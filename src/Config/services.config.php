@@ -19,31 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-namespace Seat\Services;
+return [
 
-use Illuminate\Support\ServiceProvider;
+    'version' => '1.0',
 
-class ServicesServiceProvider extends ServiceProvider
-{
-
-    /**
-     * Bootstrap the application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        //
-    }
-
-    /**
-     * Register the application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->mergeConfigFrom(
-            __DIR__ . '/Config/services.config.php', 'services.config');
-    }
-}
+];
