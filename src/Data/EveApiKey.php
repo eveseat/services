@@ -21,10 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Data;
 
-use Seat\Eveapi\Models\EveApiKey as EveApiKeyModel;
+use Seat\Eveapi\Models\Eve\ApiKey as EveApiKeyModel;
 
 /**
- * Class EveApiKey
+ * Class ApiKey
  * @package Seat\Services\Data
  */
 trait EveApiKey
