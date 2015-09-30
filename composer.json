@@ -11,7 +11,10 @@
     "autoload": {
         "psr-4": {
             "Seat\\Services\\": "src/"
-        }
+        },
+        "files": [
+            "src/Helpers/helpers.php"
+        ]
     },
     "minimum-stability": "stable",
     "require": {
