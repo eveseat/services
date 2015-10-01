@@ -40,6 +40,40 @@ trait UserRespository
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getAllFullUsers()
+    {
+
+        return UserModel::with('roles', 'affiliations', 'keys')
+            ->get();
+    }
+
+    /**
+     * @param $user_id
+     *
+     * @return mixed
+     */
+    public function getUser($user_id)
+    {
+
+        return UserModel::findOrFail($user_id);
+    }
+
+    /**
+     * @param $user_id
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getFullUser($user_id)
+    {
+
+        return UserModel::with('roles.permissions', 'affiliations', 'keys')
+            ->where('id', $user_id)
+            ->first();
+    }
+
+    /**
      * @return mixed
      */
     public function getAllUsersWithKeys()
@@ -48,5 +82,19 @@ trait UserRespository
         $users = UserModel::with('keys.characters')->get();
 
         return $users;
+    }
+
+    /**
+     * @param $user_id
+     */
+    public function flipUserAccountStatus($user_id)
+    {
+
+        $user = $this->getUser($user_id);
+        $user->active = $user->active == false ? true : false;
+        $user->save();
+
+        return;
+
     }
 }
