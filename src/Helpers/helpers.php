@@ -45,3 +45,24 @@ function human_diff($time)
 
     return carbon($time)->diffForHumans();
 }
+
+/**
+ * Return an <img> tag ready for the lazy
+ * loading plugin.
+ *
+ * @param           $type
+ * @param           $id
+ * @param           $size
+ * @param array     $attr
+ * @param bool|true $lazy
+ *
+ * @return string
+ */
+function img($type, $id, $size, array $attr, $lazy = true)
+{
+
+    $image = (new \Seat\Services\Image\Eve($type, $id, $size, $attr, $lazy))
+        ->html();
+
+    return $image;
+}
