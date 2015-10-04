@@ -61,6 +61,8 @@ class Eve
     protected $known_types = [
         'character', 'corporation', 'alliance', 'type'];
 
+    protected $extention = 'png';
+
     /**
      * @var string
      */
@@ -95,6 +97,12 @@ class Eve
 
         // Fix images to _at least_ x32
         $this->size = ($size < 32 ? 32 : $size);
+
+        // Character images are jpg, everything else is
+        // png. So, set the extention to jpg if this
+        // is for a character image
+        if ($type == 'character')
+            $this->extention = 'jpg';
 
     }
 
@@ -154,7 +162,7 @@ class Eve
     {
 
         return $this->img_server . '/' . $this->type . '/' . $this->id .
-        '_' . $size . '.jpg';
+        '_' . $size . '.' . $this->extention;
 
     }
 }
