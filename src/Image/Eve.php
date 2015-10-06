@@ -61,6 +61,9 @@ class Eve
     protected $known_types = [
         'character', 'corporation', 'alliance', 'type'];
 
+    /**
+     * @var string
+     */
     protected $extention = 'png';
 
     /**
