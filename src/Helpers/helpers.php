@@ -66,3 +66,39 @@ function img($type, $id, $size, array $attr, $lazy = true)
 
     return $image;
 }
+
+/**
+ * Dump the next SQL query to screen with its positional
+ * parameters populated.
+ *
+ * This is purely for debugging purposes.
+ */
+function dump_query()
+{
+
+    \Illuminate\Support\Facades\Event::listen(
+        'illuminate.query', function ($query, $params, $time, $conn) {
+
+        $positional = 0;
+        $full_query = '';
+
+        foreach (str_split($query) as $char) {
+
+            if ($char === '?') {
+
+                $full_query = $full_query . '"' .
+                    $params[$positional] . '"';
+                $positional++;
+
+            } else {
+
+                $full_query = $full_query . $char;
+
+            }
+        }
+
+        dd($full_query, $time . ' seconds', 'on ' . $conn);
+    });
+
+    return;
+}
