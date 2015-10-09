@@ -102,3 +102,17 @@ function dump_query()
 
     return;
 }
+
+/**
+ * Return a formatted number.
+ *
+ * @param $number
+ * @param $dec
+ *
+ * @return string
+ */
+function number($number, $dec = 2)
+{
+
+    return number_format($number, $dec, '.', ' ');
+}
