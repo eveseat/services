@@ -130,4 +130,39 @@ trait CharacterRepository
             ->lists('corporationName');
     }
 
+    /**
+     * Get Information about a specific Character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterInformation($character_id)
+    {
+
+        $info = ApiKeyInfoCharacters::join('eve_character_infos',
+            'eve_character_infos.characterID', '=',
+            'account_api_key_info_characters.characterID')
+            ->where('eve_character_infos.characterID', $character_id)
+            ->first();
+
+        return $info;
+
+    }
+
+    /**
+     * Returns the characters on a API Key
+     *
+     * @param $key_id
+     *
+     * @return mixed
+     */
+    public function getCharactersOnApiKey($key_id)
+    {
+
+        return ApiKeyInfoCharacters::where('keyID', $key_id)
+            ->get();
+
+    }
+
 }
