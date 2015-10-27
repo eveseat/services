@@ -22,8 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Http\Request;
+use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
+use Seat\Eveapi\Models\Character\SkillInTraining;
+use Seat\Eveapi\Models\Character\SkillQueue;
+use Seat\Eveapi\Models\Eve\CharacterInfoEmploymentHistory;
 use Seat\Services\Helpers\Filterable;
 
 /**
@@ -141,13 +145,11 @@ trait CharacterRepository
     public function getCharacterInformation($character_id)
     {
 
-        $info = ApiKeyInfoCharacters::join('eve_character_infos',
+        return ApiKeyInfoCharacters::join('eve_character_infos',
             'eve_character_infos.characterID', '=',
             'account_api_key_info_characters.characterID')
             ->where('eve_character_infos.characterID', $character_id)
             ->first();
-
-        return $info;
 
     }
 
@@ -161,7 +163,7 @@ trait CharacterRepository
     public function getCharacterSkillsInformation($character_id)
     {
 
-        $skills = CharacterSheetSkills::join('invTypes',
+        return CharacterSheetSkills::join('invTypes',
             'character_character_sheet_skills.typeID', '=',
             'invTypes.typeID')
             ->join('invGroups', 'invTypes.groupID', '=', 'invGroups.groupID')
@@ -169,7 +171,77 @@ trait CharacterRepository
             ->orderBy('invTypes.typeName')
             ->get();
 
-        return $skills;
+    }
+
+    /**
+     * Return information about the current skill in training
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterSkillInTraining($character_id)
+    {
+
+        return SkillInTraining::join('invTypes',
+            'character_skill_in_trainings.trainingTypeID', '=',
+            'invTypes.typeID')
+            ->where('characterID', $character_id)
+            ->first();
+    }
+
+    /**
+     * Return a characters current Skill Queue
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterSkilQueue($character_id)
+    {
+
+        return SkillQueue::join('invTypes',
+            'character_skill_queues.typeID', '=',
+            'invTypes.typeID')
+            ->where('characterID', $character_id)
+            ->orderBy('queuePosition')
+            ->get();
+
+    }
+
+    /**
+     * Return the employment history for a character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterEmploymentHistory($character_id)
+    {
+
+        return CharacterInfoEmploymentHistory::where('characterID', $character_id)
+            ->orderBy('startDate', 'desc')
+            ->get();
+
+    }
+
+    /**
+     * Return the Account Status information for a specific
+     * character
+     *
+     * @param $character_id
+     */
+    public function getCharacterAccountInfo($character_id)
+    {
+
+        $key_id = ApiKeyInfoCharacters::where('characterID', $character_id)
+            ->value('keyID');
+
+        if ($key_id)
+            return AccountStatus::find($key_id);
+
+        return;
+
     }
 
     /**
