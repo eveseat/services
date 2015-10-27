@@ -23,6 +23,7 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Http\Request;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
+use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Services\Helpers\Filterable;
 
 /**
@@ -148,6 +149,27 @@ trait CharacterRepository
 
         return $info;
 
+    }
+
+    /**
+     * Return the skills detail for a specific Character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterSkillsInformation($character_id)
+    {
+
+        $skills = CharacterSheetSkills::join('invTypes',
+            'character_character_sheet_skills.typeID', '=',
+            'invTypes.typeID')
+            ->join('invGroups', 'invTypes.groupID', '=', 'invGroups.groupID')
+            ->where('character_character_sheet_skills.characterID', $character_id)
+            ->orderBy('invTypes.typeName')
+            ->get();
+
+        return $skills;
     }
 
     /**
