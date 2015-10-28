@@ -85,7 +85,7 @@ trait CharacterRepository
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.list', false))
-                    $query = $query->whereIn('characterID',
+                    $query = $query->whereIn('account_api_key_info_characters.characterID',
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
