@@ -31,6 +31,7 @@ use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
 use Seat\Eveapi\Models\Character\WalletJournal;
+use Seat\Eveapi\Models\Character\WalletTransaction;
 use Seat\Eveapi\Models\Eve\CharacterInfoEmploymentHistory;
 use Seat\Services\Helpers\Filterable;
 
@@ -248,6 +249,29 @@ trait CharacterRepository
             $journal = $this->where_filter($journal, $request->filter);
 
         return $journal->orderBy('date', 'desc')
+            ->take($chunk)
+            ->get();
+    }
+
+    /**
+     * Retreive Wallet Transaction Entries for a Character
+     *
+     * @param                               $character_id
+     * @param int                           $chunk
+     * @param \Illuminate\Http\Request|null $request
+     *
+     * @return mixed
+     */
+    public function getCharacterWalletTransactions($character_id, $chunk = 50, Request $request = null)
+    {
+
+        $transactions = WalletTransaction::where('characterID', $character_id);
+
+        // Apply any received filters
+        if ($request && $request->filter)
+            $transactions = $this->where_filter($transactions, $request->filter);
+
+        return $transactions->orderBy('transactionDateTime', 'desc')
             ->take($chunk)
             ->get();
     }
