@@ -30,6 +30,7 @@ use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
+use Seat\Eveapi\Models\Character\WalletJournal;
 use Seat\Eveapi\Models\Eve\CharacterInfoEmploymentHistory;
 use Seat\Services\Helpers\Filterable;
 
@@ -223,6 +224,32 @@ trait CharacterRepository
             ->orderBy('queuePosition')
             ->get();
 
+    }
+
+    /**
+     * Retreive Wallet Journal Entries for a Character
+     *
+     * @param                          $character_id
+     * @param int                      $chunk
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return mixed
+     */
+    public function getCharacterWalletJournal($character_id, $chunk = 50, Request $request = null)
+    {
+
+        $journal = WalletJournal::join('eve_ref_types',
+            'character_wallet_journals.refTypeID', '=',
+            'eve_ref_types.refTypeID')
+            ->where('characterID', $character_id);
+
+        // Apply any received filters
+        if ($request && $request->filter)
+            $journal = $this->where_filter($journal, $request->filter);
+
+        return $journal->orderBy('date', 'desc')
+            ->take($chunk)
+            ->get();
     }
 
     /**

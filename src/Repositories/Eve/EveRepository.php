@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Repositories\Eve;
 
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Eve\RefTypes;
 
 /**
  * Class EveRepository
@@ -47,5 +48,16 @@ trait EveRepository
 
         return $groups;
 
+    }
+
+    /**
+     * Return the transaction reference types
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getEveTransactionTypes()
+    {
+
+        return RefTypes::all();
     }
 }
