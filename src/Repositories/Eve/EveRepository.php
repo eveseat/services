@@ -36,7 +36,7 @@ trait EveRepository
      *
      * @return mixed
      */
-    public function getCharacterSkillsGroups()
+    public function getEveSkillsGroups()
     {
 
         $groups = DB::table('invGroups')
