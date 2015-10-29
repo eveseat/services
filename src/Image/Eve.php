@@ -59,7 +59,7 @@ class Eve
      * @var array
      */
     protected $known_types = [
-        'character', 'corporation', 'alliance', 'type'];
+        'character', 'corporation', 'alliance', 'type', 'auto'];
 
     /**
      * @var string
@@ -93,6 +93,10 @@ class Eve
         if (!is_int($size))
             throw new EveImageException('size must be an integer');
 
+        // Check if we should detect the type based on id
+        if($type == 'auto')
+            $type = $this->detect_type($id);
+
         $this->type = ucfirst($type);
         $this->id = $id;
         $this->attributes = $attr;
@@ -104,9 +108,32 @@ class Eve
         // Character images are jpg, everything else is
         // png. So, set the extention to jpg if this
         // is for a character image
-        if ($type == 'character')
+        if ($this->type == 'Character')
             $this->extention = 'jpg';
 
+    }
+
+    /**
+     * Attempt to detect the image type based on the
+     * range in which an integer falls.
+     *
+     * @param $id
+     *
+     * @return string
+     */
+    public function detect_type($id)
+    {
+
+        if ($id > 90000000 && $id < 98000000)
+            return 'character';
+
+        elseif (($id > 98000000 && $id < 99000000) || ($id > 1000000 && $id < 2000000))
+            return 'corporation';
+
+        elseif (($id > 99000000 && $id < 100000000) || ($id > 0 && $id < 1000000))
+            return 'alliance';
+
+        return 'character';
     }
 
     /**
