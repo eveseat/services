@@ -116,3 +116,17 @@ function number($number, $dec = 2)
 
     return number_format($number, $dec, '.', ' ');
 }
+
+/**
+ * Return a shortened number with a suffix.
+ * Depends on php5-intl
+ *
+ * @param $number
+ *
+ * @return bool|string
+ */
+function number_metric($number)
+{
+
+    return Coduo\PHPHumanizer\Number::metricSuffix($number);
+}
