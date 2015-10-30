@@ -43,6 +43,7 @@ class ServicesServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
         $this->mergeConfigFrom(
             __DIR__ . '/Config/services.config.php', 'services.config');
     }

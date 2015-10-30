@@ -94,7 +94,7 @@ class Eve
             throw new EveImageException('size must be an integer');
 
         // Check if we should detect the type based on id
-        if($type == 'auto')
+        if ($type == 'auto')
             $type = $this->detect_type($id);
 
         $this->type = ucfirst($type);

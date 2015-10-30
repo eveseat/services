@@ -52,17 +52,6 @@ trait UserRespository
     /**
      * @param $user_id
      *
-     * @return mixed
-     */
-    public function getUser($user_id)
-    {
-
-        return UserModel::findOrFail($user_id);
-    }
-
-    /**
-     * @param $user_id
-     *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
     public function getFullUser($user_id)
@@ -96,5 +85,16 @@ trait UserRespository
 
         return;
 
+    }
+
+    /**
+     * @param $user_id
+     *
+     * @return mixed
+     */
+    public function getUser($user_id)
+    {
+
+        return UserModel::findOrFail($user_id);
     }
 }
