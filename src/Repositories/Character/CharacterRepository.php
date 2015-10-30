@@ -29,6 +29,7 @@ use Seat\Eveapi\Models\Character\CharacterSheet;
 use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\MailMessage;
+use Seat\Eveapi\Models\Character\Notifications;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
 use Seat\Eveapi\Models\Character\WalletJournal;
@@ -443,6 +444,29 @@ trait CharacterRepository
         return MailMessage::join('character_mail_message_bodies',
             'character_mail_messages.messageID', '=',
             'character_mail_message_bodies.messageID')
+            ->where('characterID', $character_id)
+            ->take($chunk)
+            ->orderBy('sentDate', 'desc')
+            ->get();
+    }
+
+    /**
+     * Return notifications for a character
+     *
+     * @param     $character_id
+     * @param int $chunk
+     *
+     * @return mixed
+     */
+    public function getCharacterNotifications($character_id, $chunk = 50)
+    {
+
+        return Notifications::join('character_notifications_texts',
+            'character_notifications.notificationID', '=',
+            'character_notifications_texts.notificationID')
+            ->join('eve_notification_types',
+                'character_notifications.typeID', '=',
+                'eve_notification_types.id')
             ->where('characterID', $character_id)
             ->take($chunk)
             ->orderBy('sentDate', 'desc')
