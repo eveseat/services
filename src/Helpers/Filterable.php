@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Helpers;
 
+use Seat\Services\Exceptions\FilterException;
+
 /**
  * Class Filterable
  * @package Seat\Services\Helpers
@@ -31,22 +33,32 @@ trait Filterable
     /**
      * Apply where() filters to a query. If an array
      * of parameters is found, whereIn is used,
-     * otherwise where()
+     * otherwise where().
+     *
+     * Rules are applied to ensure that filters columns
+     * are not tampered with.
      *
      * @param       $query
      * @param array $filters
+     * @param array $rules
      *
      * @return mixed
+     *
+     * @throws \Seat\Services\Exceptions\FilterException
      */
-    public function where_filter($query, array $filters)
+    public function where_filter($query, array $filters, array $rules)
     {
 
-        foreach ($filters as $column => $value)
+        foreach ($filters as $column => $value) {
+
+            if (!in_array($column, $rules))
+                throw new FilterException('Filter on ' . $column . ' blocked by rule');
 
             if (is_array($value))
                 $query = $query->whereIn($column, $value);
             else
                 $query = $query->where($column, $value);
+        }
 
         return $query;
 

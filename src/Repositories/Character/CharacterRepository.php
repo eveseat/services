@@ -81,7 +81,8 @@ trait CharacterRepository
 
         // Apply any received filters
         if ($request && $request->filter)
-            $characters = $this->where_filter($characters, $request->filter);
+            $characters = $this->where_filter(
+                $characters, $request->filter, config('web.filter.rules.characters'));
 
         // If the user us a super user, return all
         if (!$user->hasSuperUser()) {
@@ -291,7 +292,8 @@ trait CharacterRepository
 
         // Apply any received filters
         if ($request && $request->filter)
-            $journal = $this->where_filter($journal, $request->filter);
+            $journal = $this->where_filter(
+                $journal, $request->filter, config('web.filter.rules.character_journal'));
 
         return $journal->orderBy('date', 'desc')
             ->take($chunk)
@@ -314,7 +316,8 @@ trait CharacterRepository
 
         // Apply any received filters
         if ($request && $request->filter)
-            $transactions = $this->where_filter($transactions, $request->filter);
+            $transactions = $this->where_filter(
+                $transactions, $request->filter, config('web.filter.rules.character_transactions'));
 
         return $transactions->orderBy('transactionDateTime', 'desc')
             ->take($chunk)
