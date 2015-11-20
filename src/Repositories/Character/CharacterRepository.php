@@ -30,6 +30,7 @@ use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\ContactList;
 use Seat\Eveapi\Models\Character\ContactListLabel;
+use Seat\Eveapi\Models\Character\KillMail;
 use Seat\Eveapi\Models\Character\MailMessage;
 use Seat\Eveapi\Models\Character\Notifications;
 use Seat\Eveapi\Models\Character\SkillInTraining;
@@ -234,6 +235,36 @@ trait CharacterRepository
             'account_api_key_info_characters.characterID')
             ->where('eve_character_infos.characterID', $character_id)
             ->first();
+
+    }
+
+    /**
+     * Return the killmails for a character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterKillmails($character_id)
+    {
+
+        return KillMail::select(
+            '*',
+            'character_kill_mails.characterID as ownerID',
+            'kill_mail_details.characterID as victimID')
+            ->leftJoin(
+                'kill_mail_details',
+                'character_kill_mails.killID', '=',
+                'kill_mail_details.killID')
+            ->leftJoin(
+                'invTypes',
+                'kill_mail_details.shipTypeID', '=',
+                'invTypes.typeID')
+            ->leftJoin('mapDenormalize',
+                'kill_mail_details.solarSystemID', '=',
+                'mapDenormalize.itemID')
+            ->where('character_kill_mails.characterID', $character_id)
+            ->get();
 
     }
 
