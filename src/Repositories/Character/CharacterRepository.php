@@ -238,6 +238,47 @@ trait CharacterRepository
 
     }
 
+    public function getCharacterIndustry($character_id)
+    {
+
+        return DB::table('character_industry_jobs as a')
+            ->select(DB::raw("
+                *,
+
+                --
+                -- Start Facility Name Lookup
+                --
+                CASE
+                when a.stationID BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.stationID-6000000)
+                when a.stationID BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.stationID-6000001)
+                when a.stationID BETWEEN 66014934 AND 67999999 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.stationID-6000000)
+                when a.stationID BETWEEN 60014861 AND 60014928 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.stationID)
+                when a.stationID BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.stationID)
+                when a.stationID >= 61000000 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.stationID)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                WHERE m.itemID = a.stationID) end
+                AS facilityName"))
+            ->leftJoin(
+                'ramActivities',
+                'ramActivities.activityID', '=',
+                'a.activityID') // character_industry_jobs aliased to a
+            ->where('a.characterID', $character_id)
+            ->orderBy('endDate', 'desc')
+            ->get();
+    }
+
     /**
      * Return the killmails for a character
      *
