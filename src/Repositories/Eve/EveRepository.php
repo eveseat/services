@@ -32,6 +32,25 @@ trait EveRepository
 {
 
     /**
+     * Return the order states that market orders can have.
+     * Order states from: https://neweden-dev.com/Character/Market_Orders
+     *
+     * @return array
+     */
+    public function getEveMarketOrderStates()
+    {
+
+        return [
+            0 => 'Active',
+            1 => 'Closed',
+            2 => 'Expired / Fulfilled',
+            3 => 'Cancelled',
+            4 => 'Pending',
+            5 => 'Deleted'
+        ];
+    }
+
+    /**
      * Return the groups that character skills
      * fall in
      *
