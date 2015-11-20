@@ -238,6 +238,13 @@ trait CharacterRepository
 
     }
 
+    /**
+     * Return the industry jobs for a character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
     public function getCharacterIndustry($character_id)
     {
 
