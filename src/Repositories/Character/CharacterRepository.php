@@ -28,10 +28,13 @@ use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 use Seat\Eveapi\Models\Character\CharacterSheet;
 use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
+use Seat\Eveapi\Models\Character\ContactList;
+use Seat\Eveapi\Models\Character\ContactListLabel;
 use Seat\Eveapi\Models\Character\MailMessage;
 use Seat\Eveapi\Models\Character\Notifications;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
+use Seat\Eveapi\Models\Character\UpcomingCalendarEvent;
 use Seat\Eveapi\Models\Character\WalletJournal;
 use Seat\Eveapi\Models\Character\WalletTransaction;
 use Seat\Eveapi\Models\Eve\CharacterInfoEmploymentHistory;
@@ -147,6 +150,35 @@ trait CharacterRepository
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
             ->where('a.characterID', $character_id)
+            ->get();
+    }
+
+    /**
+     * Get a characters contact list
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterContacts($character_id)
+    {
+
+        return ContactList::where('characterID', $character_id)
+            ->orderBy('standing', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get a characters contact list labels
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterContactLabels($character_id)
+    {
+
+        return ContactListLabel::where('characterID', $character_id)
             ->get();
     }
 
@@ -470,6 +502,20 @@ trait CharacterRepository
             ->where('characterID', $character_id)
             ->take($chunk)
             ->orderBy('sentDate', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get Calendar events for a specific character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterUpcomingCalendarEvents($character_id)
+    {
+
+        return UpcomingCalendarEvent::where('characterID', $character_id)
             ->get();
     }
 
