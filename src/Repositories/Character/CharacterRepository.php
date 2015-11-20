@@ -269,6 +269,81 @@ trait CharacterRepository
     }
 
     /**
+     * Return Contract Information for a character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterContracts($character_id)
+    {
+
+        return DB::table(DB::raw('character_contracts as a'))
+            ->select(DB::raw(
+                "
+                --
+                -- All Columns
+                --
+                *,
+
+                --
+                -- Start Location Lookup
+                --
+                CASE
+                when a.startStationID BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.startStationID-6000000)
+                when a.startStationID BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.startStationID-6000001)
+                when a.startStationID BETWEEN 66014934 AND 67999999 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.startStationID-6000000)
+                when a.startStationID BETWEEN 60014861 AND 60014928 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.startStationID)
+                when a.startStationID BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.startStationID)
+                when a.startStationID >= 61000000 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.startStationID)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID = a.startStationID) end
+                AS startlocation,
+
+                --
+                -- End Location Lookup
+                --
+                CASE
+                when a.endstationID BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.endStationID-6000000)
+                when a.endStationID BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.endStationID-6000001)
+                when a.endStationID BETWEEN 66014934 AND 67999999 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.endStationID-6000000)
+                when a.endStationID BETWEEN 60014861 AND 60014928 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.endStationID)
+                when a.endStationID BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.endStationID)
+                when a.endStationID >= 61000000 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.endStationID)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID = a.endStationID) end
+                AS endlocation "))
+            ->where('a.characterID', $character_id)
+            ->orderBy('dateIssued', 'desc')
+            ->get();
+
+    }
+
+    /**
      * Return the character sheet for a character
      *
      * @param $character_id
