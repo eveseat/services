@@ -34,6 +34,7 @@ use Seat\Eveapi\Models\Character\KillMail;
 use Seat\Eveapi\Models\Character\MailMessage;
 use Seat\Eveapi\Models\Character\Notifications;
 use Seat\Eveapi\Models\Character\PlanetaryColony;
+use Seat\Eveapi\Models\Character\Research;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
 use Seat\Eveapi\Models\Character\UpcomingCalendarEvent;
@@ -728,6 +729,28 @@ trait CharacterRepository
     {
 
         return PlanetaryColony::where('ownerID', $character_id)
+            ->get();
+    }
+
+    /**
+     * Return a characters research info
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterResearchAgents($character_id)
+    {
+
+        return Research::join(
+            'invNames',
+            'character_researches.agentID', '=',
+            'invNames.itemID')
+            ->join(
+                'invTypes',
+                'character_researches.skillTypeID', '=',
+                'invTypes.typeID')
+            ->where('characterID', $character_id)
             ->get();
     }
 
