@@ -33,6 +33,7 @@ use Seat\Eveapi\Models\Character\ContactListLabel;
 use Seat\Eveapi\Models\Character\KillMail;
 use Seat\Eveapi\Models\Character\MailMessage;
 use Seat\Eveapi\Models\Character\Notifications;
+use Seat\Eveapi\Models\Character\PlanetaryColony;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
 use Seat\Eveapi\Models\Character\UpcomingCalendarEvent;
@@ -713,6 +714,20 @@ trait CharacterRepository
             ->where('characterID', $character_id)
             ->take($chunk)
             ->orderBy('sentDate', 'desc')
+            ->get();
+    }
+
+    /**
+     * Return the Planetary Colonies for a character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterPlanetaryColonies($character_id)
+    {
+
+        return PlanetaryColony::where('ownerID', $character_id)
             ->get();
     }
 
