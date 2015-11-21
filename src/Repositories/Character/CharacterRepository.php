@@ -37,6 +37,7 @@ use Seat\Eveapi\Models\Character\PlanetaryColony;
 use Seat\Eveapi\Models\Character\Research;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
+use Seat\Eveapi\Models\Character\Standing;
 use Seat\Eveapi\Models\Character\UpcomingCalendarEvent;
 use Seat\Eveapi\Models\Character\WalletJournal;
 use Seat\Eveapi\Models\Character\WalletTransaction;
@@ -729,6 +730,20 @@ trait CharacterRepository
     {
 
         return PlanetaryColony::where('ownerID', $character_id)
+            ->get();
+    }
+
+    /**
+     * Return the standings for a character
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterStandings($character_id)
+    {
+
+        return Standing::where('characterID', $character_id)
             ->get();
     }
 
