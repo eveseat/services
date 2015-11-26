@@ -92,7 +92,7 @@ trait CharacterRepository
             $characters = $this->where_filter(
                 $characters, $request->filter, config('web.filter.rules.characters'));
 
-        // If the user us a super user, return all
+        // If the user is a super user, return all
         if (!$user->hasSuperUser()) {
 
             $characters = $characters->where(function ($query) use ($user, $request) {
