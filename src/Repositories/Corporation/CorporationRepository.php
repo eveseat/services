@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Repositories\Corporation;
 
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
+use Seat\Services\Helpers\Filterable;
 
 /**
  * Class CorporationRepository
@@ -30,6 +31,8 @@ use Seat\Eveapi\Models\Corporation\CorporationSheet;
 trait CorporationRepository
 {
 
+    use Filterable;
+
     /**
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -37,6 +40,63 @@ trait CorporationRepository
     {
 
         return CorporationSheet::all();
+    }
+
+    /**
+     * Return the corporations for which a user has access.
+     *
+     * @return mixed
+     */
+    public function getAllCorporationsWithAffiliationsAndFilters()
+    {
+
+        // Get the User for permissions and affiliation
+        // checks
+        $user = auth()->user();
+
+        // Start a fresh query
+        $corporations = new CorporationSheet;
+
+        // Check if this user us a superuser. If not,
+        // limit to stuff only they can see.
+        if (!$user->hasSuperUser()) {
+
+            // Add affiliated corporations based on the
+            // corporation.list_all permission
+            if ($user->has('corporation.list_all', false))
+                $corporations = $corporations->orWhereIn(
+                    'corporationID', array_keys($user->getAffiliationMap()['corp']));
+
+            // Add any keys the user may own. This is a slightly
+            // complex case as we need to sub select a few things
+            $corporations = $corporations->orWhereIn('corporationID',
+
+                // The return array of all of the below is a
+                // nested mess. We can just flatten it.
+                array_flatten($user->keys()
+                    // Include info.characters so that we can
+                    // filter it down in the map() function
+                    // below.
+                    ->with('info.characters')
+                    // Info itself has a constraint applied, checking
+                    // if the api key type is that of a corp.
+                    ->whereHas('info', function ($query) {
+
+                        $query->where('type', 'Corporation');
+
+                    })->get()->map(function ($item) {
+
+                        // We finally map the resultant Collection
+                        // object and list the corporationID out of
+                        // the $key->info->characters relation.
+                        return $item->info->characters
+                            ->lists('corporationID')->toArray();
+                    })));
+        }
+
+        return $corporations->orderBy('corporationName', 'desc')
+            ->get();
+
     }
 
 }
