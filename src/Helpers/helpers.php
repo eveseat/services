@@ -137,3 +137,34 @@ function number_metric($number)
 
     return Coduo\PHPHumanizer\Number::metricSuffix($number);
 }
+
+/**
+ * Strip any CCP styling and tags from an HTML string
+ *
+ * @param $html
+ *
+ * @return string
+ */
+function clean_ccp_html($html)
+{
+
+    // Remove any tags that we are not interested in,
+    // or that is not considered valid HTML anyways.
+    $html = strip_tags($html, '<font><br><i>');
+
+    // Prep a DOMDocument so that we can remove font
+    // colors and size attributes.
+    $dom = new DOMDocument();
+    $dom->loadHTML($html);
+
+    foreach ($dom->getElementsByTagName('font') as $tag) {
+
+        $tag->setAttribute('size', '');
+        $tag->setAttribute('color', '');
+    }
+
+    // Strip tags again as DOMDocument will add a
+    // !DOCTYPE attribute
+    return trim(strip_tags($dom->saveHTML(), '<font><br><i>'));
+
+}
