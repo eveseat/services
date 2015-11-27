@@ -27,6 +27,7 @@ use Seat\Eveapi\Models\Corporation\ContactListLabel;
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
+use Seat\Eveapi\Models\Corporation\KillMail;
 use Seat\Services\Helpers\Filterable;
 
 /**
@@ -320,6 +321,35 @@ trait CorporationRepository
                 'a.activityID')// corporation_industry_jobs aliased to a
             ->where('a.corporationID', $corporation_id)
             ->orderBy('endDate', 'desc')
+            ->get();
+    }
+
+    /**
+     * Return the Killmails for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationKillmails($corporation_id)
+    {
+
+        return KillMail::select(
+            '*',
+            'corporation_kill_mails.corporationID as ownerID',
+            'kill_mail_details.corporationID as victimID')
+            ->leftJoin(
+                'kill_mail_details',
+                'corporation_kill_mails.killID', '=',
+                'kill_mail_details.killID')
+            ->leftJoin(
+                'invTypes',
+                'kill_mail_details.shipTypeID', '=',
+                'invTypes.typeID')
+            ->leftJoin('mapDenormalize',
+                'kill_mail_details.solarSystemID', '=',
+                'mapDenormalize.itemID')
+            ->where('corporation_kill_mails.corporationID', $corporation_id)
             ->get();
     }
 
