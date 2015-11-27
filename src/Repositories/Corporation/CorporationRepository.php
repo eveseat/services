@@ -22,12 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Repositories\Corporation;
 
 use DB;
+use Illuminate\Http\Request;
 use Seat\Eveapi\Models\Corporation\ContactList;
 use Seat\Eveapi\Models\Corporation\ContactListLabel;
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Eveapi\Models\Corporation\KillMail;
+use Seat\Eveapi\Models\Corporation\Standing;
+use Seat\Eveapi\Models\Corporation\WalletJournal;
 use Seat\Services\Helpers\Filterable;
 
 /**
@@ -424,6 +427,20 @@ trait CorporationRepository
     }
 
     /**
+     * Return the standings for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationStandings($corporation_id)
+    {
+
+        return Standing::where('corporationID', $corporation_id)
+            ->get();
+    }
+
+    /**
      * Return the Corporation Wallet Divisions for a Corporation
      *
      * @param $corporation_id
@@ -435,6 +452,35 @@ trait CorporationRepository
 
         return CorporationSheetWalletDivision::where('corporationID', $corporation_id)
             ->get();
+    }
+
+    /**
+     * Return a Wallet Journal for a Corporation
+     *
+     * @param                               $corporation_id
+     * @param int                           $chunk
+     * @param \Illuminate\Http\Request|null $request
+     *
+     * @return mixed
+     * @throws \Seat\Services\Exceptions\FilterException
+     */
+    public function getCorporationWalletJournal($corporation_id, $chunk = 50, Request $request = null)
+    {
+
+        $journal = WalletJournal::leftJoin('eve_ref_types',
+            'corporation_wallet_journals.refTypeID', '=',
+            'eve_ref_types.refTypeID')
+            ->where('corporationID', $corporation_id);
+
+        // Apply any received filters
+        if ($request && $request->filter)
+            $journal = $this->where_filter(
+                $journal, $request->filter, config('web.filter.rules.corporation_transactions'));
+
+        return $journal->orderBy('date', 'desc')
+            ->take($chunk)
+            ->get();
+
     }
 
 }
