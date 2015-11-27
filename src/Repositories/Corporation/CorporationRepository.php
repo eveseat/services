@@ -31,6 +31,7 @@ use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Eveapi\Models\Corporation\KillMail;
 use Seat\Eveapi\Models\Corporation\Standing;
 use Seat\Eveapi\Models\Corporation\WalletJournal;
+use Seat\Eveapi\Models\Corporation\WalletTransaction;
 use Seat\Services\Helpers\Filterable;
 
 /**
@@ -481,6 +482,31 @@ trait CorporationRepository
             ->take($chunk)
             ->get();
 
+    }
+
+    /**
+     * Return Wallet Transactions for a Corporation
+     *
+     * @param                               $corporation_id
+     * @param int                           $chunk
+     * @param \Illuminate\Http\Request|null $request
+     *
+     * @return mixed
+     * @throws \Seat\Services\Exceptions\FilterException
+     */
+    public function getCorporationWalletTransactions($corporation_id, $chunk = 50, Request $request = null)
+    {
+
+        $transactions = WalletTransaction::where('corporationID', $corporation_id);
+
+        // Apply any received filters
+        if ($request && $request->filter)
+            $transactions = $this->where_filter(
+                $transactions, $request->filter, config('web.filter.rules.corporation_transactions'));
+
+        return $transactions->orderBy('transactionDateTime', 'desc')
+            ->take($chunk)
+            ->get();
     }
 
 }
