@@ -6,4 +6,5 @@
 [![Latest Unstable Version](https://poser.pugx.org/eveseat/services/v/unstable)](https://packagist.org/packages/eveseat/services)
 [![License](https://poser.pugx.org/eveseat/services/license)](https://packagist.org/packages/eveseat/services)
 
-This repository contains the Services code for SeAT
+## This repository contains the Services code for SeAT
+Please use the main SeAT repository [here](https://github.com/eveseat/seat) for issues.
