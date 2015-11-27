@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Repositories\Corporation;
 
 use DB;
+use Seat\Eveapi\Models\Corporation\ContactList;
+use Seat\Eveapi\Models\Corporation\ContactListLabel;
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
@@ -153,6 +155,36 @@ trait CorporationRepository
             ->where('a.corporationID', $corporation_id)
             ->get();
 
+    }
+
+    /**
+     * Return the contacts list for a corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationContacts($corporation_id)
+    {
+
+        return ContactList::where('corporationID', $corporation_id)
+            ->orderBy('standing', 'desc')
+            ->get();
+
+    }
+
+    /**
+     * Return the contact labels for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationContactsLabels($corporation_id)
+    {
+
+        return ContactListLabel::where('corporationID', $corporation_id)
+            ->get();
     }
 
     /**
