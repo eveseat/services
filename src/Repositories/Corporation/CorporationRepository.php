@@ -475,7 +475,7 @@ trait CorporationRepository
         // Apply any received filters
         if ($request && $request->filter)
             $journal = $this->where_filter(
-                $journal, $request->filter, config('web.filter.rules.corporation_transactions'));
+                $journal, $request->filter, config('web.filter.rules.corporation_journal'));
 
         return $journal->orderBy('date', 'desc')
             ->take($chunk)
