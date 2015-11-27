@@ -354,6 +354,62 @@ trait CorporationRepository
     }
 
     /**
+     * Return the Market Orders for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return array|static[]
+     */
+    public function getCorporationMarketOrders($corporation_id)
+    {
+
+        return DB::table(DB::raw('corporation_market_orders as a'))
+            ->select(DB::raw(
+                "
+                --
+                -- Select All
+                --
+                *,
+
+                --
+                -- Start stationName Lookup
+                --
+                CASE
+                when a.stationID BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.stationID-6000000)
+                when a.stationID BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.stationID-6000001)
+                when a.stationID BETWEEN 66014934 AND 67999999 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.stationID-6000000)
+                when a.stationID BETWEEN 60014861 AND 60014928 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.stationID)
+                when a.stationID BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.stationID)
+                when a.stationID >= 61000000 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.stationID)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID = a.stationID) end
+                    AS stationName"))
+            ->join(
+                'invTypes',
+                'a.typeID', '=',
+                'invTypes.typeID')
+            ->join(
+                'invGroups',
+                'invTypes.groupID', '=',
+                'invGroups.groupID')
+            ->where('a.corporationID', $corporation_id)
+            ->orderBy('a.issued', 'desc')
+            ->get();
+    }
+
+    /**
      * Return the Corporation Sheet for a Corporation
      *
      * @param $corporation_id
