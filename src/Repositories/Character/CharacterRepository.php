@@ -532,7 +532,7 @@ trait CharacterRepository
     public function getCharacterWalletJournal($character_id, $chunk = 50, Request $request = null)
     {
 
-        $journal = WalletJournal::join('eve_ref_types',
+        $journal = WalletJournal::leftJoin('eve_ref_types',
             'character_wallet_journals.refTypeID', '=',
             'eve_ref_types.refTypeID')
             ->where('characterID', $character_id);
