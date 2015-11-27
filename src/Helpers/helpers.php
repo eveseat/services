@@ -148,9 +148,12 @@ function number_metric($number)
 function clean_ccp_html($html)
 {
 
+    // The list of tags that is OK to remain.
+    $acceptable_tags = '<font><br><i>';
+
     // Remove any tags that we are not interested in,
     // or that is not considered valid HTML anyways.
-    $html = strip_tags($html, '<font><br><i>');
+    $html = strip_tags($html, $acceptable_tags);
 
     // Prep a DOMDocument so that we can remove font
     // colors and size attributes.
@@ -159,12 +162,12 @@ function clean_ccp_html($html)
 
     foreach ($dom->getElementsByTagName('font') as $tag) {
 
-        $tag->setAttribute('size', '');
-        $tag->setAttribute('color', '');
+        $tag->removeAttribute('size');
+        $tag->removeAttribute('color');
     }
 
     // Strip tags again as DOMDocument will add a
     // !DOCTYPE attribute
-    return trim(strip_tags($dom->saveHTML(), '<font><br><i>'));
+    return trim(strip_tags($dom->saveHTML(), $acceptable_tags));
 
 }
