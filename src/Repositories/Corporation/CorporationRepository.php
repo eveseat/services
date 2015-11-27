@@ -29,6 +29,9 @@ use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Eveapi\Models\Corporation\KillMail;
+use Seat\Eveapi\Models\Corporation\MemberSecurity;
+use Seat\Eveapi\Models\Corporation\MemberSecurityLog;
+use Seat\Eveapi\Models\Corporation\MemberSecurityTitle;
 use Seat\Eveapi\Models\Corporation\MemberTracking;
 use Seat\Eveapi\Models\Corporation\Standing;
 use Seat\Eveapi\Models\Corporation\WalletJournal;
@@ -411,6 +414,49 @@ trait CorporationRepository
                 'invGroups.groupID')
             ->where('a.corporationID', $corporation_id)
             ->orderBy('a.issued', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get the Member Security for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationMemberSecurity($corporation_id)
+    {
+
+        return MemberSecurity::where('corporationID', $corporation_id)
+            ->get();
+    }
+
+    /**
+     * Get the security change logs for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationMemberSecurityLogs($corporation_id)
+    {
+
+        return MemberSecurityLog::where('corporationID', $corporation_id)
+            ->orderBy('changeTime', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get the titles for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationMemberSecurityTitles($corporation_id)
+    {
+
+        return MemberSecurityTitle::where('corporationID', $corporation_id)
             ->get();
     }
 
