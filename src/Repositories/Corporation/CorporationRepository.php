@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Repositories\Corporation;
 
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
+use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
+use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Services\Helpers\Filterable;
 
 /**
@@ -97,6 +99,48 @@ trait CorporationRepository
         return $corporations->orderBy('corporationName', 'desc')
             ->get();
 
+    }
+
+    /**
+     * Return the Corporation Divisions for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationDivisions($corporation_id)
+    {
+
+        return CorporationSheetDivision::where('corporationID', $corporation_id)
+            ->get();
+    }
+
+    /**
+     * Return the Corporation Sheet for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationSheet($corporation_id)
+    {
+
+        return CorporationSheet::where('corporationID', $corporation_id)
+            ->first();
+    }
+
+    /**
+     * Return the Corporation Wallet Divisions for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationWalletDivisions($corporation_id)
+    {
+
+        return CorporationSheetWalletDivision::where('corporationID', $corporation_id)
+            ->get();
     }
 
 }
