@@ -29,6 +29,7 @@ use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Eveapi\Models\Corporation\KillMail;
+use Seat\Eveapi\Models\Corporation\MemberTracking;
 use Seat\Eveapi\Models\Corporation\Standing;
 use Seat\Eveapi\Models\Corporation\WalletJournal;
 use Seat\Eveapi\Models\Corporation\WalletTransaction;
@@ -410,6 +411,33 @@ trait CorporationRepository
                 'invGroups.groupID')
             ->where('a.corporationID', $corporation_id)
             ->orderBy('a.issued', 'desc')
+            ->get();
+    }
+
+    /**
+     * Return the Member Tracking for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationMemberTracking($corporation_id)
+    {
+
+        return MemberTracking::select(
+            'corporation_member_trackings.*',
+            'eve_api_keys.enabled')
+            ->leftJoin(
+                'account_api_key_info_characters',
+                'corporation_member_trackings.characterID', '=',
+                'account_api_key_info_characters.characterID')
+            ->leftJoin(
+                'eve_api_keys',
+                'account_api_key_info_characters.keyID', '=',
+                'eve_api_keys.key_id')
+            ->where('corporation_member_trackings.corporationID',
+                $corporation_id)
+            ->orderBy('name')
             ->get();
     }
 
