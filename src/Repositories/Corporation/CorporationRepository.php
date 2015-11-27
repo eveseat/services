@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Corporation;
 
+use DB;
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
@@ -97,6 +98,59 @@ trait CorporationRepository
         }
 
         return $corporations->orderBy('corporationName', 'desc')
+            ->get();
+
+    }
+
+    /**
+     * Return the assets list for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return array|static[]
+     */
+    public function getCorporationAssets($corporation_id)
+    {
+
+        return DB::table('corporation_asset_lists as a')
+            ->select(DB::raw("
+                --
+                -- Select All Fields
+                --
+                *,
+
+                --
+                -- Start the Lookation Lookup
+                --
+                CASE
+                when a.locationID BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.locationID-6000000)
+                when a.locationID BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.locationID-6000001)
+                when a.locationID BETWEEN 66014934 AND 67999999 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.locationID-6000000)
+                when a.locationID BETWEEN 60014861 AND 60014928 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.locationID)
+                when a.locationID BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID = a.locationID)
+                when a.locationID >= 61000000 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID = a.locationID)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID = a.locationID) end
+                    AS location"))
+            ->join('invTypes',
+                'a.typeID', '=',
+                'invTypes.typeID')
+            ->join('invGroups',
+                'invTypes.groupID', '=',
+                'invGroups.groupID')
+            ->where('a.corporationID', $corporation_id)
             ->get();
 
     }
