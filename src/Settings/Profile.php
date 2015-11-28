@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Settings;
 
-use Seat\Web\Models\UserSetting;
+use Seat\Services\Models\UserSetting;
 
 /**
  * Class Profile
@@ -49,8 +49,30 @@ class Profile extends Settings
      * @var array
      */
     protected static $defaults = [
+
+        // UI
+        'sidebar'             => 'sidebar-full',
+        'skin'                => 'skin-black',
+
+        // Main Character
         'main_character_id'   => 1,
         'main_character_name' => null
+    ];
+
+    /**
+     * The options available for this Setting type
+     *
+     * @var array
+     */
+    protected static $options = [
+
+        'sidebar' => ['sidebar-full', 'sidebar-collapse'],
+        'skin'    => [
+            'skin-blue', 'skin-black', 'skin-purple', 'skin-green',
+            'skin-red', 'skin-yellow', 'skin-blue-light', 'skin-black-light',
+            'skin-purple-light', 'skin-green-light', 'skin-red-light',
+            'skin-yellow-light'
+        ]
     ];
 
 }

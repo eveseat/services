@@ -49,7 +49,7 @@ class Seat extends Settings
      * @var array
      */
     protected static $defaults = [
-        'color_scheme' => null
+
     ];
 
 }

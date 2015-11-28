@@ -171,3 +171,21 @@ function clean_ccp_html($html)
     return trim(strip_tags($dom->saveHTML(), $acceptable_tags));
 
 }
+
+/**
+ * Retrive a Setting value
+ *
+ * @param      $name
+ * @param bool $global
+ *
+ * @return mixed
+ */
+function setting($name, $global = false)
+{
+
+    if ($global)
+        return \Seat\Services\Settings\Seat::get($name);
+
+    return \Seat\Services\Settings\Profile::get($name);
+
+}
