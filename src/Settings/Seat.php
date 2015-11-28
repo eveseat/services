@@ -31,30 +31,6 @@ class Seat extends Settings
 {
 
     /**
-     * @var string
-     */
-    protected static $prefix = 'seat';
-
-    /**
-     * @var
-     */
-    protected static $model = GlobalSetting::class;
-
-    /**
-     * @var string
-     */
-    protected static $scope = 'global';
-
-    /**
-     * @var array
-     */
-    protected static $defaults = [
-
-        // User Registration
-        'registration' => 'yes'
-    ];
-
-    /**
      * The options available for this Setting type
      *
      * @var array
@@ -62,6 +38,26 @@ class Seat extends Settings
     public static $options = [
 
         'registration' => ['yes', 'no']
+    ];
+    /**
+     * @var string
+     */
+    protected static $prefix = 'seat';
+    /**
+     * @var
+     */
+    protected static $model = GlobalSetting::class;
+    /**
+     * @var string
+     */
+    protected static $scope = 'global';
+    /**
+     * @var array
+     */
+    protected static $defaults = [
+
+        // User Registration
+        'registration' => 'yes'
     ];
 
 }

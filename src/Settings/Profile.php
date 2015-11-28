@@ -31,20 +31,34 @@ class Profile extends Settings
 {
 
     /**
+     * The options available for this Setting type
+     *
+     * @var array
+     */
+    public static $options = [
+
+        'sidebar'            => ['sidebar-full', 'sidebar-collapse'],
+        'skins'              => [
+            'skin-blue', 'skin-black', 'skin-purple', 'skin-green',
+            'skin-red', 'skin-yellow', 'skin-blue-light', 'skin-black-light',
+            'skin-purple-light', 'skin-green-light', 'skin-red-light',
+            'skin-yellow-light'
+        ],
+        'thousand_seperator' => [' ', ',', '.'],
+        'decimal_seperator'  => [',', '.']
+    ];
+    /**
      * @var string
      */
     protected static $prefix = 'profile';
-
     /**
      * @var
      */
     protected static $model = UserSetting::class;
-
     /**
      * @var string
      */
     protected static $scope = 'user';
-
     /**
      * @var array
      */
@@ -61,24 +75,6 @@ class Profile extends Settings
         // Numbers
         'thousand_seperator'  => ' ',
         'decimal_seperator'   => '.'
-    ];
-
-    /**
-     * The options available for this Setting type
-     *
-     * @var array
-     */
-    public static $options = [
-
-        'sidebar'            => ['sidebar-full', 'sidebar-collapse'],
-        'skins'              => [
-            'skin-blue', 'skin-black', 'skin-purple', 'skin-green',
-            'skin-red', 'skin-yellow', 'skin-blue-light', 'skin-black-light',
-            'skin-purple-light', 'skin-green-light', 'skin-red-light',
-            'skin-yellow-light'
-        ],
-        'thousand_seperator' => [' ', ',', '.'],
-        'decimal_seperator'  => [',', '.']
     ];
 
 }

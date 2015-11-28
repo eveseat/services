@@ -108,7 +108,7 @@ trait UserRespository
     {
 
         return ApiKeyInfoCharacters::with('key')
-            ->whereHas('key', function($query) use ($user_id){
+            ->whereHas('key', function ($query) use ($user_id) {
 
                 $query->where('user_id', $user_id);
             })
