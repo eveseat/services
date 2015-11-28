@@ -121,7 +121,8 @@ function dump_query($stop = false)
 function number($number, $dec = 2)
 {
 
-    return number_format($number, $dec, '.', ' ');
+    return number_format($number, $dec,
+        setting('decimal_seperator'), setting('thousand_seperator'));
 }
 
 /**

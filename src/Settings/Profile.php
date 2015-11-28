@@ -56,7 +56,11 @@ class Profile extends Settings
 
         // Main Character
         'main_character_id'   => 1,
-        'main_character_name' => null
+        'main_character_name' => null,
+
+        // Numbers
+        'thousand_seperator'  => ' ',
+        'decimal_seperator'   => '.'
     ];
 
     /**
@@ -64,15 +68,17 @@ class Profile extends Settings
      *
      * @var array
      */
-    public $options = [
+    public static $options = [
 
-        'sidebar' => ['sidebar-full', 'sidebar-collapse'],
-        'skins'    => [
+        'sidebar'            => ['sidebar-full', 'sidebar-collapse'],
+        'skins'              => [
             'skin-blue', 'skin-black', 'skin-purple', 'skin-green',
             'skin-red', 'skin-yellow', 'skin-blue-light', 'skin-black-light',
             'skin-purple-light', 'skin-green-light', 'skin-red-light',
             'skin-yellow-light'
-        ]
+        ],
+        'thousand_seperator' => [' ', ',', '.'],
+        'decimal_seperator'  => [',', '.']
     ];
 
 }

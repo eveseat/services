@@ -224,6 +224,20 @@ trait CharacterRepository
     }
 
     /**
+     * Retreive a character name by character id
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterNameById($character_id)
+    {
+
+        return ApiKeyInfoCharacters::where('characterID', $character_id)
+            ->pluck('characterName');
+    }
+
+    /**
      * Get Information about a specific Character
      *
      * @param $character_id

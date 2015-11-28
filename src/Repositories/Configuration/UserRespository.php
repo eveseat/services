@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Configuration;
 
+use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 use Seat\Web\Models\User as UserModel;
 
 /**
@@ -97,4 +98,21 @@ trait UserRespository
 
         return UserModel::findOrFail($user_id);
     }
+
+    /**
+     * @param $user_id
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getUserCharacters($user_id)
+    {
+
+        return ApiKeyInfoCharacters::with('key')
+            ->whereHas('key', function($query) use ($user_id){
+
+                $query->where('user_id', $user_id);
+            })
+            ->get();
+    }
 }
+

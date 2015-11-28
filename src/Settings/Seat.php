@@ -55,6 +55,6 @@ class Seat extends Settings
      *
      * @var array
      */
-    public $options = [];
+    public static $options = [];
 
 }
