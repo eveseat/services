@@ -64,10 +64,10 @@ class Profile extends Settings
      *
      * @var array
      */
-    protected static $options = [
+    public $options = [
 
         'sidebar' => ['sidebar-full', 'sidebar-collapse'],
-        'skin'    => [
+        'skins'    => [
             'skin-blue', 'skin-black', 'skin-purple', 'skin-green',
             'skin-red', 'skin-yellow', 'skin-blue-light', 'skin-black-light',
             'skin-purple-light', 'skin-green-light', 'skin-red-light',

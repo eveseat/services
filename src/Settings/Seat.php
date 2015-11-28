@@ -48,8 +48,13 @@ class Seat extends Settings
     /**
      * @var array
      */
-    protected static $defaults = [
+    protected static $defaults = [];
 
-    ];
+    /**
+     * The options available for this Setting type
+     *
+     * @var array
+     */
+    public $options = [];
 
 }
