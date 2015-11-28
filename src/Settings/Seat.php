@@ -48,13 +48,20 @@ class Seat extends Settings
     /**
      * @var array
      */
-    protected static $defaults = [];
+    protected static $defaults = [
+
+        // User Registration
+        'registration' => 'yes'
+    ];
 
     /**
      * The options available for this Setting type
      *
      * @var array
      */
-    public static $options = [];
+    public static $options = [
+
+        'registration' => ['yes', 'no']
+    ];
 
 }
