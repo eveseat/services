@@ -61,7 +61,7 @@ function human_diff($time)
 function img($type, $id, $size, array $attr, $lazy = true)
 {
 
-    $image = (new \Seat\Services\Image\Eve($type, $id, $size, $attr, $lazy))
+    $image = (new \Seat\Services\Image\Eve($type, (int)$id, $size, $attr, $lazy))
         ->html();
 
     return $image;
