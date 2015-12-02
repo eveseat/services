@@ -74,7 +74,10 @@ class Profile extends Settings
 
         // Numbers
         'thousand_seperator'  => ' ',
-        'decimal_seperator'   => '.'
+        'decimal_seperator'   => '.',
+
+        // Notifications
+        'email_notifications' => 'no'
     ];
 
 }
