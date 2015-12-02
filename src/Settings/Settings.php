@@ -64,15 +64,17 @@ abstract class Settings
     /**
      * Retreive a setting by name.
      *
-     * @param $name
+     * @param      $name
+     * @param null $for_id
      *
      * @return mixed
+     * @throws \Seat\Services\Exceptions\SettingException
      */
-    public static function get($name)
+    public static function get($name, $for_id = null)
     {
 
         return Cache::rememberForever(
-            self::get_key_prefix($name), function () use ($name) {
+            self::get_key_prefix($name), function () use ($name, $for_id) {
 
             // Init a new MODEL
             $value = (new static::$model);
@@ -80,7 +82,8 @@ abstract class Settings
             // If we are not in the global scope, add a constraint
             // to be user specific.
             if (static::$scope != 'global')
-                $value = $value->where('user_id', auth()->user()->id);
+                $value = $value->where('user_id',
+                    is_null($for_id) ? auth()->user()->id : $for_id);
 
             // Retreive the value
             $value = $value->where('name', $name)
@@ -99,12 +102,13 @@ abstract class Settings
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param      $name
+     * @param      $value
+     * @param null $for_id
      *
      * @throws \Seat\Services\Exceptions\SettingException
      */
-    public static function set($name, $value)
+    public static function set($name, $value, $for_id = null)
     {
 
         // Init a new MODEL
@@ -113,7 +117,8 @@ abstract class Settings
         // If we are not in the global scope, add a constraint
         // to be user specific.
         if (static::$scope != 'global')
-            $db = $db->where('user_id', auth()->user()->id);
+            $db = $db->where('user_id',
+                is_null($for_id) ? auth()->user()->id : $for_id);
 
         // Retreive the value
         $db = $db->where('name', $name)
@@ -132,7 +137,7 @@ abstract class Settings
         // Again, if we are not in the global context, then
         // we need to constrain this setting to a user.
         if (static::$scope != 'global')
-            $db->user_id = auth()->user()->id;
+            $db->user_id = is_null($for_id) ? auth()->user()->id : $for_id;
 
         $db->save();
 
