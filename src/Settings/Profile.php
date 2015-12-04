@@ -77,7 +77,10 @@ class Profile extends Settings
         'decimal_seperator'   => '.',
 
         // Notifications
-        'email_notifications' => 'no'
+        'email_notifications' => 'no',
+
+        // Multi factor authentication
+        'require_mfa'         => 'no'
     ];
 
 }
