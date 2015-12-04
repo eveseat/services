@@ -23,6 +23,7 @@ namespace Seat\Services\Repositories\Eve;
 
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Eve\RefTypes;
+use Seat\Eveapi\Models\Server\ServerStatus;
 
 /**
  * Class EveRepository
@@ -78,5 +79,17 @@ trait EveRepository
     {
 
         return RefTypes::all();
+    }
+
+    /**
+     * Get the last server status
+     *
+     * @return mixed
+     */
+    public function getEveLastServerStatus()
+    {
+
+        return ServerStatus::orderBy('created_at', 'desc')
+            ->first();
     }
 }
