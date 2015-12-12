@@ -72,7 +72,8 @@ trait JobRepository
     public function getAllPaginatedJobs($pagination = 20)
     {
 
-        return JobTracking::paginate($pagination);
+        return JobTracking::orderBy('created_at', 'desc')
+            ->paginate($pagination);
     }
 
     /**
