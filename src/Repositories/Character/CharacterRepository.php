@@ -711,6 +711,26 @@ trait CharacterRepository
     }
 
     /**
+     * Retreive a specific message for a character
+     *
+     * @param $character_id
+     * @param $message_id
+     *
+     * @return mixed
+     */
+    public function getCharacterMailMessage($character_id, $message_id)
+    {
+
+        return MailMessage::join('character_mail_message_bodies',
+            'character_mail_messages.messageID', '=',
+            'character_mail_message_bodies.messageID')
+            ->where('characterID', $character_id)
+            ->where('character_mail_messages.messageID', $message_id)
+            ->orderBy('sentDate', 'desc')
+            ->first();
+    }
+
+    /**
      * Return notifications for a character
      *
      * @param     $character_id
