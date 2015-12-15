@@ -159,7 +159,7 @@ function clean_ccp_html($html)
     // Prep a DOMDocument so that we can remove font
     // colors and size attributes.
     $dom = new DOMDocument();
-    $dom->loadHTML($html);
+    @$dom->loadHTML($html);
 
     foreach ($dom->getElementsByTagName('font') as $tag) {
 
