@@ -731,6 +731,55 @@ trait CharacterRepository
     }
 
     /**
+     * Get the mail timeline for all of the characters
+     * a logged in user has access to. Either by owning the
+     * api key with the characters, or having the correct
+     * affiliation & role
+     *
+     * @return mixed
+     */
+    public function getCharacterMailTimeline()
+    {
+
+        // Get the User for permissions and affiliation
+        // checks
+        $user = auth()->user();
+
+        $messages = MailMessage::join('character_mail_message_bodies',
+            'character_mail_messages.messageID', '=',
+            'character_mail_message_bodies.messageID')
+            ->join(
+                'account_api_key_info_characters',
+                'character_mail_messages.characterID', '=',
+                'account_api_key_info_characters.characterID')
+            ->join(
+                'eve_api_keys',
+                'eve_api_keys.key_id', '=',
+                'account_api_key_info_characters.keyID');
+
+        // If the user is a super user, return all
+        if (!$user->hasSuperUser()) {
+
+            $messages = $messages->where(function ($query) use ($user) {
+
+                // If the user has any affiliations and can
+                // list those characters, add them
+                if ($user->has('character.mail', false))
+                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                        array_keys($user->getAffiliationMap()['char']));
+
+                // Add any characters from owner API keys
+                $query->orWhere('eve_api_keys.user_id', $user->id);
+            });
+
+        }
+
+        return $messages->groupBy('character_mail_messages.messageID')
+            ->orderBy('character_mail_messages.sentDate', 'desc')
+            ->paginate(25);
+    }
+
+    /**
      * Return notifications for a character
      *
      * @param     $character_id
