@@ -67,6 +67,7 @@ class Profile extends Settings
         // UI
         'sidebar'             => 'sidebar-full',
         'skin'                => 'skin-black',
+        'language'            => 'en',
 
         // Main Character
         'main_character_id'   => 1,
