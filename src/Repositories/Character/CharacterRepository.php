@@ -79,13 +79,18 @@ trait CharacterRepository
 
         $characters = ApiKeyInfoCharacters::with('key', 'key.owner', 'key_info')
             ->join(
+                'account_api_key_infos',
+                'account_api_key_infos.keyID', '=',
+                'account_api_key_info_characters.keyID')
+            ->join(
                 'eve_api_keys',
                 'eve_api_keys.key_id', '=',
                 'account_api_key_info_characters.keyID')
             ->join(
                 'eve_character_infos',
                 'eve_character_infos.characterID', '=',
-                'account_api_key_info_characters.characterID');
+                'account_api_key_info_characters.characterID')
+            ->where('account_api_key_infos.type', '!=', 'Corporation');
 
         // Apply any received filters
         if ($request && $request->filter)
@@ -109,7 +114,8 @@ trait CharacterRepository
 
         }
 
-        return $characters->orderBy('account_api_key_info_characters.characterName')
+        return $characters->groupBy('account_api_key_info_characters.characterID')
+            ->orderBy('account_api_key_info_characters.characterName')
             ->get();
     }
 
