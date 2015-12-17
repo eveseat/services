@@ -483,6 +483,7 @@ trait CorporationRepository
                 'eve_api_keys.key_id')
             ->where('corporation_member_trackings.corporationID',
                 $corporation_id)
+            ->groupBy('corporation_member_trackings.characterID')
             ->orderBy('name')
             ->get();
     }
