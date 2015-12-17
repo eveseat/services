@@ -671,11 +671,16 @@ trait CharacterRepository
     public function getCharacterAccountInfo($character_id)
     {
 
-        $key_id = ApiKeyInfoCharacters::where('characterID', $character_id)
-            ->value('keyID');
+        $key_info = ApiKeyInfoCharacters::where('characterID', $character_id)
+            ->leftJoin(
+                'account_api_key_infos',
+                'account_api_key_infos.keyID', '=',
+                'account_api_key_info_characters.keyID')
+            ->where('account_api_key_infos.type', '!=', 'Corporation')
+            ->first();
 
-        if ($key_id)
-            return AccountStatus::find($key_id);
+        if ($key_info)
+            return AccountStatus::find($key_info->keyID);
 
         return;
 
