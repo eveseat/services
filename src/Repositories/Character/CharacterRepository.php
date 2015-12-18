@@ -28,6 +28,7 @@ use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 use Seat\Eveapi\Models\Character\CharacterSheet;
 use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
+use Seat\Eveapi\Models\Character\ChatChannel;
 use Seat\Eveapi\Models\Character\ContactList;
 use Seat\Eveapi\Models\Character\ContactListLabel;
 use Seat\Eveapi\Models\Character\KillMail;
@@ -160,6 +161,21 @@ trait CharacterRepository
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
             ->where('a.characterID', $character_id)
+            ->get();
+    }
+
+    /**
+     * Get a characters Chat Channels
+     *
+     * @param $character_id
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getCharacterChatChannelsFull($character_id)
+    {
+
+        return ChatChannel::with('info', 'members')
+            ->where('characterID', $character_id)
             ->get();
     }
 
