@@ -25,6 +25,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
+use Seat\Eveapi\Models\Character\Bookmark;
 use Seat\Eveapi\Models\Character\CharacterSheet;
 use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
@@ -161,6 +162,20 @@ trait CharacterRepository
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
             ->where('a.characterID', $character_id)
+            ->get();
+    }
+
+    /**
+     * Return a characters Bookmarks
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterBookmarks($character_id)
+    {
+
+        return Bookmark::where('characterID', $character_id)
             ->get();
     }
 
