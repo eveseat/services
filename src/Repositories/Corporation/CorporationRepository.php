@@ -23,6 +23,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use DB;
 use Illuminate\Http\Request;
+use Seat\Eveapi\Models\Corporation\Bookmark;
 use Seat\Eveapi\Models\Corporation\ContactList;
 use Seat\Eveapi\Models\Corporation\ContactListLabel;
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
@@ -164,6 +165,20 @@ trait CorporationRepository
             ->where('a.corporationID', $corporation_id)
             ->get();
 
+    }
+
+    /**
+     * Get a corporations Bookmarks
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationBookmarks($corporation_id)
+    {
+
+        return Bookmark::where('corporationID', $corporation_id)
+            ->get();
     }
 
     /**
