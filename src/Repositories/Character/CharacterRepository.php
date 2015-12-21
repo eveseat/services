@@ -594,8 +594,7 @@ trait CharacterRepository
                 $journal, $request->filter, config('web.filter.rules.character_journal'));
 
         return $journal->orderBy('date', 'desc')
-            ->take($chunk)
-            ->get();
+            ->paginate($chunk);
     }
 
     /**
@@ -618,8 +617,7 @@ trait CharacterRepository
                 $transactions, $request->filter, config('web.filter.rules.character_transactions'));
 
         return $transactions->orderBy('transactionDateTime', 'desc')
-            ->take($chunk)
-            ->get();
+            ->paginate($chunk);
     }
 
     /**

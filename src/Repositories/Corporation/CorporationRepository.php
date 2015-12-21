@@ -569,8 +569,7 @@ trait CorporationRepository
                 $journal, $request->filter, config('web.filter.rules.corporation_journal'));
 
         return $journal->orderBy('date', 'desc')
-            ->take($chunk)
-            ->get();
+            ->paginate($chunk);
 
     }
 
@@ -595,8 +594,7 @@ trait CorporationRepository
                 $transactions, $request->filter, config('web.filter.rules.corporation_transactions'));
 
         return $transactions->orderBy('transactionDateTime', 'desc')
-            ->take($chunk)
-            ->get();
+            ->paginate($chunk);
     }
 
 }
