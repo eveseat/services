@@ -52,6 +52,42 @@ trait EveRepository
     }
 
     /**
+     * Return the possible states a starbase could
+     * be in.
+     *
+     * @return array
+     */
+    public function getEveStarbaseTowerStates()
+    {
+
+        return [
+            '0' => 'Unanchored',
+            '1' => 'Anchored / Offline',
+            '2' => 'Onlining',
+            '3' => 'Reinforced',
+            '4' => 'Online'
+        ];
+    }
+
+    /**
+     * Return the bonusses applicable to cargo bays
+     * anchored at starbases with bonusses.
+     *
+     * @return static
+     */
+    public function getEveBayBonusses()
+    {
+
+        return collect(DB::table('dgmTypeAttributes')
+            ->select('typeID', 'valueFloat')
+            // From dgmAttributeTypes,
+            // 757 = controlTowerSiloCapacityBonus
+            ->where('attributeID', 757)
+            ->get())
+            ->keyBy('typeID');
+    }
+
+    /**
      * Return the groups that character skills
      * fall in
      *

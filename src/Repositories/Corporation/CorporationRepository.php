@@ -23,6 +23,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use DB;
 use Illuminate\Http\Request;
+use Seat\Eveapi\Models\Corporation\AssetListContents;
 use Seat\Eveapi\Models\Corporation\Bookmark;
 use Seat\Eveapi\Models\Corporation\ContactList;
 use Seat\Eveapi\Models\Corporation\ContactListLabel;
@@ -30,11 +31,13 @@ use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Eveapi\Models\Corporation\KillMail;
+use Seat\Eveapi\Models\Corporation\Locations;
 use Seat\Eveapi\Models\Corporation\MemberSecurity;
 use Seat\Eveapi\Models\Corporation\MemberSecurityLog;
 use Seat\Eveapi\Models\Corporation\MemberSecurityTitle;
 use Seat\Eveapi\Models\Corporation\MemberTracking;
 use Seat\Eveapi\Models\Corporation\Standing;
+use Seat\Eveapi\Models\Corporation\Starbase;
 use Seat\Eveapi\Models\Corporation\WalletJournal;
 use Seat\Eveapi\Models\Corporation\WalletTransaction;
 use Seat\Services\Helpers\Filterable;
@@ -165,6 +168,61 @@ trait CorporationRepository
             ->where('a.corporationID', $corporation_id)
             ->get();
 
+    }
+
+    /**
+     * Returns a corporation assets grouped by location.
+     * Only assets in space will appear here as assets
+     * that are in stations dont have 'locations' entries.
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationAssetByLocation($corporation_id)
+    {
+
+        return Locations::leftJoin('corporation_asset_lists',
+            'corporation_locations.itemID', '=',
+            'corporation_asset_lists.itemID')
+            ->leftJoin(
+                'invTypes',
+                'corporation_asset_lists.typeID', '=',
+                'invTypes.typeID')
+            ->where('corporation_locations.corporationID', $corporation_id)
+            ->get()
+            ->groupBy('mapID'); // <--- :O That is so sexy <3
+    }
+
+    /**
+     * Return an assets contents. If no parent asset / item ids
+     * are specified, then all assets for the corporation is
+     * returned
+     *
+     * @param      $corporation_id
+     * @param null $parent_asset_id
+     * @param null $parent_item_id
+     *
+     * @return mixed
+     */
+    public function getCorporationAssetContents($corporation_id,
+                                                $parent_asset_id = null,
+                                                $parent_item_id = null)
+    {
+
+        $contents = AssetListContents::join('invTypes',
+            'corporation_asset_list_contents.typeID', '=',
+            'invTypes.typeID')
+            ->where('corporationID', $corporation_id);
+
+        if (!is_null($parent_asset_id))
+            $contents = $contents->where('parentAssetItemID', $parent_asset_id);
+
+        if (!is_null($parent_item_id))
+            $contents = $contents->where('parentItemID', $parent_item_id);
+
+        return collect($contents->get())
+            ->groupBy('itemID');
     }
 
     /**
@@ -528,6 +586,130 @@ trait CorporationRepository
     {
 
         return Standing::where('corporationID', $corporation_id)
+            ->get();
+    }
+
+    /**
+     * Return a list of starbases for a Corporation.
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationStarbases($corporation_id)
+    {
+
+        return Starbase::select(
+            'corporation_starbases.itemID',
+            'corporation_starbases.moonID',
+            'corporation_starbases.state',
+            'corporation_starbases.stateTimeStamp',
+            'corporation_starbases.onlineTimeStamp',
+            'corporation_starbases.onlineTimeStamp',
+            'corporation_starbase_details.useStandingsFrom',
+            'corporation_starbase_details.onAggression',
+            'corporation_starbase_details.onCorporationWar',
+            'corporation_starbase_details.allowCorporationMembers',
+            'corporation_starbase_details.allowAllianceMembers',
+            'corporation_starbase_details.fuelBlocks',
+            'corporation_starbase_details.strontium',
+            'corporation_starbase_details.starbaseCharter',
+            'invTypes.typeID as starbaseTypeID',
+            'invTypes.typeName as starbaseTypeName',
+            'mapDenormalize.itemName as mapName',
+            'mapDenormalize.security as mapSecurity',
+            'invNames.itemName as moonName',
+            'map_sovereignties.solarSystemName',
+            'corporation_starbase_details.updated_at')
+            ->selectSub(function ($query) {
+
+                return $query->from('invControlTowerResources')
+                    ->select('quantity')
+                    // from invControlTowerResources, we can see
+                    // that fuelBlock resourceTypeID's are around
+                    // 4051 -> 4312. For that reason, we can just
+                    // approximate the range that fuel blocks will
+                    // fall in.
+                    ->whereBetween('resourceTypeID', [4000, 5000])
+                    ->where('purpose', 1)
+                    ->where('controlTowerTypeID',
+                        $query->raw('corporation_starbases.typeID'));
+
+            }, 'baseFuelUsage')
+            ->selectSub(function ($query) {
+
+                return $query->from('invControlTowerResources')
+                    ->select('quantity')
+                    ->where('resourceTypeID', '=', 16275)
+                    ->where('purpose', 4)
+                    ->where('controlTowerTypeID',
+                        $query->raw('corporation_starbases.typeID'));
+
+            }, 'baseStrontUsage')
+            ->selectSub(function ($query) {
+
+                return $query->from('invTypes')
+                    ->select('capacity')
+                    ->where('groupID', 365)
+                    ->where('typeID',
+                        $query->raw('corporation_starbases.typeID'));
+
+            }, 'fuelBaySize')
+            ->selectSub(function ($query) {
+
+                return $query->from('dgmTypeAttributes')
+                    ->select('valueFloat')
+                    ->where('dgmTypeAttributes.attributeID', 1233)
+                    ->where('typeID',
+                        $query->raw('corporation_starbases.typeID'));
+
+            }, 'strontBaySize')
+            ->selectSub(function ($query) {
+
+                return $query->from('corporation_locations')
+                    ->select('itemName')
+                    ->where('itemID',
+                        $query->raw('corporation_starbases.itemID'));
+
+            }, 'starbaseName')
+            ->selectSub(function ($query) use ($corporation_id) {
+
+                return $query->from('map_sovereignties')
+                    ->selectRaw(
+                        'IF(solarSystemID, TRUE, FALSE) inSovSystem')
+                    ->where('factionID', 0)
+                    ->whereIn('allianceID', function ($subquery) use ($corporation_id) {
+
+                        $subquery->from('corporation_sheets')
+                            ->select('allianceID')
+                            ->where('corporationID', $corporation_id);
+                    })
+                    ->where('solarSystemID',
+                        $query->raw('corporation_starbases.locationID'));
+
+            }, 'inSovSystem')
+            ->join(
+                'corporation_starbase_details',
+                'corporation_starbases.itemID', '=',
+                'corporation_starbase_details.itemID')
+            ->join(
+                'mapDenormalize',
+                'corporation_starbases.locationID', '=',
+                'mapDenormalize.itemID')
+            ->join(
+                'invNames',
+                'corporation_starbases.moonID', '=',
+                'invNames.itemID')
+            ->join(
+                'invTypes',
+                'corporation_starbases.typeID', '=',
+                'invTypes.typeID')
+            ->leftJoin(
+                'map_sovereignties',
+                'corporation_starbases.locationID', '=',
+                'map_sovereignties.solarSystemID')
+            ->where('corporation_starbases.corporationID', $corporation_id)
+            ->orderBy('invNames.itemName', 'asc')
             ->get();
     }
 
