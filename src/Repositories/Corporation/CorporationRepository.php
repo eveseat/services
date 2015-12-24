@@ -221,8 +221,10 @@ trait CorporationRepository
         if (!is_null($parent_item_id))
             $contents = $contents->where('parentItemID', $parent_item_id);
 
-        return collect($contents->get())
-            ->groupBy('itemID');
+        // TODO: Allow the nested lookups to occur.
+        $contents = $contents->where('parentItemID', null);
+
+        return collect($contents->get());
     }
 
     /**
