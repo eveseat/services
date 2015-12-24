@@ -70,24 +70,6 @@ trait EveRepository
     }
 
     /**
-     * Return the bonusses applicable to cargo bays
-     * anchored at starbases with bonusses.
-     *
-     * @return static
-     */
-    public function getEveBayBonusses()
-    {
-
-        return collect(DB::table('dgmTypeAttributes')
-            ->select('typeID', 'valueFloat')
-            // From dgmAttributeTypes,
-            // 757 = controlTowerSiloCapacityBonus
-            ->where('attributeID', 757)
-            ->get())
-            ->keyBy('typeID');
-    }
-
-    /**
      * Return the groups that character skills
      * fall in
      *

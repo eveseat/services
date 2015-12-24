@@ -690,6 +690,17 @@ trait CorporationRepository
                         $query->raw('corporation_starbases.locationID'));
 
             }, 'inSovSystem')
+            ->selectSub(function ($query) {
+
+                return $query->from('dgmTypeAttributes')
+                    ->select('valueFloat')
+                    // From dgmAttributeTypes,
+                    // 757 = controlTowerSiloCapacityBonus
+                    ->where('attributeID', 757)
+                    ->where('typeID',
+                        $query->raw('corporation_starbases.typeID'));
+
+            }, 'siloCapacityBonus')
             ->join(
                 'corporation_starbase_details',
                 'corporation_starbases.itemID', '=',
