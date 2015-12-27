@@ -592,16 +592,19 @@ trait CorporationRepository
     }
 
     /**
-     * Return a list of starbases for a Corporation.
+     * Return a list of starbases for a Corporation. If
+     * a starbaseID is provided, then only data for that
+     * starbase is returned.
      *
-     * @param $corporation_id
+     * @param      $corporation_id
+     * @param null $starbase_id
      *
      * @return mixed
      */
-    public function getCorporationStarbases($corporation_id)
+    public function getCorporationStarbases($corporation_id, $starbase_id = null)
     {
 
-        return Starbase::select(
+        $starbase = Starbase::select(
             'corporation_starbases.itemID',
             'corporation_starbases.moonID',
             'corporation_starbases.state',
@@ -722,8 +725,13 @@ trait CorporationRepository
                 'corporation_starbases.locationID', '=',
                 'map_sovereignties.solarSystemID')
             ->where('corporation_starbases.corporationID', $corporation_id)
-            ->orderBy('invNames.itemName', 'asc')
-            ->get();
+            ->orderBy('invNames.itemName', 'asc');
+
+        if(is_null($starbase_id))
+            return $starbase->get();
+
+        return $starbase->where('corporation_starbases.itemID', $starbase_id)
+            ->first();
     }
 
     /**
