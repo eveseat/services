@@ -30,6 +30,7 @@ use Seat\Eveapi\Models\Corporation\ContactListLabel;
 use Seat\Eveapi\Models\Corporation\CorporationSheet;
 use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
+use Seat\Eveapi\Models\Corporation\CustomsOffice;
 use Seat\Eveapi\Models\Corporation\KillMail;
 use Seat\Eveapi\Models\Corporation\Locations;
 use Seat\Eveapi\Models\Corporation\MemberSecurity;
@@ -564,6 +565,37 @@ trait CorporationRepository
     }
 
     /**
+     * Return a Corporations Customs Offices
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationCustomsOffices($corporation_id)
+    {
+
+        return CustomsOffice::select(
+            'corporation_customs_offices.*',
+            'corporation_customs_office_locations.itemName as planetName',
+            'mapDenormalize.typeID AS planetTypeID',
+            'invTypes.typeName AS planetTypeName')
+            ->join(
+                'corporation_customs_office_locations',
+                'corporation_customs_offices.itemID', '=',
+                'corporation_customs_office_locations.itemID')
+            ->join(
+                'mapDenormalize',
+                'corporation_customs_office_locations.mapID', '=',
+                'mapDenormalize.itemID')
+            ->join(
+                'invTypes',
+                'invTypes.typeID', '=',
+                'mapDenormalize.typeID')
+            ->where('corporation_customs_offices.corporationID', $corporation_id)
+            ->get();
+    }
+
+    /**
      * Return the Corporation Sheet for a Corporation
      *
      * @param $corporation_id
@@ -727,7 +759,7 @@ trait CorporationRepository
             ->where('corporation_starbases.corporationID', $corporation_id)
             ->orderBy('invNames.itemName', 'asc');
 
-        if(is_null($starbase_id))
+        if (is_null($starbase_id))
             return $starbase->get();
 
         return $starbase->where('corporation_starbases.itemID', $starbase_id)
