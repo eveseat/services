@@ -807,7 +807,29 @@ trait CorporationRepository
             ->paginate($chunk);
 
     }
+ 
+    /**
+     * Return the Wallet Ledger for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return array|static[]
+     */
+    public function getCorporationWalletLedger($corporation_id)
+    {
 
+        $ledger = DB::table('corporation_wallet_journals')
+            ->select(DB::raw('YEAR(date) year, MONTH(date) month, accountKey, SUM(amount) balance'))
+            ->where('corporationID', $corporation_id)
+            ->groupBy('year')
+            ->groupBy('month')
+            ->groupBy('accountKey')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        return $ledger;
+    }
     /**
      * Return Wallet Transactions for a Corporation
      *
