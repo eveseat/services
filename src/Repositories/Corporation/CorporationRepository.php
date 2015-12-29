@@ -547,8 +547,26 @@ trait CorporationRepository
     {
 
         return MemberTracking::select(
-            'corporation_member_trackings.*',
-            'eve_api_keys.enabled')
+            'corporation_member_trackings.*')
+            ->selectSub(function ($query) {
+
+                // Get the key status for the character
+                return $query->from('eve_api_keys')
+                    ->select('enabled')
+                    ->join(
+                        'account_api_key_infos',
+                        'eve_api_keys.key_id', '=',
+                        'account_api_key_infos.keyID')
+                    ->join(
+                        'account_api_key_info_characters',
+                        'eve_api_keys.key_id', '=',
+                        'account_api_key_info_characters.keyID')
+                    ->where('account_api_key_infos.type', '!=', 'Corporation')
+                    ->where('account_api_key_info_characters.characterID',
+                        $query->raw('corporation_member_trackings.characterID'))
+                    ->groupBy('corporation_member_trackings.characterID');
+
+            }, 'enabled')
             ->leftJoin(
                 'account_api_key_info_characters',
                 'corporation_member_trackings.characterID', '=',
