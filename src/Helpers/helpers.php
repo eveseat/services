@@ -152,6 +152,9 @@ function clean_ccp_html($html)
     // The list of tags that is OK to remain.
     $acceptable_tags = '<font><br><i>';
 
+    // Handle Unicode cases.
+    $html = mb_convert_encoding($html , 'HTML-ENTITIES', 'UTF-8');
+
     // Remove any tags that we are not interested in,
     // or that is not considered valid HTML anyways.
     $html = strip_tags($html, $acceptable_tags);
