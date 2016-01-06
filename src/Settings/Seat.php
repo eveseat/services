@@ -57,7 +57,7 @@ class Seat extends Settings
     protected static $defaults = [
 
         // User Registration
-        'registration' => 'yes',
+        'registration'  => 'yes',
 
         // Admin contact
         'admin_contact' => 'seatadmin@localhost.local'
