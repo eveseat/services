@@ -60,8 +60,22 @@ trait PeopleRepository
     public function getPeopleSearchListJson($query)
     {
 
+        if (auth()->user()->has('people.view', false))
+            return [
+                'results' => Person::select('id', 'main_character_name as text')
+                    ->where('main_character_name', 'like', '%' . $query . '%')
+                    ->orderBy('main_character_name', 'asc')
+                    ->get()
+            ];
+
         return [
             'results' => Person::select('id', 'main_character_name as text')
+                ->whereHas('members.characters', function ($query) {
+
+                    $query->whereIn('keyID', ApiKey::where(
+                        'user_id', auth()->user()->id)->lists('key_id'));
+
+                })
                 ->where('main_character_name', 'like', '%' . $query . '%')
                 ->orderBy('main_character_name', 'asc')
                 ->get()
