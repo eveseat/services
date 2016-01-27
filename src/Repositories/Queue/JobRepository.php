@@ -50,7 +50,7 @@ trait JobRepository
         if ($limit)
             $jobs = $jobs->take($limit);
 
-        return $jobs->get();
+        return $jobs->orderBy('created_at')->get();
     }
 
     /**
