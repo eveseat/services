@@ -68,7 +68,6 @@ trait CorporationRepository
      */
     public function getAllCorporationsWithAffiliationsAndFilters()
     {
-
         // Get the User for permissions and affiliation
         // checks
         $user = auth()->user();
@@ -82,9 +81,19 @@ trait CorporationRepository
 
             // Add affiliated corporations based on the
             // corporation.list_all permission
-            if ($user->has('corporation.list_all', false))
+            if ($user->has('corporation.list_all', false)) {
+                $map = $user->getAffiliationMap();
                 $corporations = $corporations->orWhereIn(
-                    'corporationID', array_keys($user->getAffiliationMap()['corp']));
+                    'corporationID', $this->getCorpAffiliationsFromMap($map['corp'], 'corporation.list_all'));
+                    
+                // If there are any roles with inverted affiliations in the map 
+                // go through these
+                foreach ($map['inverted'] as $key => $invertedRole) {
+                    if (in_array('corporation.list_all', $invertedRole['permissions'])) {
+                        $corporations->orWhereNotIn('corporationID', $invertedRole['corp']);
+                    }   
+                }    
+            }
 
             // Add any keys the user may own. This is a slightly
             // complex case as we need to sub select a few things
@@ -117,7 +126,7 @@ trait CorporationRepository
             ->get();
 
     }
-
+   
     /**
      * Return the assets list for a Corporation
      *
@@ -848,6 +857,25 @@ trait CorporationRepository
 
         return $transactions->orderBy('transactionDateTime', 'desc')
             ->paginate($chunk);
+    }
+    
+    /**
+    * Return array of affiliations that contains the specified permission
+    * 
+    * @param $map
+    * @param $permission
+    *
+    * $return array
+    */    
+    private function getCorpAffiliationsFromMap($map, $permission) {
+        $results = array();
+        
+        foreach($map as $affiliation => $permissions) {
+            if (in_array($permission, $permissions))
+                $results[] = $affiliation;
+        }
+        
+        return $results;
     }
 
 }
