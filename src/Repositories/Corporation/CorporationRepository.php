@@ -799,6 +799,22 @@ trait CorporationRepository
     }
 
     /**
+     * Return the Corporation Wallet Divisions for a Corporation
+     *
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationWalletDivisionSummary($corporation_id)
+    {
+	$divisionsummary = CorporationSheetWalletDivision::join('corporation_account_balances','corporation_sheet_wallet_divisions.accountKey','=','corporation_account_balances.accountKey')
+				->select('corporation_account_balances.accountID as accountid', 'corporation_account_balances.balance as balance', 'corporation_sheet_wallet_divisions.description as description');
+
+        return $divisionsummary->get();
+    }
+
+
+    /**
      * Return a Wallet Journal for a Corporation
      *
      * @param                               $corporation_id
@@ -850,4 +866,106 @@ trait CorporationRepository
             ->paginate($chunk);
     }
 
+    /**
+     * Return Wallet Transactions for a Corporation
+     *
+     * @param                               $corporation_id
+     * @param int                           $chunk
+     * @param \Illuminate\Http\Request|null $request
+     *
+     * @return mixed
+     * @throws \Seat\Services\Exceptions\FilterException
+     */
+    public function getCorporationLedgerBountyPrizeDates($corporation_id, $chunk = 50)
+    {
+
+        $bountyprizedates = DB::table('corporation_wallet_journals')->select( DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year') )
+				->where('corporationID', $corporation_id)
+				->where('refTypeID', '85');
+
+        return $bountyprizedates->orderBy('date', 'desc')
+            ->paginate($chunk);
+    }
+
+    /**
+     * Return Wallet Transactions for a Corporation
+     *
+     * @param                               $corporation_id
+     * @param int                           $chunk
+     * @param \Illuminate\Http\Request|null $request
+     *
+     * @return mixed
+     * @throws \Seat\Services\Exceptions\FilterException
+     */
+    public function getCorporationLedgerPIDates($corporation_id, $chunk = 50)
+    {
+
+        $bountyprizedates = DB::table('corporation_wallet_journals')->select( DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year') )
+				->where('corporationID', $corporation_id)
+				->where('refTypeID', '96')
+				->orWhere('refTypeID', '97');
+
+        return $bountyprizedates->orderBy('date', 'desc')
+            ->paginate($chunk);
+    }
+
+    /**
+     * Return Wallet Transactions for a Corporation
+     *
+     * @param                               $corporation_id
+     * @param int                           $chunk
+     * @param \Illuminate\Http\Request|null $request
+     *
+     * @return mixed
+     * @throws \Seat\Services\Exceptions\FilterException
+     */
+    public function getCorporationLedgerBountyPrizeByMonth($corporation_id, $year = 0, $month = 0, $chunk = 500)
+    {
+        if ($year == 0) {
+		$year = date("Y", time());
+	}
+	if ($month == 0) {
+		$month = date("m", time());
+	}
+
+        $bountyprizedates = DB::table('corporation_wallet_journals')->select( DB::raw('MONTH(date) as month, YEAR(date) as year, ROUND(SUM(amount)) as total, ownerName2, ownerID2') )
+				->where('corporationID', $corporation_id)
+				->where('refTypeID', '85')
+				->where(DB::raw('YEAR(date)'), $year)
+				->where(DB::raw('MONTH(date)'), $month)
+				->groupBy('ownerName2')
+				->orderBy(DB::raw('SUM(amount)'), 'desc');
+
+        return $bountyprizedates->paginate($chunk);
+    }
+
+    /**
+     * Return Planetary Interaction Totals for a Corporation
+     *
+     * @param                               $corporation_id
+     * @param int                           $chunk
+     * @param \Illuminate\Http\Request|null $request
+     *
+     * @return mixed
+     * @throws \Seat\Services\Exceptions\FilterException
+     */
+    public function getCorporationLedgerPITotalsByMonth($corporation_id, $year = 0, $month = 0, $chunk = 500)
+    {
+        if ($year == 0) {
+		$year = date("Y", time());
+	}
+	if ($month == 0) {
+		$month = date("m", time());
+	}
+
+        $pitotals = DB::table('corporation_wallet_journals')->select( DB::raw('MONTH(date) as month, YEAR(date) as year, ROUND(SUM(amount)) as total, ownerName1, ownerID1') )
+				->where('corporationID', $corporation_id)
+				->where('refTypeID', '96')
+				->orWhere('refTypeID', '97')
+				->where(DB::raw('YEAR(date)'), $year)
+				->where(DB::raw('MONTH(date)'), $month)
+				->groupBy('ownerName1')
+				->orderBy(DB::raw('SUM(amount)'), 'desc');
+        return $pitotals->paginate($chunk);
+    }
 }
