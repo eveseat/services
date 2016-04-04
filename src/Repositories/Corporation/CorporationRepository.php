@@ -874,7 +874,6 @@ trait CorporationRepository
      * @param \Illuminate\Http\Request|null $request
      *
      * @return mixed
-     * @throws \Seat\Services\Exceptions\FilterException
      */
     public function getCorporationLedgerBountyPrizeDates($corporation_id, $chunk = 50)
     {
@@ -895,7 +894,6 @@ trait CorporationRepository
      * @param \Illuminate\Http\Request|null $request
      *
      * @return mixed
-     * @throws \Seat\Services\Exceptions\FilterException
      */
     public function getCorporationLedgerPIDates($corporation_id, $chunk = 50)
     {
@@ -913,11 +911,12 @@ trait CorporationRepository
      * Return Wallet Transactions for a Corporation
      *
      * @param                               $corporation_id
+     * @param int                           $year
+     * @param int                           $month
      * @param int                           $chunk
      * @param \Illuminate\Http\Request|null $request
      *
      * @return mixed
-     * @throws \Seat\Services\Exceptions\FilterException
      */
     public function getCorporationLedgerBountyPrizeByMonth($corporation_id, $year = 0, $month = 0, $chunk = 500)
     {
@@ -943,11 +942,12 @@ trait CorporationRepository
      * Return Planetary Interaction Totals for a Corporation
      *
      * @param                               $corporation_id
+     * @param int                           $year
+     * @param int                           $month
      * @param int                           $chunk
      * @param \Illuminate\Http\Request|null $request
      *
      * @return mixed
-     * @throws \Seat\Services\Exceptions\FilterException
      */
     public function getCorporationLedgerPITotalsByMonth($corporation_id, $year = 0, $month = 0, $chunk = 500)
     {
