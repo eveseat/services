@@ -942,7 +942,7 @@ trait CorporationRepository
      * @return mixed
      * @throws \Seat\Services\Exceptions\FilterException
      */
-    public function getCorporationLedgerPITotalsByMonth($corporation_id, &$year = null, &$month = null, $chunk = 500)
+    public function getCorporationLedgerPITotalsByMonth($corporation_id, $year = null, $month = null, $chunk = 500)
     {
 
         $pitotals = DB::table('corporation_wallet_journals')->select( DB::raw('MONTH(date) as month, YEAR(date) as year, ROUND(SUM(amount)) as total, ownerName1, ownerID1') )
