@@ -808,7 +808,8 @@ trait CorporationRepository
     public function getCorporationWalletDivisionSummary($corporation_id)
     {
 	$divisionsummary = CorporationSheetWalletDivision::join('corporation_account_balances','corporation_sheet_wallet_divisions.accountKey','=','corporation_account_balances.accountKey')
-				->select('corporation_account_balances.accountID as accountid', 'corporation_account_balances.balance as balance', 'corporation_sheet_wallet_divisions.description as description');
+				->select('corporation_account_balances.accountID as accountid', 'corporation_account_balances.balance as balance', 'corporation_sheet_wallet_divisions.description as description')
+				->where('corporation_sheet_wallet_divisions.corporationID', $corporation_id);
 
         return $divisionsummary->get();
     }
