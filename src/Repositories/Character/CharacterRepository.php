@@ -774,11 +774,16 @@ trait CharacterRepository
      * Get the mail timeline for all of the characters
      * a logged in user has access to. Either by owning the
      * api key with the characters, or having the correct
-     * affiliation & role
+     * affiliation & role.
+     *
+     * Supplying the $message_id will return only that
+     * mail.
+     *
+     * @param null $message_id
      *
      * @return mixed
      */
-    public function getCharacterMailTimeline()
+    public function getCharacterMailTimeline($message_id = null)
     {
 
         // Get the User for permissions and affiliation
@@ -813,6 +818,11 @@ trait CharacterRepository
             });
 
         }
+
+        // Filter by messageID if its set
+        if (!is_null($message_id))
+            return $messages->where('character_mail_messages.messageID', $message_id)
+                ->first();
 
         return $messages->groupBy('character_mail_messages.messageID')
             ->orderBy('character_mail_messages.sentDate', 'desc')
