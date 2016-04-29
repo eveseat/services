@@ -47,18 +47,22 @@ class Profile extends Settings
         'thousand_seperator' => [' ', ',', '.'],
         'decimal_seperator'  => [',', '.']
     ];
+
     /**
      * @var string
      */
     protected static $prefix = 'profile';
+
     /**
      * @var
      */
     protected static $model = UserSetting::class;
+
     /**
      * @var string
      */
     protected static $scope = 'user';
+
     /**
      * @var array
      */
