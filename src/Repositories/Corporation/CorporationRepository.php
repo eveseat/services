@@ -813,9 +813,9 @@ trait CorporationRepository
             'corporation_sheet_wallet_divisions.accountKey', '=',
             'corporation_account_balances.accountKey')
             ->select(
-                'corporation_account_balances.accountID as accountid',
-                'corporation_account_balances.balance as balance',
-                'corporation_sheet_wallet_divisions.description as description')
+                'corporation_account_balances.balance',
+                'corporation_sheet_wallet_divisions.description')
+            ->where('corporation_account_balances.corporationID', $corporation_id)
             ->where('corporation_sheet_wallet_divisions.corporationID', $corporation_id)
             ->get();
 
