@@ -38,7 +38,8 @@ class Seat extends Settings
     public static $options = [
 
         'registration'   => ['yes', 'no'],
-        'force_min_mask' => ['yes', 'no']
+        'force_min_mask' => ['yes', 'no'],
+        'allow_sso'      => ['yes', 'no'],
     ];
 
     /**
@@ -63,6 +64,9 @@ class Seat extends Settings
 
         // User Registration
         'registration'    => 'yes',
+
+        // Allow users to login using EVE Online SSO
+        'allow_sso'       => 'no',
 
         // Admin contact
         'admin_contact'   => 'seatadmin@localhost.local',
