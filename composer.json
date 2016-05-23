@@ -1,0 +1,26 @@
+{
+    "name": "eveseat/services",
+    "description": "SeAT Services Components",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Leon Jacobs",
+            "email": "leonja511@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Seat\\Services\\": "src/"
+        },
+        "files": [
+            "src/Helpers/helpers.php"
+        ]
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.5.9",
+        "laravel/framework": "5.1.*",
+        "coduo/php-humanizer": "^1.0",
+        "eveseat/eveapi": "~1.0"
+    }
+}
