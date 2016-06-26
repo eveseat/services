@@ -777,11 +777,56 @@ trait CorporationRepository
             ->where('corporation_starbases.corporationID', $corporation_id)
             ->orderBy('invNames.itemName', 'asc');
 
+        // If we did get a specific starbase_id to query then
+        // just return what we have now for all of the starbases.
         if (is_null($starbase_id))
             return $starbase->get();
 
-        return $starbase->where('corporation_starbases.itemID', $starbase_id)
+        // ... otherwise, filter down to the specific requested starbase
+        // and grab some extra information about the silos etc at this tower.
+        $starbase = $starbase->where('corporation_starbases.itemID', $starbase_id)
             ->first();
+
+        // When calculating *actual* silo capacity, we need
+        // to keep in mind that certain towers have bonusses
+        // to silo cargo capacity, like amarr & gallente
+        // towers do now. To calculate this, we will get the
+        // siloCapacityBonus value from the starbase and add the
+        // % capacity to actual modules that benefit from
+        // the bonusses.
+        $cargo_types_with_bonus = [14343, 17982]; // Silo, Coupling Array
+        $assetlist_locations = $this->getCorporationAssetByLocation($corporation_id);
+        $module_contents = $this->getCorporationAssetContents($corporation_id);
+
+        // Check if we know of *any* assets at the moon where this tower is.
+        if ($assetlist_locations->has($starbase->moonID)) {
+
+            // Set the 'modules' key for the starbase
+            $starbase->modules = $assetlist_locations->get($starbase->moonID)
+                ->map(function ($asset) use (
+                    $starbase,
+                    $cargo_types_with_bonus,
+                    $module_contents
+                ) {
+
+                    // Return a collection with module related info.
+                    return [
+                        'detail'           => $asset,
+                        'used_volume'      => $module_contents->where(
+                            'parentAssetItemID', $asset->itemID)->sum(function ($_) {
+
+                            return $_->quantity * $_->volume;
+                        }),
+                        'available_volume' => in_array($asset->typeID, $cargo_types_with_bonus) ?
+                            $asset->capacity * (1 + $starbase->siloCapacityBonus / 100) :
+                            $asset->capacity,
+                        'total_items'      => $module_contents->where(
+                            'parentAssetItemID', $asset->itemID)->sum('quantity')
+                    ];
+                });
+        }
+
+        return $starbase;
     }
 
     /**
