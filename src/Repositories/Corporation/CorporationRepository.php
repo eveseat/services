@@ -434,6 +434,7 @@ trait CorporationRepository
                 'kill_mail_details.solarSystemID', '=',
                 'mapDenormalize.itemID')
             ->where('corporation_kill_mails.corporationID', $corporation_id)
+            ->orderBy('corporation_kill_mails.killID', 'desc')
             ->get();
     }
 

@@ -366,6 +366,7 @@ trait CharacterRepository
                 'kill_mail_details.solarSystemID', '=',
                 'mapDenormalize.itemID')
             ->where('character_kill_mails.characterID', $character_id)
+            ->orderBy('character_kill_mails.killID', 'desc')
             ->get();
 
     }
