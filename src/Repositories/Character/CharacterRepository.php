@@ -343,11 +343,12 @@ trait CharacterRepository
     /**
      * Return the killmails for a character
      *
-     * @param $character_id
+     * @param     $character_id
+     * @param int $chunk
      *
      * @return mixed
      */
-    public function getCharacterKillmails($character_id)
+    public function getCharacterKillmails($character_id, $chunk = 200)
     {
 
         return KillMail::select(
@@ -367,7 +368,7 @@ trait CharacterRepository
                 'mapDenormalize.itemID')
             ->where('character_kill_mails.characterID', $character_id)
             ->orderBy('character_kill_mails.killID', 'desc')
-            ->get();
+            ->paginate($chunk);
 
     }
 
@@ -431,11 +432,12 @@ trait CharacterRepository
     /**
      * Return Contract Information for a character
      *
-     * @param $character_id
+     * @param     $character_id
+     * @param int $chunk
      *
      * @return mixed
      */
-    public function getCharacterContracts($character_id)
+    public function getCharacterContracts($character_id, $chunk = 50)
     {
 
         return DB::table(DB::raw('character_contracts as a'))
@@ -499,7 +501,7 @@ trait CharacterRepository
                 AS endlocation "))
             ->where('a.characterID', $character_id)
             ->orderBy('dateIssued', 'desc')
-            ->get();
+            ->paginate($chunk);
 
     }
 

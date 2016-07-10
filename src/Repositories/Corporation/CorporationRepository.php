@@ -412,11 +412,12 @@ trait CorporationRepository
     /**
      * Return the Killmails for a Corporation
      *
-     * @param $corporation_id
+     * @param     $corporation_id
+     * @param int $chunk
      *
      * @return mixed
      */
-    public function getCorporationKillmails($corporation_id)
+    public function getCorporationKillmails($corporation_id, $chunk = 200)
     {
 
         return KillMail::select(
@@ -436,7 +437,7 @@ trait CorporationRepository
                 'mapDenormalize.itemID')
             ->where('corporation_kill_mails.corporationID', $corporation_id)
             ->orderBy('corporation_kill_mails.killID', 'desc')
-            ->get();
+            ->paginate($chunk);
     }
 
     /**
