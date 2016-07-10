@@ -261,11 +261,12 @@ trait CorporationRepository
     /**
      * Return the contracts for a Corporation
      *
-     * @param $corporation_id
+     * @param     $corporation_id
+     * @param int $chunk
      *
      * @return array|static[]
      */
-    public function getCorporationContracts($corporation_id)
+    public function getCorporationContracts($corporation_id, $chunk = 50)
     {
 
         return DB::table(DB::raw('corporation_contracts as a'))
@@ -329,7 +330,7 @@ trait CorporationRepository
                 AS endlocation "))
             ->where('a.corporationID', $corporation_id)
             ->orderBy('dateIssued', 'desc')
-            ->get();
+            ->paginate($chunk);
     }
 
     /**
