@@ -69,10 +69,17 @@ class ScheduleSeeder extends Seeder
             'ping_before'       => null,
             'ping_after'        => null
         ],
-
         [   // EVE API Keys | Hourly
             'command'           => 'eve:queue-keys',
             'expression'        => '0 * * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null
+        ],
+        [   // Clear Expired Commands | Daily at 12am
+            'command'           => 'seat:queue:clear-expired',
+            'expression'        => '0 0 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
