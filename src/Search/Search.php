@@ -81,11 +81,11 @@ trait Search
     }
 
     /**
-     * @param $query
+     * @param $filter
      *
      * @return mixed
      */
-    public function doSearchCharacterMail($query)
+    public function doSearchCharacterMail($filter)
     {
 
         // Get the User for permissions and affiliation
@@ -118,12 +118,16 @@ trait Search
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
             });
-
         }
 
-        return $messages->where('character_mail_messages.title', 'like', '%' . $query . '%')
-            ->orWhere('character_mail_message_bodies.body', 'like', '%' . $query . '%')
-            ->orderBy('character_mail_messages.sentDate', 'desc')
+        // Filter by the query string
+        $messages = $messages->where(function ($query) use ($filter) {
+
+            $query->where('character_mail_messages.title', 'like', '%' . $filter . '%')
+                ->orWhere('character_mail_message_bodies.body', 'like', '%' . $filter . '%');
+        });
+
+        return $messages->orderBy('character_mail_messages.sentDate', 'desc')
             ->take(15)
             ->get();
 
