@@ -919,4 +919,18 @@ trait CharacterRepository
             ->get();
     }
 
+    /**
+     * Get Corporation titles related to a specific character
+     * 
+     * @param $character_id
+     * 
+     * @return mixed
+     */
+    public function getCharacterCorporationTitles($character_id)
+    {
+
+        return CharacterSheetCorporationTitles::where('characterID', $character_id)
+            ->get();
+    }
+
 }
