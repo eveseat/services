@@ -40,6 +40,7 @@ class Seat extends Settings
         'registration'   => ['yes', 'no'],
         'force_min_mask' => ['yes', 'no'],
         'allow_sso'      => ['yes', 'no'],
+        'allow_tracking' => ['yes', 'no'],
     ];
 
     /**
@@ -75,7 +76,10 @@ class Seat extends Settings
         'force_min_mask'  => 'no',
 
         // Minimum required Access Mask for Keys
-        'min_access_mask' => 0
+        'min_access_mask' => 0,
+
+        // Allow Usage Tracking
+        'allow_tracking'    => 'yes',
     ];
 
 }
