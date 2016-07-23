@@ -27,6 +27,7 @@ use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 use Seat\Eveapi\Models\Character\Bookmark;
 use Seat\Eveapi\Models\Character\CharacterSheet;
+use Seat\Eveapi\Models\Character\CharacterSheetCorporationTitles;
 use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\ChatChannel;
