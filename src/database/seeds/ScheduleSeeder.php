@@ -77,9 +77,9 @@ class ScheduleSeeder extends Seeder
             'ping_before'       => null,
             'ping_after'        => null
         ],
-        [   // Clear Expired Commands | Daily at 12am
+        [   // Clear Expired Commands | Every 6 hours
             'command'           => 'seat:queue:clear-expired',
-            'expression'        => '0 0 * * * *',
+            'expression'        => '0 */6 * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
