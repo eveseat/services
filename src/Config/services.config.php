@@ -2,7 +2,7 @@
 /*
 This file is part of SeAT
 
-Copyright (C) 2015  Leon Jacobs
+Copyright (C) 2015, 2016  Leon Jacobs
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,6 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 return [
 
-    'version' => '1.0.7',
+    'version' => '1.0.22',
 
 ];

@@ -2,7 +2,7 @@
 /*
 This file is part of SeAT
 
-Copyright (C) 2015  Leon Jacobs
+Copyright (C) 2015, 2016  Leon Jacobs
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -151,6 +151,9 @@ function clean_ccp_html($html)
 
     // The list of tags that is OK to remain.
     $acceptable_tags = '<font><br><i>';
+
+    // Handle Unicode cases.
+    $html = mb_convert_encoding($html , 'HTML-ENTITIES', 'UTF-8');
 
     // Remove any tags that we are not interested in,
     // or that is not considered valid HTML anyways.

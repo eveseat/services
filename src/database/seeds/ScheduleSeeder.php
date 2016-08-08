@@ -2,7 +2,7 @@
 /*
 This file is part of SeAT
 
-Copyright (C) 2015  Leon Jacobs
+Copyright (C) 2015, 2016  Leon Jacobs
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -69,10 +69,17 @@ class ScheduleSeeder extends Seeder
             'ping_before'       => null,
             'ping_after'        => null
         ],
-
         [   // EVE API Keys | Hourly
             'command'           => 'eve:queue-keys',
             'expression'        => '0 * * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null
+        ],
+        [   // Clear Expired Commands | Every 6 hours
+            'command'           => 'seat:queue:clear-expired',
+            'expression'        => '0 */6 * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,

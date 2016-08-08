@@ -2,7 +2,7 @@
 /*
 This file is part of SeAT
 
-Copyright (C) 2015  Leon Jacobs
+Copyright (C) 2015, 2016  Leon Jacobs
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 use Seat\Eveapi\Models\Character\Bookmark;
 use Seat\Eveapi\Models\Character\CharacterSheet;
+use Seat\Eveapi\Models\Character\CharacterSheetCorporationTitles;
 use Seat\Eveapi\Models\Character\CharacterSheetImplants;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\ChatChannel;
@@ -351,11 +352,12 @@ trait CharacterRepository
     /**
      * Return the killmails for a character
      *
-     * @param $character_id
+     * @param     $character_id
+     * @param int $chunk
      *
      * @return mixed
      */
-    public function getCharacterKillmails($character_id)
+    public function getCharacterKillmails($character_id, $chunk = 200)
     {
 
         return KillMail::select(
@@ -374,7 +376,8 @@ trait CharacterRepository
                 'kill_mail_details.solarSystemID', '=',
                 'mapDenormalize.itemID')
             ->where('character_kill_mails.characterID', $character_id)
-            ->get();
+            ->orderBy('character_kill_mails.killID', 'desc')
+            ->paginate($chunk);
 
     }
 
@@ -438,11 +441,12 @@ trait CharacterRepository
     /**
      * Return Contract Information for a character
      *
-     * @param $character_id
+     * @param     $character_id
+     * @param int $chunk
      *
      * @return mixed
      */
-    public function getCharacterContracts($character_id)
+    public function getCharacterContracts($character_id, $chunk = 50)
     {
 
         return DB::table(DB::raw('character_contracts as a'))
@@ -506,7 +510,7 @@ trait CharacterRepository
                 AS endlocation "))
             ->where('a.characterID', $character_id)
             ->orderBy('dateIssued', 'desc')
-            ->get();
+            ->paginate($chunk);
 
     }
 
@@ -782,11 +786,16 @@ trait CharacterRepository
      * Get the mail timeline for all of the characters
      * a logged in user has access to. Either by owning the
      * api key with the characters, or having the correct
-     * affiliation & role
+     * affiliation & role.
+     *
+     * Supplying the $message_id will return only that
+     * mail.
+     *
+     * @param null $message_id
      *
      * @return mixed
      */
-    public function getCharacterMailTimeline()
+    public function getCharacterMailTimeline($message_id = null)
     {
 
         // Get the User for permissions and affiliation
@@ -825,6 +834,11 @@ trait CharacterRepository
             });
 
         }
+
+        // Filter by messageID if its set
+        if (!is_null($message_id))
+            return $messages->where('character_mail_messages.messageID', $message_id)
+                ->first();
 
         return $messages->groupBy('character_mail_messages.messageID')
             ->orderBy('character_mail_messages.sentDate', 'desc')
@@ -915,6 +929,20 @@ trait CharacterRepository
     {
 
         return UpcomingCalendarEvent::where('characterID', $character_id)
+            ->get();
+    }
+
+    /**
+     * Get Corporation titles related to a specific character
+     * 
+     * @param $character_id
+     * 
+     * @return mixed
+     */
+    public function getCharacterCorporationTitles($character_id)
+    {
+
+        return CharacterSheetCorporationTitles::where('characterID', $character_id)
             ->get();
     }
 

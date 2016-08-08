@@ -2,7 +2,7 @@
 /*
 This file is part of SeAT
 
-Copyright (C) 2015  Leon Jacobs
+Copyright (C) 2015, 2016  Leon Jacobs
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ trait JobRepository
         if ($limit)
             $jobs = $jobs->take($limit);
 
-        return $jobs->get();
+        return $jobs->orderBy('created_at')->get();
     }
 
     /**

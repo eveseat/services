@@ -2,7 +2,7 @@
 /*
 This file is part of SeAT
 
-Copyright (C) 2015  Leon Jacobs
+Copyright (C) 2015, 2016  Leon Jacobs
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,6 +48,24 @@ trait EveRepository
             3 => 'Cancelled',
             4 => 'Pending',
             5 => 'Deleted'
+        ];
+    }
+
+    /**
+     * Return the possible states a starbase could
+     * be in.
+     *
+     * @return array
+     */
+    public function getEveStarbaseTowerStates()
+    {
+
+        return [
+            '0' => 'Unanchored',
+            '1' => 'Anchored / Offline',
+            '2' => 'Onlining',
+            '3' => 'Reinforced',
+            '4' => 'Online'
         ];
     }
 

@@ -2,7 +2,7 @@
 /*
 This file is part of SeAT
 
-Copyright (C) 2015  Leon Jacobs
+Copyright (C) 2015, 2016  Leon Jacobs
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,30 +37,49 @@ class Seat extends Settings
      */
     public static $options = [
 
-        'registration' => ['yes', 'no']
+        'registration'   => ['yes', 'no'],
+        'force_min_mask' => ['yes', 'no'],
+        'allow_sso'      => ['yes', 'no'],
+        'allow_tracking' => ['yes', 'no'],
     ];
+
     /**
      * @var string
      */
     protected static $prefix = 'seat';
+
     /**
      * @var
      */
     protected static $model = GlobalSetting::class;
+
     /**
      * @var string
      */
     protected static $scope = 'global';
+
     /**
      * @var array
      */
     protected static $defaults = [
 
         // User Registration
-        'registration' => 'yes',
+        'registration'    => 'yes',
+
+        // Allow users to login using EVE Online SSO
+        'allow_sso'       => 'no',
 
         // Admin contact
-        'admin_contact' => 'seatadmin@localhost.local'
+        'admin_contact'   => 'seatadmin@localhost.local',
+
+        // Force the Minimum Access Mask for Keys
+        'force_min_mask'  => 'no',
+
+        // Minimum required Access Mask for Keys
+        'min_access_mask' => 0,
+
+        // Allow Usage Tracking
+        'allow_tracking'    => 'yes',
     ];
 
 }
