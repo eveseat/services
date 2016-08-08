@@ -110,6 +110,10 @@ trait CharacterRepository
                     $query = $query->whereIn('account_api_key_info_characters.characterID',
                         array_keys($user->getAffiliationMap()['char']));
 
+                if ($user->has('character.list', false))
+                    $query = $query->orWhereIn('account_api_key_info_characters.corporationID',
+                        array_keys($user->getAffiliationMap()['corp']));
+
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
             });
@@ -250,6 +254,10 @@ trait CharacterRepository
                 if ($user->has('character.list', false))
                     $query = $query->whereIn('characterID',
                         array_keys($user->getAffiliationMap()['char']));
+
+                if ($user->has('character.list', false))
+                    $query = $query->orWhereIn('corporationID',
+                        array_keys($user->getAffiliationMap()['corp']));
 
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
@@ -807,6 +815,10 @@ trait CharacterRepository
                 if ($user->has('character.mail', false))
                     $query = $query->whereIn('account_api_key_info_characters.characterID',
                         array_keys($user->getAffiliationMap()['char']));
+
+                if ($user->has('character.mail', false))
+                    $query = $query->orWhereIn('account_api_key_info_characters.corporationID',
+                        array_keys($user->getAffiliationMap()['corp']));
 
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
