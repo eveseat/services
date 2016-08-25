@@ -79,7 +79,10 @@ class Seat extends Settings
         'min_access_mask' => 0,
 
         // Allow Usage Tracking
-        'allow_tracking'    => 'yes',
+        'allow_tracking'  => 'yes',
+
+        // Currently Installed SDE Version
+        'installed_sde'   => null
     ];
 
 }
