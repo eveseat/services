@@ -107,10 +107,23 @@ trait CharacterRepository
 
                 // If the user has any affiliations and can
                 // list those characters, add them
-                if ($user->has('character.list', false))
+                if ($user->has('character.list', false)) {
+                    $map = $user->getAffiliationMap();
+                
                     $query = $query->whereIn('account_api_key_info_characters.characterID',
-                        array_keys($user->getAffiliationMap()['char']));
-
+                        $this->getAffiliationsFromMap($map['char'], 'character.list'));
+                        
+                    
+                    // If there are any roles with inverted affiliations in the map 
+                    // go through these
+                    foreach ($map['inverted'] as $key => $invertedRole) {
+                        if (in_array('character.list', $invertedRole['permissions'])) {
+                            $query->orWhereNotIn('account_api_key_info_characters.characterID', $invertedRole['char']);
+                        }   
+                    }
+                }
+                
+                
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
             });
@@ -248,10 +261,20 @@ trait CharacterRepository
 
                 // If the user has any affiliations and can
                 // list those characters, add them
-                if ($user->has('character.list', false))
+                if ($user->has('character.list', false)) {
+                    $map = $user->getAffiliationMap();
+                
                     $query = $query->whereIn('characterID',
-                        array_keys($user->getAffiliationMap()['char']));
-
+                        $this->getAffiliationsFromMap($map['char'], 'character.list'));
+                        
+                    // If there are any roles with inverted affiliations in the map 
+                    // go through these
+                    foreach ($map['inverted'] as $key => $invertedRole) {
+                        if (in_array('character.list', $invertedRole['permissions'])) {
+                            $query->orWhereNotIn('characterID', $invertedRole['char']);
+                        }   
+                    }
+                }
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
             });
@@ -813,9 +836,20 @@ trait CharacterRepository
 
                 // If the user has any affiliations and can
                 // list those characters, add them
-                if ($user->has('character.mail', false))
+                if ($user->has('character.mail', false)) {
+                    $map = $user->getAffiliationMap();
+                
                     $query = $query->whereIn('account_api_key_info_characters.characterID',
-                        array_keys($user->getAffiliationMap()['char']));
+                        $this->getAffiliationsFromMap($map['char'], 'character.mail'));           
+                        
+                    // If there are any roles with inverted affiliations in the map 
+                    // go through these
+                    foreach ($map['inverted'] as $key => $invertedRole) {
+                        if (in_array('character.mail', $invertedRole['permissions'])) {
+                            $query->orWhereNotIn('account_api_key_info_characters.characterID', $invertedRole['char']);
+                        }   
+                    }             
+                }
 
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
@@ -918,6 +952,25 @@ trait CharacterRepository
 
         return UpcomingCalendarEvent::where('characterID', $character_id)
             ->get();
+    }
+    
+    /**
+    * Return array of affiliations that contains the specified permission
+    * 
+    * @param $map
+    * @param $permission
+    *
+    * $return array
+    */    
+    private function getAffiliationsFromMap($map, $permission) {
+        $results = array();
+        
+        foreach($map as $affiliation => $permissions) {
+            if (in_array($permission, $permissions))
+                $results[] = $affiliation;
+        }
+        
+        return $results;
     }
 
     /**
