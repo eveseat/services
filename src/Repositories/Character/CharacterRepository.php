@@ -167,6 +167,53 @@ trait CharacterRepository
     }
 
     /**
+     * Get a list of alliances the current
+     * authenticated user has access to
+     *
+     * @return mixed
+     */
+    public function getCharacterAlliances()
+    {
+
+        $user = auth()->user();
+
+        $corporations = ApiKeyInfoCharacters::join(
+            'eve_api_keys',
+            'eve_api_keys.key_id', '=',
+            'account_api_key_info_characters.keyID')
+            ->join(
+                'eve_character_infos',
+                'eve_character_infos.characterID', '=',
+                'account_api_key_info_characters.characterID')
+            ->distinct();
+
+        // If the user us a super user, return all
+        if (!$user->hasSuperUser()) {
+
+            $corporations = $corporations->orWhere(function ($query) use ($user) {
+
+                // If the user has any affiliations and can
+                // list those characters, add them
+                if ($user->has('character.list', false))
+                    $query = $query->whereIn('characterID',
+                        array_keys($user->getAffiliationMap()['char']));
+
+                // Add any characters from owner API keys
+                $query->orWhere('eve_api_keys.user_id', $user->id);
+            });
+        }
+
+        return $corporations->orderBy('corporationName')
+            ->lists('eve_character_infos.alliance')
+            ->filter(function ($item) {
+
+                // Filter out the null alliance name
+                return !is_null($item);
+            });
+
+    }
+
+    /**
      * Return a characters Bookmarks
      *
      * @param $character_id
@@ -922,9 +969,9 @@ trait CharacterRepository
 
     /**
      * Get Corporation titles related to a specific character
-     * 
+     *
      * @param $character_id
-     * 
+     *
      * @return mixed
      */
     public function getCharacterCorporationTitles($character_id)
