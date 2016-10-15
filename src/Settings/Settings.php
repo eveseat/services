@@ -87,7 +87,7 @@ abstract class Settings
 
             // Retreive the value
             $value = $value->where('name', $name)
-                ->pluck('value');
+                ->value('value');
 
             if ($value)
                 return $value;
