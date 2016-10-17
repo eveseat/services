@@ -204,7 +204,7 @@ trait CharacterRepository
         }
 
         return $corporations->orderBy('corporationName')
-            ->lists('eve_character_infos.alliance')
+            ->pluck('eve_character_infos.alliance')
             ->filter(function ($item) {
 
                 // Filter out the null alliance name
@@ -305,7 +305,7 @@ trait CharacterRepository
         }
 
         return $corporations->orderBy('corporationName')
-            ->lists('corporationName');
+            ->pluck('corporationName');
     }
 
     /**

@@ -54,7 +54,7 @@ trait EveApiKey
                 'expires'     => $key->info ? $key->info->expires : null,
                 'last_error'  => $key->last_error,
                 'characters'  => count($key->characters) > 0 ?
-                    implode(', ', $key->characters->lists('characterName')->all()) : null
+                    implode(', ', $key->characters->pluck('characterName')->all()) : null
             ];
 
         }

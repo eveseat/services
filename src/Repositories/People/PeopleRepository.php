@@ -47,7 +47,7 @@ trait PeopleRepository
         return Person::whereHas('members.characters', function ($query) {
 
             $query->whereIn('keyID', ApiKey::where(
-                'user_id', auth()->user()->id)->lists('key_id'));
+                'user_id', auth()->user()->id)->pluck('key_id'));
 
         })->get();
     }
@@ -73,7 +73,7 @@ trait PeopleRepository
                 ->whereHas('members.characters', function ($query) {
 
                     $query->whereIn('keyID', ApiKey::where(
-                        'user_id', auth()->user()->id)->lists('key_id'));
+                        'user_id', auth()->user()->id)->pluck('key_id'));
 
                 })
                 ->where('main_character_name', 'like', '%' . $query . '%')

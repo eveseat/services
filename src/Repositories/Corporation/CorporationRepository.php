@@ -109,7 +109,7 @@ trait CorporationRepository
                         // object and list the corporationID out of
                         // the $key->info->characters relation.
                         return $item->info->characters
-                            ->lists('corporationID')->toArray();
+                            ->pluck('corporationID')->toArray();
                     })));
         }
 
