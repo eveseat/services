@@ -21,9 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Jobs;
 
-use App\Jobs\Job;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\Bus\SelfHandling;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -34,10 +33,10 @@ use Seat\Services\Settings\Seat;
  * Class Analytics
  * @package Seat\Services\Jobs
  */
-class Analytics extends Job implements SelfHandling, ShouldQueue
+class Analytics implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var \Seat\Services\Helpers\AnalyticsContainer
