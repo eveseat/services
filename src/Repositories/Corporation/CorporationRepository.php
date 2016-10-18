@@ -170,7 +170,6 @@ trait CorporationRepository
             ->get();
 
     }
-
     /**
      * Returns a corporation assets grouped by location.
      * Only assets in space will appear here as assets
@@ -194,7 +193,31 @@ trait CorporationRepository
             ->get()
             ->groupBy('mapID'); // <--- :O That is so sexy <3
     }
+    /**
+     * Returns corporation silos grouped by location.
+     * Only assets in space will appear here as assets
+     * that are in stations dont have 'locations' entries.
+     * this is *much* faster than using getCorporationAssetByLocation
+     * and then filtering out the Silos.
+     * @param $corporation_id
+     *
+     * @return mixed
+     */
+    public function getCorporationSilosByLocation($corporation_id)
+    {
 
+        return Locations::leftJoin('corporation_asset_lists',
+            'corporation_locations.itemID', '=',
+            'corporation_asset_lists.itemID')
+            ->leftJoin(
+                'invTypes',
+                'corporation_asset_lists.typeID', '=',
+                'invTypes.typeID')
+            ->where('corporation_locations.corporationID', $corporation_id)
+            ->where('invTypes.typeID', 14343) // get just the silos
+            ->get()
+            ->groupBy('mapID');
+    }
     /**
      * Return an assets contents. If no parent asset / item ids
      * are specified, then all assets for the corporation is
