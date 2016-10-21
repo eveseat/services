@@ -550,39 +550,23 @@ trait CorporationRepository
     {
 
         return MemberTracking::select(
-            'corporation_member_trackings.*')
-            ->selectSub(function ($query) {
+            'corporation_member_trackings.*',
+            'account_api_key_info_characters.*',
+            'eve_api_keys.enabled')
+            ->join('account_api_key_info_characters', function ($join) {
 
-                // Get the key status for the character
-                return $query->from('eve_api_keys')
-                    ->select('enabled')
-                    ->join(
-                        'account_api_key_infos',
-                        'eve_api_keys.key_id', '=',
-                        'account_api_key_infos.keyID')
-                    ->join(
-                        'account_api_key_info_characters',
-                        'eve_api_keys.key_id', '=',
-                        'account_api_key_info_characters.keyID')
-                    ->where('account_api_key_infos.type', '!=', 'Corporation')
-                    ->where('account_api_key_info_characters.characterID',
-                        $query->raw('corporation_member_trackings.characterID'))
-                    ->groupBy('corporation_member_trackings.characterID');
+                $join->on('corporation_member_trackings.characterID', '=',
+                    'account_api_key_info_characters.characterID');
+            })
+            ->join('eve_api_keys', function ($join) {
 
-            }, 'enabled')
-            ->leftJoin(
-                'account_api_key_info_characters',
-                'corporation_member_trackings.characterID', '=',
-                'account_api_key_info_characters.characterID')
-            ->leftJoin(
-                'eve_api_keys',
-                'account_api_key_info_characters.keyID', '=',
-                'eve_api_keys.key_id')
+                $join->on('account_api_key_info_characters.keyID', '=',
+                    'eve_api_keys.key_id');
+            })
             ->where('corporation_member_trackings.corporationID',
                 $corporation_id)
-            ->groupBy('corporation_member_trackings.characterID')
-            ->orderBy('name')
-            ->get();
+            ->get()
+            ->unique('characterID');
     }
 
     /**
