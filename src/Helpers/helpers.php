@@ -93,7 +93,7 @@ function number($number, $dec = 2)
 function number_metric($number)
 {
 
-    return Coduo\PHPHumanizer\Number::metricSuffix($number);
+    return Coduo\PHPHumanizer\NumberHumanizer::metricSuffix($number);
 }
 
 /**
