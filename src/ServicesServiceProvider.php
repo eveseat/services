@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class ServicesServiceProvider extends ServiceProvider
@@ -33,6 +35,35 @@ class ServicesServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+        // If we are in debug mode, listen to database events
+        // and log queries to the log file.
+        if(config('app.debug')) {
+
+            DB::listen(function ($query) {
+
+                $positional = 0;
+                $full_query = '';
+
+                foreach (str_split($query->sql) as $char) {
+
+                    if ($char === '?') {
+
+                        $full_query = $full_query . '"' .
+                            $query->bindings[$positional] . '"';
+                        $positional++;
+
+                    } else {
+
+                        $full_query = $full_query . $char;
+
+                    }
+                }
+
+                Log::debug(' ---> QUERY DEBUG: ' . $full_query . ' <---');
+
+            });
+        }
 
         $this->publishes([
             __DIR__ . '/database/migrations/' => database_path('migrations'),

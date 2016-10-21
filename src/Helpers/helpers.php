@@ -68,49 +68,6 @@ function img($type, $id, $size, array $attr, $lazy = true)
 }
 
 /**
- * Dump the next SQL query to screen with its positional
- * parameters populated.
- *
- * This is purely for debugging purposes.
- *
- * @param bool $stop
- */
-function dump_query($stop = false)
-{
-
-    \Illuminate\Support\Facades\Event::listen(
-        'illuminate.query', function ($query, $params, $time, $conn) use ($stop) {
-
-        $positional = 0;
-        $full_query = '';
-
-        foreach (str_split($query) as $char) {
-
-            if ($char === '?') {
-
-                $full_query = $full_query . '"' .
-                    $params[$positional] . '"';
-                $positional++;
-
-            } else {
-
-                $full_query = $full_query . $char;
-
-            }
-        }
-
-        // Check if we should stop execution
-        if ($stop)
-            dd($full_query, $time . ' miliseconds', 'on ' . $conn);
-
-        var_dump($full_query, $time . ' miliseconds', 'on ' . $conn);
-
-    });
-
-    return;
-}
-
-/**
  * Return a formatted number.
  *
  * @param $number
@@ -153,7 +110,7 @@ function clean_ccp_html($html)
     $acceptable_tags = '<font><br><i>';
 
     // Handle Unicode cases.
-    $html = mb_convert_encoding($html , 'HTML-ENTITIES', 'UTF-8');
+    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
     // Remove any tags that we are not interested in,
     // or that is not considered valid HTML anyways.
