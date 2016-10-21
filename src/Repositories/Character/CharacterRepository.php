@@ -118,9 +118,9 @@ trait CharacterRepository
         }
 
         return $characters
+            ->groupBy('account_api_key_info_characters.characterID')
             ->orderBy('account_api_key_info_characters.characterName')
-            ->get()
-            ->unique('characterID');
+            ->get();
     }
 
     /**

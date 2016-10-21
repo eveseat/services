@@ -565,8 +565,8 @@ trait CorporationRepository
             })
             ->where('corporation_member_trackings.corporationID',
                 $corporation_id)
-            ->get()
-            ->unique('characterID');
+            ->groupBy('corporation_member_trackings.characterID')
+            ->get();
     }
 
     /**
