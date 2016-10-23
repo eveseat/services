@@ -320,7 +320,7 @@ trait CharacterRepository
     {
 
         return ApiKeyInfoCharacters::where('characterID', $character_id)
-            ->pluck('characterName');
+            ->value('characterName');
     }
 
     /**
