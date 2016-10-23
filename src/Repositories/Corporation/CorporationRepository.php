@@ -225,7 +225,7 @@ trait CorporationRepository
         // TODO: Allow the nested lookups to occur.
         $contents = $contents->where('parentItemID', null);
 
-        return collect($contents->get());
+        return $contents->get();
     }
 
     /**
