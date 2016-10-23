@@ -38,7 +38,7 @@ class ServicesServiceProvider extends ServiceProvider
 
         // If we are in debug mode, listen to database events
         // and log queries to the log file.
-        if(config('app.debug')) {
+        if(env('DB_DEBUG', false)) {
 
             DB::listen(function ($query) {
 
