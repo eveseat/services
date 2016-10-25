@@ -23,7 +23,7 @@ namespace Seat\Services\Search;
 
 use Seat\Eveapi\Models\Character\MailMessage;
 use Seat\Services\Repositories\Character\Character;
-use Seat\Services\Repositories\Corporation\CorporationRepository;
+use Seat\Services\Repositories\Corporation\Corporation;
 
 /**
  * Class Search
@@ -32,12 +32,7 @@ use Seat\Services\Repositories\Corporation\CorporationRepository;
 trait Search
 {
 
-    use Character, CorporationRepository {
-
-        // Both Char & Corp Repos use the Seat\Services\Helpers\Filterable
-        // Trait, so just specify one to resolve the colision
-        Character::where_filter insteadof CorporationRepository;
-    }
+    use Character, Corporation;
 
     /**
      * @param $query
