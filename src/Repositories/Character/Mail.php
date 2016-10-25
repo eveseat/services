@@ -19,73 +19,72 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-namespace Seat\Services\Search;
+namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Character\MailMessage;
-use Seat\Services\Repositories\Character\Character;
-use Seat\Services\Repositories\Corporation\CorporationRepository;
 
 /**
- * Class Search
- * @package Seat\Services\Search
+ * Class Mail
+ * @package Seat\Services\Repositories\Character
  */
-trait Search
+trait Mail
 {
 
-    use Character, CorporationRepository {
-
-        // Both Char & Corp Repos use the Seat\Services\Helpers\Filterable
-        // Trait, so just specify one to resolve the colision
-        Character::where_filter insteadof CorporationRepository;
-    }
-
     /**
-     * @param $query
+     * Return mail for a character
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static|static[]
+     * @param int $character_id
+     * @param int $chunk
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function doSearchCharacters($query)
+    public function getCharacterMail(int $character_id, int $chunk = 50) : Collection
     {
 
-        // Get the data
-        $characters = $this->getAllCharactersWithAffiliationsAndFilters();
-
-        // Filter the data
-        $characters = $characters->filter(function ($item) use ($query) {
-
-            return str_contains(
-                strtoupper($item->characterName), strtoupper($query));
-        });
-
-        return $characters;
+        return MailMessage::join('character_mail_message_bodies',
+            'character_mail_messages.messageID', '=',
+            'character_mail_message_bodies.messageID')
+            ->where('characterID', $character_id)
+            ->take($chunk)
+            ->orderBy('sentDate', 'desc')
+            ->get();
     }
 
     /**
-     * @param $query
+     * Retreive a specific message for a character
+     *
+     * @param int $character_id
+     * @param int $message_id
+     *
+     * @return \Seat\Eveapi\Models\Character\MailMessage
+     */
+    public function getCharacterMailMessage(int $character_id, int $message_id) : MailMessage
+    {
+
+        return MailMessage::join('character_mail_message_bodies',
+            'character_mail_messages.messageID', '=',
+            'character_mail_message_bodies.messageID')
+            ->where('characterID', $character_id)
+            ->where('character_mail_messages.messageID', $message_id)
+            ->orderBy('sentDate', 'desc')
+            ->first();
+    }
+
+    /**
+     * Get the mail timeline for all of the characters
+     * a logged in user has access to. Either by owning the
+     * api key with the characters, or having the correct
+     * affiliation & role.
+     *
+     * Supplying the $message_id will return only that
+     * mail.
+     *
+     * @param int $message_id
      *
      * @return mixed
      */
-    public function doSearchCorporations($query)
-    {
-
-        $corporations = $this->getAllCorporationsWithAffiliationsAndFilters();
-
-        $corporations = $corporations->filter(function ($item) use ($query) {
-
-            return str_contains(
-                strtoupper($item->corporationName), strtoupper($query));
-        });
-
-        return $corporations;
-
-    }
-
-    /**
-     * @param $filter
-     *
-     * @return mixed
-     */
-    public function doSearchCharacterMail($filter)
+    public function getCharacterMailTimeline(int $message_id = null)
     {
 
         // Get the User for permissions and affiliation
@@ -118,19 +117,17 @@ trait Search
                 // Add any characters from owner API keys
                 $query->orWhere('eve_api_keys.user_id', $user->id);
             });
+
         }
 
-        // Filter by the query string
-        $messages = $messages->where(function ($query) use ($filter) {
+        // Filter by messageID if its set
+        if (!is_null($message_id))
+            return $messages->where('character_mail_messages.messageID', $message_id)
+                ->first();
 
-            $query->where('character_mail_messages.title', 'like', '%' . $filter . '%')
-                ->orWhere('character_mail_message_bodies.body', 'like', '%' . $filter . '%');
-        });
-
-        return $messages->orderBy('character_mail_messages.sentDate', 'desc')
-            ->take(15)
-            ->get();
-
+        return $messages->groupBy('character_mail_messages.messageID')
+            ->orderBy('character_mail_messages.sentDate', 'desc')
+            ->paginate(25);
     }
 
 }
