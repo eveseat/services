@@ -36,7 +36,7 @@ trait Skills
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterSkillsInformation(int $character_id) :Collection
+    public function getCharacterSkillsInformation(int $character_id) : Collection
     {
 
         return CharacterSheetSkills::join('invTypes',
@@ -56,7 +56,7 @@ trait Skills
      *
      * @return \Seat\Eveapi\Models\Character\SkillInTraining
      */
-    public function getCharacterSkillInTraining(int $character_id) : SkillInTraining
+    public function getCharacterSkillInTraining(int $character_id)
     {
 
         return SkillInTraining::join('invTypes',
