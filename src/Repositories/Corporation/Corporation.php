@@ -71,7 +71,7 @@ trait Corporation
 
                 // The return array of all of the below is a
                 // nested mess. We can just flatten it.
-                array_flatten($user->keys()
+                $user->keys()
                     // Include info.characters so that we can
                     // filter it down in the map() function
                     // below.
@@ -89,7 +89,7 @@ trait Corporation
                         // the $key->info->characters relation.
                         return $item->info->characters
                             ->pluck('corporationID')->toArray();
-                    })));
+                    }));
         }
 
         return $corporations->orderBy('corporationName', 'desc')
