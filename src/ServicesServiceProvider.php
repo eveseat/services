@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class ServicesServiceProvider extends ServiceProvider
@@ -38,7 +37,7 @@ class ServicesServiceProvider extends ServiceProvider
 
         // If we are in debug mode, listen to database events
         // and log queries to the log file.
-        if(env('DB_DEBUG', false)) {
+        if (env('DB_DEBUG', false)) {
 
             DB::listen(function ($query) {
 
@@ -60,7 +59,7 @@ class ServicesServiceProvider extends ServiceProvider
                     }
                 }
 
-                Log::debug(' ---> QUERY DEBUG: ' . $full_query . ' <---');
+                logger()->debug(' ---> QUERY DEBUG: ' . $full_query . ' <---');
 
             });
         }
