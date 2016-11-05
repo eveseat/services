@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 trait Market
@@ -31,10 +31,12 @@ trait Market
      * Return a characters market orders
      *
      * @param int $character_id
+     * @param int $chunk
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getCharacterMarketOrders(int $character_id) : Collection
+    public function getCharacterMarketOrders(
+        int $character_id, int $chunk = 200) : LengthAwarePaginator
     {
 
         return DB::table(DB::raw('character_market_orders as a'))
@@ -80,7 +82,7 @@ trait Market
                 'invGroups.groupID')
             ->where('a.charID', $character_id)
             ->orderBy('a.issued', 'desc')
-            ->get();
+            ->paginate($chunk);
 
     }
 
