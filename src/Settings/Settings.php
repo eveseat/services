@@ -102,6 +102,25 @@ abstract class Settings
     }
 
     /**
+     * Determine the unique prefix for the key by name.
+     *
+     * @param $name
+     *
+     * @return string
+     * @throws \Seat\Services\Exceptions\SettingException
+     */
+    public static function get_key_prefix($name)
+    {
+
+        // Ensure we have a prefix to work with.
+        if (is_null(static::$prefix))
+            throw new SettingException(
+                'No prefix defined. Have you extended and declared $prefix?');
+
+        return implode('.', [Session::getId(), static::$prefix, $name]);
+    }
+
+    /**
      * @param      $name
      * @param      $value
      * @param null $for_id
@@ -146,25 +165,6 @@ abstract class Settings
 
         return;
 
-    }
-
-    /**
-     * Determine the unique prefix for the key by name.
-     *
-     * @param $name
-     *
-     * @return string
-     * @throws \Seat\Services\Exceptions\SettingException
-     */
-    public static function get_key_prefix($name)
-    {
-
-        // Ensure we have a prefix to work with.
-        if (is_null(static::$prefix))
-            throw new SettingException(
-                'No prefix defined. Have you extended and declared $prefix?');
-
-        return implode('.', [Session::getId(), static::$prefix, $name]);
     }
 
 }

@@ -68,31 +68,62 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Retreive a client-id from the cache. If none
-     * exists, generate one.
+     * Execute the job, keeping in mind that if tracking
+     * is disabled, nothing should be sent and the
+     * job should just return.
+     *
+     * @return void
      */
-    private function getClientID()
+    public function handle()
     {
 
-        $id = Seat::get('analytics_id');
+        // Do nothing if tracking is disabled
+        if (!$this->allowTracking())
+            return;
 
-        if (!$id) {
+        // Send the hit based on the hit type
+        switch ($this->hit->type) {
 
-            // Generate a V4 random UUID
-            //  https://gist.github.com/dahnielson/508447#file-uuid-php-L74
-            $id = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-            );
+            case 'event':
+                $this->sendEvent();
+                break;
 
-            // Set the generated UUID in the applications config
-            Seat::set('analytics_id', $id);
+            case 'exception':
+                $this->sendException();
+                break;
+
+            default:
+                break;
         }
 
-        return $id;
+    }
+
+    /**
+     * Check if tracking is allowed
+     *
+     * @return bool
+     */
+    public function allowTracking()
+    {
+
+        if (Seat::get('allow_tracking') === 'no')
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Send an 'event' type hit to GA
+     */
+    public function sendEvent()
+    {
+
+        $this->send('event', [
+            'ec' => $this->hit->ec,     // Event Category
+            'ea' => $this->hit->ea,     // Event Action
+            'el' => $this->hit->el,     // Event Label
+            'ev' => $this->hit->ev,     // Event Value
+        ]);
 
     }
 
@@ -158,17 +189,31 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Send an 'event' type hit to GA
+     * Retreive a client-id from the cache. If none
+     * exists, generate one.
      */
-    public function sendEvent()
+    private function getClientID()
     {
 
-        $this->send('event', [
-            'ec' => $this->hit->ec,     // Event Category
-            'ea' => $this->hit->ea,     // Event Action
-            'el' => $this->hit->el,     // Event Label
-            'ev' => $this->hit->ev,     // Event Value
-        ]);
+        $id = Seat::get('analytics_id');
+
+        if (!$id) {
+
+            // Generate a V4 random UUID
+            //  https://gist.github.com/dahnielson/508447#file-uuid-php-L74
+            $id = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0x0fff) | 0x4000,
+                mt_rand(0, 0x3fff) | 0x8000,
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            );
+
+            // Set the generated UUID in the applications config
+            Seat::set('analytics_id', $id);
+        }
+
+        return $id;
 
     }
 
@@ -182,50 +227,5 @@ class Analytics implements ShouldQueue
             'exd' => $this->hit->exd,   // Exception Description
             'exf' => $this->hit->exf,   // Is Fatal Exception?
         ]);
-    }
-
-    /**
-     * Check if tracking is allowed
-     *
-     * @return bool
-     */
-    public function allowTracking()
-    {
-
-        if (Seat::get('allow_tracking') === 'no')
-            return false;
-
-        return true;
-    }
-
-    /**
-     * Execute the job, keeping in mind that if tracking
-     * is disabled, nothing should be sent and the
-     * job should just return.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-
-        // Do nothing if tracking is disabled
-        if (!$this->allowTracking())
-            return;
-
-        // Send the hit based on the hit type
-        switch ($this->hit->type) {
-
-            case 'event':
-                $this->sendEvent();
-                break;
-
-            case 'exception':
-                $this->sendException();
-                break;
-
-            default:
-                break;
-        }
-
     }
 }
