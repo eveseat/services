@@ -21,8 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Eveapi\Models\Corporation\WalletJournal;
@@ -78,53 +76,52 @@ trait Wallet
     /**
      * Return a Wallet Journal for a Corporation
      *
-     * @param int                      $corporation_id
-     * @param int                      $chunk
-     * @param \Illuminate\Http\Request $request
+     * @param int  $corporation_id
+     * @param bool $get
+     * @param int  $chunk
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getCorporationWalletJournal(
-        int $corporation_id, int $chunk = 50, Request $request = null) : LengthAwarePaginator
+        int $corporation_id, bool $get = true, int $chunk = 50)
     {
 
-        $journal = WalletJournal::leftJoin('eve_ref_types',
-            'corporation_wallet_journals.refTypeID', '=',
-            'eve_ref_types.refTypeID')
+        $journal = WalletJournal::leftJoin(
+            'eve_ref_types', function ($join) {
+
+            $join->on('corporation_wallet_journals.refTypeID', '=',
+                'eve_ref_types.refTypeID');
+        })
             ->where('corporationID', $corporation_id);
 
-        // Apply any received filters
-        if ($request && $request->filter)
-            $journal = $this->where_filter(
-                $journal, $request->filter, config('web.filter.rules.corporation_journal'));
+        if ($get)
+            return $journal->orderBy('date', 'desc')
+                ->paginate($chunk);
 
-        return $journal->orderBy('date', 'desc')
-            ->paginate($chunk);
+        return $journal;
 
     }
 
     /**
      * Return Wallet Transactions for a Corporation
      *
-     * @param int                      $corporation_id
-     * @param int                      $chunk
-     * @param \Illuminate\Http\Request $request
+     * @param int  $corporation_id
+     * @param bool $get
+     * @param int  $chunk
      *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return
      */
     public function getCorporationWalletTransactions(
-        int $corporation_id, int $chunk = 50, Request $request = null) : LengthAwarePaginator
+        int $corporation_id, bool $get = true, int $chunk = 50)
     {
 
         $transactions = WalletTransaction::where('corporationID', $corporation_id);
 
-        // Apply any received filters
-        if ($request && $request->filter)
-            $transactions = $this->where_filter(
-                $transactions, $request->filter, config('web.filter.rules.corporation_transactions'));
+        if ($get)
+            return $transactions->orderBy('transactionDateTime', 'desc')
+                ->paginate($chunk);
 
-        return $transactions->orderBy('transactionDateTime', 'desc')
-            ->paginate($chunk);
+        return $transactions;
     }
 
 }

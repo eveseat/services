@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -32,18 +31,19 @@ trait Contracts
 {
 
     /**
-     * Return the contracts for a Corporation
+     * Return the contracts for a Corporation.
      *
-     * @param int $corporation_id
-     * @param int $chunk
+     * @param int  $corporation_id
+     * @param bool $get
+     * @param int  $chunk
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getCorporationContracts(
-        int $corporation_id, int $chunk = 50) : LengthAwarePaginator
+        int $corporation_id, bool $get = true, int $chunk = 50)
     {
 
-        return DB::table(DB::raw('corporation_contracts as a'))
+        $contracts = DB::table(DB::raw('corporation_contracts as a'))
             ->select(DB::raw(
                 "
                 --
@@ -102,9 +102,14 @@ trait Contracts
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID = a.endStationID) end
                 AS endlocation "))
-            ->where('a.corporationID', $corporation_id)
-            ->orderBy('dateIssued', 'desc')
-            ->paginate($chunk);
+            ->where('a.corporationID', $corporation_id);
+
+        if ($get)
+            return $contracts
+                ->orderBy('dateIssued', 'desc')
+                ->paginate($chunk);
+
+        return $contracts;
     }
 
 }

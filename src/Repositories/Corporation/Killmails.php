@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Seat\Eveapi\Models\Corporation\KillMail;
 
 trait Killmails
@@ -30,15 +29,17 @@ trait Killmails
     /**
      * Return the Killmails for a Corporation
      *
-     * @param int $corporation_id
-     * @param int $chunk
+     * @param int  $corporation_id
+     * @param bool $get
+     * @param int  $chunk
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getCorporationKillmails(int $corporation_id, int $chunk = 200) : LengthAwarePaginator
+    public function getCorporationKillmails(
+        int $corporation_id, bool $get = true, int $chunk = 200)
     {
 
-        return KillMail::select(
+        $killmails = KillMail::select(
             '*',
             'corporation_kill_mails.corporationID as ownerID',
             'kill_mail_details.corporationID as victimID')
@@ -53,9 +54,14 @@ trait Killmails
             ->leftJoin('mapDenormalize',
                 'kill_mail_details.solarSystemID', '=',
                 'mapDenormalize.itemID')
-            ->where('corporation_kill_mails.corporationID', $corporation_id)
-            ->orderBy('corporation_kill_mails.killID', 'desc')
-            ->paginate($chunk);
+            ->where('corporation_kill_mails.corporationID', $corporation_id);
+
+        if ($get)
+            return $killmails->orderBy('corporation_kill_mails.killID', 'desc')
+                ->paginate($chunk);
+
+        return $killmails;
+
     }
 
 }

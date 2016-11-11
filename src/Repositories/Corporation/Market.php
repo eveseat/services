@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -34,14 +33,15 @@ trait Market
     /**
      * Return the Market Orders for a Corporation
      *
-     * @param int $corporation_id
+     * @param int  $corporation_id
+     * @param bool $get
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMarketOrders(int $corporation_id) : Collection
+    public function getCorporationMarketOrders(int $corporation_id, bool $get = true)
     {
 
-        return DB::table(DB::raw('corporation_market_orders as a'))
+        $orders = DB::table(DB::raw('corporation_market_orders as a'))
             ->select(DB::raw(
                 "
                 --
@@ -82,9 +82,14 @@ trait Market
                 'invGroups',
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
-            ->where('a.corporationID', $corporation_id)
-            ->orderBy('a.issued', 'desc')
-            ->get();
+            ->where('a.corporationID', $corporation_id);
+
+        if ($get)
+            return $orders->orderBy('a.issued', 'desc')
+                ->get();
+
+        return $orders;
+
     }
 
 }

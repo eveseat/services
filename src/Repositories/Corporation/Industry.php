@@ -35,14 +35,15 @@ trait Industry
     /**
      * Return the Industry jobs for a Corporation
      *
-     * @param int $corporation_id
+     * @param int  $corporation_id
+     * @param bool $get
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationIndustry(int $corporation_id) : Collection
+    public function getCorporationIndustry(int $corporation_id, bool $get = true)
     {
 
-        return DB::table('corporation_industry_jobs as a')
+        $industry = DB::table('corporation_industry_jobs as a')
             ->select(DB::raw("
                 *,
 
@@ -75,9 +76,15 @@ trait Industry
                 'ramActivities',
                 'ramActivities.activityID', '=',
                 'a.activityID')// corporation_industry_jobs aliased to a
-            ->where('a.corporationID', $corporation_id)
-            ->orderBy('endDate', 'desc')
-            ->get();
+            ->where('a.corporationID', $corporation_id);
+
+        if ($get)
+            return $industry
+                ->orderBy('endDate', 'desc')
+                ->get();
+
+        return $industry;
+
     }
 
     /**
