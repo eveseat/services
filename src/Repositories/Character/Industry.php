@@ -21,23 +21,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Class Industry
+ * @package Seat\Services\Repositories\Character
+ */
 trait Industry
 {
 
     /**
      * Return the industry jobs for a character
      *
-     * @param int $character_id
+     * @param int  $character_id
+     * @param bool $get
      *
-     * @return \Illuminate\Support\Collection
+     * @return
      */
-    public function getCharacterIndustry(int $character_id) : Collection
+    public function getCharacterIndustry(int $character_id, bool $get = true)
     {
 
-        return DB::table('character_industry_jobs as a')
+        $industry = DB::table('character_industry_jobs as a')
             ->select(DB::raw("
                 *,
 
@@ -70,9 +74,14 @@ trait Industry
                 'ramActivities',
                 'ramActivities.activityID', '=',
                 'a.activityID')// character_industry_jobs aliased to a
-            ->where('a.characterID', $character_id)
-            ->orderBy('endDate', 'desc')
-            ->get();
+            ->where('a.characterID', $character_id);
+
+        if ($get)
+            return $industry->orderBy('endDate', 'desc')
+                ->get();
+
+        return $industry;
+
     }
 
 }

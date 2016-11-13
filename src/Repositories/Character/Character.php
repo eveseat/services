@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
@@ -49,12 +48,11 @@ trait Character
      * Query the database for characters, keeping filters,
      * permissions and affiliations in mind
      *
-     * @param \Illuminate\Http\Request|null $request
+     * @param bool $get
      *
-     * @return \Illuminate\Support\Collection
+     * @return
      */
-    public function getAllCharactersWithAffiliationsAndFilters(
-        Request $request = null) : Collection
+    public function getAllCharactersWithAffiliationsAndFilters(bool $get = true)
     {
 
         // Get the User for permissions and affiliation
@@ -76,15 +74,10 @@ trait Character
                 'account_api_key_info_characters.characterID')
             ->where('account_api_key_infos.type', '!=', 'Corporation');
 
-        // Apply any received filters
-        if ($request && $request->filter)
-            $characters = $this->where_filter(
-                $characters, $request->filter, config('web.filter.rules.characters'));
-
         // If the user is a super user, return all
         if (!$user->hasSuperUser()) {
 
-            $characters = $characters->where(function ($query) use ($user, $request) {
+            $characters = $characters->where(function ($query) use ($user) {
 
                 // If the user has any affiliations and can
                 // list those characters, add them
@@ -98,10 +91,13 @@ trait Character
 
         }
 
-        return $characters
-            ->groupBy('account_api_key_info_characters.characterID')
-            ->orderBy('account_api_key_info_characters.characterName')
-            ->get();
+        if ($get)
+            return $characters
+                ->groupBy('account_api_key_info_characters.characterID')
+                ->orderBy('account_api_key_info_characters.characterName')
+                ->get();
+
+        return $characters;
     }
 
     /**

@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Character\MailMessage;
 
 /**
@@ -34,21 +33,27 @@ trait Mail
     /**
      * Return mail for a character
      *
-     * @param int $character_id
-     * @param int $chunk
+     * @param int  $character_id
+     * @param bool $get
+     * @param int  $chunk
      *
-     * @return \Illuminate\Support\Collection
+     * @return
      */
-    public function getCharacterMail(int $character_id, int $chunk = 50) : Collection
+    public function getCharacterMail(
+        int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        return MailMessage::join('character_mail_message_bodies',
+        $mail = MailMessage::join('character_mail_message_bodies',
             'character_mail_messages.messageID', '=',
             'character_mail_message_bodies.messageID')
-            ->where('characterID', $character_id)
-            ->take($chunk)
-            ->orderBy('sentDate', 'desc')
-            ->get();
+            ->where('characterID', $character_id);
+
+        if ($get)
+            return $mail->take($chunk)
+                ->orderBy('sentDate', 'desc')
+                ->get();
+
+        return $mail;
     }
 
     /**

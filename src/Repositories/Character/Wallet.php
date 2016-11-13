@@ -21,11 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Seat\Eveapi\Models\Character\WalletJournal;
 use Seat\Eveapi\Models\Character\WalletTransaction;
-use Seat\Services\Helpers\Filterable;
 
 /**
  * Class Wallet
@@ -34,20 +31,17 @@ use Seat\Services\Helpers\Filterable;
 trait Wallet
 {
 
-    use Filterable;
-
     /**
      * Retreive Wallet Journal Entries for a Character
      *
-     * @param int                      $character_id
-     * @param int                      $chunk
+     * @param int  $character_id
+     * @param bool $get
+     * @param int  $chunk
      *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return
      */
     public function getCharacterWalletJournal(
-        int $character_id, int $chunk = 50, Request $request = null) : LengthAwarePaginator
+        int $character_id, bool $get = true, int $chunk = 50)
     {
 
         $journal = WalletJournal::leftJoin('eve_ref_types',
@@ -55,39 +49,33 @@ trait Wallet
             'eve_ref_types.refTypeID')
             ->where('characterID', $character_id);
 
-        // Apply any received filters
-        if ($request && $request->filter)
-            $journal = $this->where_filter(
-                $journal, $request->filter, config('web.filter.rules.character_journal'));
+        if ($get)
+            return $journal->orderBy('date', 'desc')
+                ->paginate($chunk);
 
-        return $journal->orderBy('date', 'desc')
-            ->paginate($chunk);
+        return $journal;
     }
 
     /**
      * Retreive Wallet Transaction Entries for a Character
      *
+     * @param int  $character_id
+     * @param bool $get
+     * @param int  $chunk
      *
-     * @param int                      $character_id
-     * @param int                      $chunk
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Pagination\LengthAwarePaginator|mixed
+     * @return
      */
     public function getCharacterWalletTransactions(
-        int $character_id, int $chunk = 50, Request $request = null) : LengthAwarePaginator
+        int $character_id, bool $get = true, int $chunk = 50)
     {
 
         $transactions = WalletTransaction::where('characterID', $character_id);
 
-        // Apply any received filters
-        if ($request && $request->filter)
-            $transactions = $this->where_filter(
-                $transactions, $request->filter, config('web.filter.rules.character_transactions'));
+        if ($get)
+            return $transactions->orderBy('transactionDateTime', 'desc')
+                ->paginate($chunk);
 
-        return $transactions->orderBy('transactionDateTime', 'desc')
-            ->paginate($chunk);
+        return $transactions;
     }
 
 }

@@ -21,25 +21,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Class Contracts
+ * @package Seat\Services\Repositories\Character
+ */
 trait Contracts
 {
 
     /**
      * Return Contract Information for a character
      *
-     * @param int $character_id
-     * @param int $chunk
+     * @param int  $character_id
+     * @param bool $get
+     * @param int  $chunk
      *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return
      */
     public function getCharacterContracts(
-        int $character_id, int $chunk = 50) : LengthAwarePaginator
+        int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        return DB::table(DB::raw('character_contracts as a'))
+        $contracts = DB::table(DB::raw('character_contracts as a'))
             ->select(DB::raw(
                 "
                 --
@@ -98,9 +102,13 @@ trait Contracts
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID = a.endStationID) end
                 AS endlocation "))
-            ->where('a.characterID', $character_id)
-            ->orderBy('dateIssued', 'desc')
-            ->paginate($chunk);
+            ->where('a.characterID', $character_id);
+
+        if ($get)
+            return $contracts->orderBy('dateIssued', 'desc')
+                ->paginate($chunk);
+
+        return $contracts;
 
     }
 

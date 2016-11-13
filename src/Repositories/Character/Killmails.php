@@ -21,25 +21,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Seat\Eveapi\Models\Character\KillMail;
 
+/**
+ * Class Killmails
+ * @package Seat\Services\Repositories\Character
+ */
 trait Killmails
 {
 
     /**
      * Return the killmails for a character
      *
-     * @param int $character_id
-     * @param int $chunk
+     * @param int  $character_id
+     * @param bool $get
+     * @param int  $chunk
      *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return
      */
     public function getCharacterKillmails(
-        int $character_id, int $chunk = 200) : LengthAwarePaginator
+        int $character_id, bool $get = true, int $chunk = 200)
     {
 
-        return KillMail::select(
+        $killmails = KillMail::select(
             '*',
             'character_kill_mails.characterID as ownerID',
             'kill_mail_details.characterID as victimID')
@@ -54,9 +58,13 @@ trait Killmails
             ->leftJoin('mapDenormalize',
                 'kill_mail_details.solarSystemID', '=',
                 'mapDenormalize.itemID')
-            ->where('character_kill_mails.characterID', $character_id)
-            ->orderBy('character_kill_mails.killID', 'desc')
-            ->paginate($chunk);
+            ->where('character_kill_mails.characterID', $character_id);
+
+        if ($get)
+            return $killmails->orderBy('character_kill_mails.killID', 'desc')
+                ->paginate($chunk);
+
+        return $killmails;
 
     }
 
