@@ -24,7 +24,6 @@ namespace Seat\Services\Repositories\Character;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
-use Seat\Services\Helpers\Filterable;
 
 /**
  * Class Character
@@ -32,8 +31,6 @@ use Seat\Services\Helpers\Filterable;
  */
 trait Character
 {
-
-    use Filterable;
 
     /**
      * @return \Illuminate\Support\Collection

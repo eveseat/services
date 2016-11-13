@@ -25,7 +25,6 @@ use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
 use Seat\Eveapi\Models\Corporation\WalletJournal;
 use Seat\Eveapi\Models\Corporation\WalletTransaction;
-use Seat\Services\Helpers\Filterable;
 
 /**
  * Class Wallet
@@ -33,8 +32,6 @@ use Seat\Services\Helpers\Filterable;
  */
 trait Wallet
 {
-
-    use Filterable;
 
     /**
      * Return the Corporation Wallet Divisions for a Corporation
