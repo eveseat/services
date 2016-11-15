@@ -134,16 +134,38 @@ function clean_ccp_html($html)
 }
 
 /**
- * Retrive a Setting value
+ * Work with settings.
+ *
+ * Providing a string argument will retreive a setting.
+ * Providing an array arguement will set a setting.
  *
  * @param      $name
  * @param bool $global
  *
  * @return mixed
+ * @throws \Seat\Services\Exceptions\SettingException
  */
-function setting($name, $global = false)
+function setting($name, bool $global = false)
 {
 
+    // If we received an array, it means we want to set.
+    if (is_array($name)) {
+
+        // Check that we have at least 2 keys.
+        if (count($name) < 2)
+            throw new \Seat\Services\Exceptions\SettingException(
+                'Must provide a name and value when setting a setting.');
+
+        // If we have a third element in the array, set it.
+        $for_id = $name[2] ?? null;
+
+        if ($global)
+            return \Seat\Services\Settings\Seat::set($name[0], $name[1], $for_id);
+
+        return \Seat\Services\Settings\Profile::set($name[0], $name[1], $for_id);
+    }
+
+    // If we just got a string, it means we want to get.
     if ($global)
         return \Seat\Services\Settings\Seat::get($name);
 
