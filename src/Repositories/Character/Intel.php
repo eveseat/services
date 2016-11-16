@@ -37,12 +37,10 @@ trait Intel
 
     /**
      * @param int $character_id
-     * @param int $top
      *
      * @return \Illuminate\Support\Collection
-     * @throws \Seat\Services\Exceptions\InvalidTypeException
      */
-    public function characterTopWalletJournalInteractions(int $character_id, int $top) : Collection
+    public function characterTopWalletJournalInteractions(int $character_id)
     {
 
         // TODO: Optimize this peice of crap!
@@ -79,21 +77,16 @@ trait Intel
             })
             // Limit to the character in question...
             ->where('character_wallet_journals.characterID', $character_id)
-            ->groupBy('ownerID1', 'ownerID2')
-            ->orderBy('total', 'desc')
-            ->limit($top)
-            ->get();
+            ->groupBy('ownerID1', 'ownerID2');
 
     }
 
     /**
      * @param int $character_id
-     * @param int $top
      *
      * @return \Illuminate\Support\Collection
-     * @throws \Seat\Services\Exceptions\InvalidTypeException
      */
-    public function characterTopWalletTransactionInteractions(int $character_id, int $top) : Collection
+    public function characterTopWalletTransactionInteractions(int $character_id)
     {
 
         return WalletTransaction::leftJoin('character_affiliations', function ($join) {
@@ -104,26 +97,27 @@ trait Intel
             );
 
         })
-            // Limit to the character in question...
             ->where('character_wallet_transactions.characterID', $character_id)
-            // ... But exclude the character in question too
             ->where('character_wallet_transactions.clientID', '<>', $character_id)
-            ->select('*')
+            ->select(
+                'character_affiliations.characterID',
+                'character_affiliations.characterName',
+                'character_affiliations.corporationID',
+                'character_affiliations.corporationName',
+                'character_affiliations.allianceID',
+                'character_affiliations.allianceName'
+            )
             ->selectRaw('count(clientID) as total')
-            ->groupBy('clientID')
-            ->orderBy('total', 'desc')
-            ->limit($top)
-            ->get();
+            ->groupBy('clientID');
 
     }
 
     /**
      * @param int $character_id
-     * @param int $top
      *
-     * @return \Illuminate\Support\Collection
+     * @return
      */
-    public function characterTopMailInteractions(int $character_id, int $top) : Collection
+    public function characterTopMailInteractions(int $character_id)
     {
 
         return MailMessage::leftJoin('character_affiliations', function ($join) {
@@ -136,12 +130,16 @@ trait Intel
         })
             ->where('character_mail_messages.characterID', $character_id)
             ->where('character_mail_messages.senderID', '<>', $character_id)
-            ->select('*')
+            ->select(
+                'character_affiliations.characterID',
+                'character_affiliations.characterName',
+                'character_affiliations.corporationID',
+                'character_affiliations.corporationName',
+                'character_affiliations.allianceID',
+                'character_affiliations.allianceName'
+            )
             ->selectRaw('count(senderID) as total')
-            ->groupBy('senderID')
-            ->orderBy('total', 'desc')
-            ->limit($top)
-            ->get();
+            ->groupBy('senderID');
 
     }
 
