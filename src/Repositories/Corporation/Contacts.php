@@ -43,6 +43,10 @@ trait Contacts
     {
 
         return ContactList::where('corporationID', $corporation_id)
+            ->join('invTypes', function ($join) {
+
+                $join->on('invTypes.typeID', '=', 'corporation_contact_lists.contactTypeID');
+            })
             ->orderBy('standing', 'desc')
             ->get();
 
