@@ -171,20 +171,19 @@ trait Intel
      * @param int $character_id
      * @param int $profile_id
      *
-     * @return \Illuminate\Support\Collection
+     * @return
      */
-    public function getCharacterJournalStandingsWithProfile(
-        int $character_id, int $profile_id) : Collection
+    public function getCharacterJournalStandingsWithProfile(int $character_id, int $profile_id)
     {
 
         return WalletJournal::select(
             DB::raw('count(*) as total'),
-            'character_affiliations.characterName as affiliation_character_name',
-            'character_affiliations.characterID as affiliation_character_id',
-            'character_affiliations.corporationName as affiliation_corporation_name',
-            'character_affiliations.corporationID as affiliation_corporation_id',
-            'character_affiliations.allianceName as affiliation_alliance_name',
-            'character_affiliations.allianceID as affiliation_alliance_id',
+            'character_affiliations.characterName',
+            'character_affiliations.characterID',
+            'character_affiliations.corporationName',
+            'character_affiliations.corporationID',
+            'character_affiliations.allianceName',
+            'character_affiliations.allianceID',
             'standings_profile_standings.elementID as standing_match_on',
             'standings_profile_standings.type as standing_type',
             'standings_profile_standings.standing as standing'
@@ -219,9 +218,7 @@ trait Intel
 
         })->where('character_wallet_journals.characterID', $character_id)
             ->where('standings_profile_standings.standings_profile_id', $profile_id)
-            ->groupBy('standings_profile_standings.elementID')
-            ->orderBy('total', 'desc')
-            ->get();
+            ->groupBy('standings_profile_standings.elementID');
 
     }
 
