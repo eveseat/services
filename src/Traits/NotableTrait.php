@@ -21,10 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Traits;
 
-/**
- * Class NotableTrait
- * @package Seat\Services\Traits
- */
 use Illuminate\Database\Eloquent\Builder;
 use Seat\Services\Models\Note;
 
@@ -90,6 +86,8 @@ trait NotableTrait
     }
 
     /**
+     * Delete a single note.
+     *
      * @param int $object_id
      * @param int $note_id
      *
@@ -102,6 +100,35 @@ trait NotableTrait
             ->where('object_id', $object_id)
             ->where('id', $note_id)
             ->delete();
+
+    }
+
+    /**
+     * Update a single note with a new title or note.
+     *
+     * @param int         $object_id
+     * @param int         $note_id
+     * @param string|null $title
+     * @param string|null $note
+     */
+    public static function updateNote(
+        int $object_id, int $note_id, string $title = null, string $note = null)
+    {
+
+        $note_record = Note::where('object_type', __CLASS__)
+            ->where('object_id', $object_id)
+            ->where('id', $note_id)
+            ->first();
+
+        if (!is_null($title))
+            $note_record->title = $title;
+
+        if (!is_null($note))
+            $note_record->note = $note;
+
+        $note_record->save();
+
+        return;
 
     }
 
