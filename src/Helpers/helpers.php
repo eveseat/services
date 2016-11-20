@@ -22,16 +22,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 if (!function_exists('carbon')) {
 
     /**
-     * A helper to get a fresh instance of Carbon
+     * A helper to get a fresh instance of Carbon.
      *
-     * @param $data
+     * @param null $data
      *
      * @return \Carbon\Carbon
      */
-    function carbon($data)
+    function carbon($data = null)
     {
 
-        return new \Carbon\Carbon($data);
+        if (!is_null($data))
+            return new \Carbon\Carbon($data);
+
+        return new \Carbon\Carbon;
     }
 }
 
