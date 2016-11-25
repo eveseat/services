@@ -38,19 +38,19 @@ trait Members
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMemberTracking(int $corporation_id) : Collection
+    public function getCorporationMemberTracking(int $corporation_id): Collection
     {
 
         return MemberTracking::select(
             'corporation_member_trackings.*',
             'account_api_key_info_characters.*',
             'eve_api_keys.enabled')
-            ->join('account_api_key_info_characters', function ($join) {
+            ->leftJoin('account_api_key_info_characters', function ($join) {
 
                 $join->on('corporation_member_trackings.characterID', '=',
                     'account_api_key_info_characters.characterID');
             })
-            ->join('eve_api_keys', function ($join) {
+            ->leftJoin('eve_api_keys', function ($join) {
 
                 $join->on('account_api_key_info_characters.keyID', '=',
                     'eve_api_keys.key_id');
