@@ -119,15 +119,13 @@ if (!function_exists('clean_ccp_html')) {
     /**
      * Strip any CCP styling and tags from an HTML string
      *
-     * @param $html
+     * @param        $html
+     * @param string $acceptable_tags
      *
      * @return string
      */
-    function clean_ccp_html($html)
+    function clean_ccp_html($html, $acceptable_tags = '<font><br><i>')
     {
-
-        // The list of tags that is OK to remain.
-        $acceptable_tags = '<font><br><i>';
 
         // Handle Unicode cases.
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
