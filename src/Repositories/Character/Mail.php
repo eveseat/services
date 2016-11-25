@@ -31,6 +31,51 @@ trait Mail
 {
 
     /**
+     * Return only the last X amount of mail for affiliation
+     * related characters.
+     *
+     * @param int $limit
+     *
+     * @return mixed
+     */
+    public function getAllCharacterNewestMail(int $limit = 10)
+    {
+
+        $user = auth()->user();
+
+        $messages = MailMessage::join(
+            'account_api_key_info_characters',
+            'character_mail_messages.characterID', '=',
+            'account_api_key_info_characters.characterID')
+            ->join(
+                'eve_api_keys',
+                'eve_api_keys.key_id', '=',
+                'account_api_key_info_characters.keyID');
+
+        // If the user is a super user, return all
+        if (!$user->hasSuperUser()) {
+
+            $messages = $messages->where(function ($query) use ($user) {
+
+                // If the user has any affiliations and can
+                // list those characters, add them
+                if ($user->has('character.mail', false))
+                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                        array_keys($user->getAffiliationMap()['char']));
+
+                // Add any characters from owner API keys
+                $query->orWhere('eve_api_keys.user_id', $user->id);
+            });
+
+        }
+
+        return $messages->groupBy('character_mail_messages.messageID')
+            ->orderBy('character_mail_messages.sentDate', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Return mail for a character
      *
      * @param int  $character_id
@@ -64,7 +109,7 @@ trait Mail
      *
      * @return \Seat\Eveapi\Models\Character\MailMessage
      */
-    public function getCharacterMailMessage(int $character_id, int $message_id) : MailMessage
+    public function getCharacterMailMessage(int $character_id, int $message_id): MailMessage
     {
 
         return MailMessage::join('character_mail_message_bodies',

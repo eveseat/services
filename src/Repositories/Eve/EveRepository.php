@@ -110,4 +110,17 @@ trait EveRepository
         return ServerStatus::orderBy('created_at', 'desc')
             ->first();
     }
+
+    /**
+     * @param int $limit
+     *
+     * @return mixed
+     */
+    public function getEveServerStatuses(int $limit = 200)
+    {
+
+        return ServerStatus::orderBy('created_at', 'desc')
+            ->take($limit)
+            ->get();
+    }
 }
