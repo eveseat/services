@@ -95,9 +95,17 @@ class ScheduleSeeder extends Seeder
     public function run()
     {
 
-        DB::table('schedules')->delete();
+        // Check if we have the schedules, else,
+        // insert them
+        foreach ($this->schedule as $job) {
 
-        DB::table('schedules')
-            ->insert($this->schedule);
+            $existing = DB::table('schedules')
+                ->where('command', $job['command'])
+                ->first();
+
+            if (!$existing)
+                DB::table('schedules')->insert($job);
+        }
+
     }
 }
