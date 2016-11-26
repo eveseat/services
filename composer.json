@@ -16,7 +16,8 @@
             "src/Helpers/helpers.php"
         ]
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "alpha",
+    "prefer-stable": true,
     "require": {
         "php": ">=7.0",
         "laravel/framework": "5.3.*",
