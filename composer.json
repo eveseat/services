@@ -21,6 +21,6 @@
         "php": ">=7.0",
         "laravel/framework": "5.3.*",
         "coduo/php-humanizer": "^2.0",
-        "eveseat/eveapi": "~1.0"
+        "eveseat/eveapi": "2.0.*"
     }
 }
