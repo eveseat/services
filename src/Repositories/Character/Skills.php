@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\SkillInTraining;
 use Seat\Eveapi\Models\Character\SkillQueue;
@@ -36,7 +37,7 @@ trait Skills
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterSkillsInformation(int $character_id) : Collection
+    public function getCharacterSkillsInformation(int $character_id): Collection
     {
 
         return CharacterSheetSkills::join('invTypes',
@@ -73,7 +74,7 @@ trait Skills
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterSkilQueue(int $character_id) : Collection
+    public function getCharacterSkilQueue(int $character_id): Collection
     {
 
         return SkillQueue::join('invTypes',
@@ -83,6 +84,94 @@ trait Skills
             ->orderBy('queuePosition')
             ->get();
 
+    }
+
+    /**
+     * Get the numer of skills per Level for a character.
+     *
+     * @param int $character_id
+     *
+     * @return array
+     */
+    public function getCharacterSkillsAmountPerLevel(int $character_id): array
+    {
+
+        $skills = CharacterSheetSkills::where('characterID', $character_id)
+            ->get();
+
+        return [
+            $skills->where('level', 0)->count(),
+            $skills->where('level', 1)->count(),
+            $skills->where('level', 2)->count(),
+            $skills->where('level', 3)->count(),
+            $skills->where('level', 4)->count(),
+            $skills->where('level', 5)->count(),
+        ];
+    }
+
+    /**
+     * Get a characters skill as well as category completion
+     * ration rate.
+     *
+     * TODO: This is definitely a candidate for a better refactor!
+     *
+     * @param $character_id
+     *
+     * @return mixed
+     */
+    public function getCharacterSkillCoverage($character_id): Collection
+    {
+
+        $inGameSkills = DB::table('invTypes')
+            ->join(
+                'invMarketGroups',
+                'invMarketGroups.marketGroupID', '=', 'invTypes.marketGroupID'
+            )
+            ->where('parentGroupID', '?')// binding at [1]
+            ->select(
+                'marketGroupName',
+                DB::raw('COUNT(invTypes.marketGroupID) as amount')
+            )
+            ->groupBy('marketGroupName')
+            ->toSql();
+
+        $characterSkills = DB::table('character_character_sheet_skills')
+            ->join(
+                'invTypes',
+                'invTypes.typeID', '=',
+                'character_character_sheet_skills.typeID'
+            )
+            ->join(
+                'invMarketGroups',
+                'invMarketGroups.marketGroupID', '=',
+                'invTypes.marketGroupID'
+            )
+            ->where('characterID', '?')// binding at [2]
+            ->select(
+                'marketGroupName',
+                DB::raw('COUNT(invTypes.marketGroupID) as amount')
+            )
+            ->groupBy('marketGroupName')
+            ->toSql();
+
+        $skills = DB::table(
+            DB::raw("(" . $inGameSkills . ") a")
+        )
+            ->leftJoin(
+                DB::raw("(" . $characterSkills . ") b"),
+                'a.marketGroupName',
+                'b.marketGroupName'
+            )
+            ->select(
+                'a.marketGroupName',
+                DB::raw('a.amount AS gameAmount'),
+                DB::raw('b.amount AS characterAmount')
+            )
+            ->addBinding(150, 'select')// binding [1]
+            ->addBinding($character_id, 'select')// binding [2]
+            ->get();
+
+        return $skills;
     }
 
 }
