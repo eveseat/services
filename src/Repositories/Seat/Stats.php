@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Seat;
 
+use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Character\CharacterSheet;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\KillMail\Detail;
@@ -58,6 +59,56 @@ trait Stats
     {
 
         return Detail::count('killID');
+    }
+
+    /**
+     * @param int $character_id
+     * @return array
+     */
+    public function getSkillsAmountPerLevel(int $character_id)
+    {
+        $skills = CharacterSheetSkills::where('characterID', $character_id)
+            ->get();
+
+        return [
+            $skills->where('level', 0)->count(),
+            $skills->where('level', 1)->count(),
+            $skills->where('level', 2)->count(),
+            $skills->where('level', 3)->count(),
+            $skills->where('level', 4)->count(),
+            $skills->where('level', 5)->count(),
+        ];
+    }
+
+    /**
+     * @param $character_id
+     * @return mixed
+     */
+    public function getSkillCoverage($character_id)
+    {
+        $inGameSkills = DB::table('invTypes')
+            ->join('invMarketGroups', 'invMarketGroups.marketGroupID', '=', 'invTypes.marketGroupID')
+            ->where('parentGroupID', '?')
+            ->select('marketGroupName', DB::raw('COUNT(invTypes.marketGroupID) as amount'))
+            ->groupBy('marketGroupName')
+            ->toSql();
+
+        $characterSkills = DB::table('character_character_sheet_skills')
+            ->join('invTypes', 'invTypes.typeID', '=', 'character_character_sheet_skills.typeID')
+            ->join('invMarketGroups', 'invMarketGroups.marketGroupID', '=', 'invTypes.marketGroupID')
+            ->where('characterID', '?')
+            ->select('marketGroupName', DB::raw('COUNT(invTypes.marketGroupID) as amount'))
+            ->groupBy('marketGroupName')
+            ->toSql();
+
+        $skills = DB::table(DB::raw("($inGameSkills) a"))
+            ->leftJoin(DB::raw("($characterSkills) b"), 'a.marketGroupName', 'b.marketGroupName')
+            ->select('a.marketGroupName', DB::raw('a.amount AS gameAmount'), DB::raw('b.amount AS characterAmount'))
+            ->addBinding(150, 'select')
+            ->addBinding($character_id, 'select')
+            ->get();
+
+        return $skills;
     }
 
 }
