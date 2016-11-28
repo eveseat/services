@@ -47,9 +47,9 @@ trait Character
      *
      * @param bool $get
      *
-     * @return
+     * @return $this|\Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function getAllCharactersWithAffiliationsAndFilters(bool $get = true)
+    public function getAllCharactersWithAffiliations(bool $get = true)
     {
 
         // Get the User for permissions and affiliation

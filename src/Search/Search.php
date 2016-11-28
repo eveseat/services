@@ -43,7 +43,7 @@ trait Search
     {
 
         // Get the data
-        $characters = $this->getAllCharactersWithAffiliationsAndFilters();
+        $characters = $this->getAllCharactersWithAffiliations();
 
         // Filter the data
         $characters = $characters->filter(function ($item) use ($query) {
@@ -123,7 +123,7 @@ trait Search
         });
 
         return $messages->orderBy('character_mail_messages.sentDate', 'desc')
-            ->take(15)
+            ->take(150) // Have to limit a little.
             ->get();
 
     }
