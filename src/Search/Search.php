@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Search;
 
+use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\MailMessage;
 use Seat\Services\Repositories\Character\Character;
 use Seat\Services\Repositories\Corporation\Corporation;
@@ -35,11 +37,11 @@ trait Search
     use Character, Corporation;
 
     /**
-     * @param $query
+     * @param string $query
      *
      * @return \Illuminate\Database\Eloquent\Collection|static|static[]
      */
-    public function doSearchCharacters($query)
+    public function doSearchCharacters(string $query)
     {
 
         // Get the data
@@ -56,11 +58,11 @@ trait Search
     }
 
     /**
-     * @param $query
+     * @param string $query
      *
      * @return mixed
      */
-    public function doSearchCorporations($query)
+    public function doSearchCorporations(string $query)
     {
 
         $corporations = $this->getAllCorporationsWithAffiliationsAndFilters();
@@ -76,11 +78,11 @@ trait Search
     }
 
     /**
-     * @param $filter
+     * @param string $filter
      *
      * @return mixed
      */
-    public function doSearchCharacterMail($filter)
+    public function doSearchCharacterMail(string $filter)
     {
 
         // Get the User for permissions and affiliation
@@ -123,9 +125,125 @@ trait Search
         });
 
         return $messages->orderBy('character_mail_messages.sentDate', 'desc')
-            ->take(150) // Have to limit a little.
+            ->take(150)// Have to limit a little.
             ->get();
 
+    }
+
+    /**
+     * @return mixed
+     */
+    public function doSearchCharacterAssets()
+    {
+
+        // Get the user.
+        $user = auth()->user();
+
+        // Start the query with all the joins needed.
+        $assets = DB::table('character_asset_lists as a')
+            ->select(DB::raw("
+                *,
+                CASE
+                when a.locationID BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=a.locationID-6000000)
+                when a.locationID BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=a.locationID-6000001)
+                when a.locationID BETWEEN 66014934 AND 67999999 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID=a.locationID-6000000)
+                when a.locationID BETWEEN 60014861 AND 60014928 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID=a.locationID)
+                when a.locationID BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=a.locationID)
+                when a.locationID>=61000000 then
+                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
+                      WHERE c.stationID=a.locationID)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID=a.locationID) end
+                    AS location,a.locationId AS locID"))
+            ->join('invTypes',
+                'a.typeID', '=',
+                'invTypes.typeID')
+            ->join('invGroups',
+                'invTypes.groupID', '=',
+                'invGroups.groupID')
+            ->join(
+                'account_api_key_info_characters',
+                'a.characterID', '=',
+                'account_api_key_info_characters.characterID')
+            ->join(
+                'eve_api_keys',
+                'eve_api_keys.key_id', '=',
+                'account_api_key_info_characters.keyID');
+
+        // If the user is not a superuser, filter the results.
+        if (!$user->hasSuperUser()) {
+
+            $assets = $assets->where(function ($query) use ($user) {
+
+                // If the user has any affiliations and can
+                // list those characters, add them
+                if ($user->has('character.assets', false))
+                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                        array_keys($user->getAffiliationMap()['char']));
+
+                // Add any characters from owner API keys
+                $query->orWhere('eve_api_keys.user_id', $user->id);
+            });
+        }
+
+        return $assets;
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function doSearchCharacterSkills()
+    {
+
+        // Get the user
+        $user = auth()->user();
+
+        // Start the skills query
+        $skills = CharacterSheetSkills::join(
+            'invTypes',
+            'character_character_sheet_skills.typeID', '=',
+            'invTypes.typeID')
+            ->join(
+                'invGroups',
+                'invTypes.groupID', '=',
+                'invGroups.groupID')
+            ->join(
+                'account_api_key_info_characters',
+                'character_character_sheet_skills.characterID', '=',
+                'account_api_key_info_characters.characterID')
+            ->join(
+                'eve_api_keys',
+                'eve_api_keys.key_id', '=',
+                'account_api_key_info_characters.keyID');
+
+        // If the user is not a superuser, filter the results.
+        if (!$user->hasSuperUser()) {
+
+            $skills = $skills->where(function ($query) use ($user) {
+
+                // If the user has any affiliations and can
+                // list those characters, add them
+                if ($user->has('character.skills', false))
+                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                        array_keys($user->getAffiliationMap()['char']));
+
+                // Add any characters from owner API keys
+                $query->orWhere('eve_api_keys.user_id', $user->id);
+            });
+        }
+
+        return $skills;
     }
 
 }
