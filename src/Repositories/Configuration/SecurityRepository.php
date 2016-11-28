@@ -33,16 +33,12 @@ trait SecurityRepository
     /**
      * Return all of the security logs
      *
-     * @param int $paginate
-     *
      * @return mixed
      */
-    public function getAllSecurityLogs($paginate = 50)
+    public function getAllSecurityLogs()
     {
 
-        return SecurityLog::with('user')
-            ->orderBy('created_at', 'desc')
-            ->paginate($paginate);
+        return SecurityLog::with('user');
     }
 
 }
