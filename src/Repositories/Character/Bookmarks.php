@@ -38,7 +38,7 @@ trait Bookmarks
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterBookmarks(int $character_id) : Collection
+    public function getCharacterBookmarks(int $character_id): Collection
     {
 
         return Bookmark::where('characterID', $character_id)

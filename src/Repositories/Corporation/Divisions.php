@@ -38,7 +38,7 @@ trait Divisions
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationDivisions(int $corporation_id) : Collection
+    public function getCorporationDivisions(int $corporation_id): Collection
     {
 
         return CorporationSheetDivision::where('corporationID', $corporation_id)

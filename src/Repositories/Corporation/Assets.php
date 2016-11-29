@@ -40,7 +40,7 @@ trait Assets
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationAssets(int $corporation_id) : Collection
+    public function getCorporationAssets(int $corporation_id): Collection
     {
 
         return DB::table('corporation_asset_lists as a')
@@ -95,7 +95,7 @@ trait Assets
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationAssetByLocation(int $corporation_id) : Collection
+    public function getCorporationAssetByLocation(int $corporation_id): Collection
     {
 
         return Locations::leftJoin('corporation_asset_lists',
@@ -123,7 +123,7 @@ trait Assets
      */
     public function getCorporationAssetContents(int $corporation_id,
                                                 int $parent_asset_id = null,
-                                                int $parent_item_id = null) : Collection
+                                                int $parent_item_id = null): Collection
     {
 
         $contents = AssetListContents::join('invTypes',

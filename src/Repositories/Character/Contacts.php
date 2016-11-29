@@ -35,7 +35,7 @@ trait Contacts
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterContacts(int $character_id) : Collection
+    public function getCharacterContacts(int $character_id): Collection
     {
 
         return ContactList::where('characterID', $character_id)
@@ -54,7 +54,7 @@ trait Contacts
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterContactLabels(int $character_id) : Collection
+    public function getCharacterContactLabels(int $character_id): Collection
     {
 
         return ContactListLabel::where('characterID', $character_id)

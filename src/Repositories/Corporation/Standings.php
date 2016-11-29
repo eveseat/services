@@ -38,7 +38,7 @@ trait Standings
      *
      * @return mixed
      */
-    public function getCorporationStandings(int $corporation_id) : Collection
+    public function getCorporationStandings(int $corporation_id): Collection
     {
 
         return Standing::where('corporationID', $corporation_id)

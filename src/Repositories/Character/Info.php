@@ -37,7 +37,7 @@ trait Info
      *
      * @return string
      */
-    public function getCharacterNameById(int $character_id) : string
+    public function getCharacterNameById(int $character_id): string
     {
 
         return ApiKeyInfoCharacters::where('characterID', $character_id)
@@ -51,7 +51,7 @@ trait Info
      *
      * @return \Seat\Eveapi\Models\Account\ApiKeyInfoCharacters
      */
-    public function getCharacterInformation(int $character_id) : ApiKeyInfoCharacters
+    public function getCharacterInformation(int $character_id): ApiKeyInfoCharacters
     {
 
         return ApiKeyInfoCharacters::join('eve_character_infos',
@@ -69,7 +69,7 @@ trait Info
      *
      * @return \Seat\Eveapi\Models\Character\CharacterSheet
      */
-    public function getCharacterSheet(int $character_id) : CharacterSheet
+    public function getCharacterSheet(int $character_id): CharacterSheet
     {
 
         return CharacterSheet::find($character_id);
@@ -82,7 +82,7 @@ trait Info
      *
      * @return \Illuminate\Support\Collection|mixed
      */
-    public function getCharacterEmploymentHistory(int $character_id) : Collection
+    public function getCharacterEmploymentHistory(int $character_id): Collection
     {
 
         return CharacterInfoEmploymentHistory::where('characterID', $character_id)
@@ -98,7 +98,7 @@ trait Info
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterCorporationTitles(int $character_id) : Collection
+    public function getCharacterCorporationTitles(int $character_id): Collection
     {
 
         return CharacterSheetCorporationTitles::where('characterID', $character_id)

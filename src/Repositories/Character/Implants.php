@@ -38,7 +38,7 @@ trait Implants
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterImplants(int $character_id) : Collection
+    public function getCharacterImplants(int $character_id): Collection
     {
 
         return CharacterSheetImplants::where('characterID', $character_id)

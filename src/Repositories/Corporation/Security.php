@@ -40,7 +40,7 @@ trait Security
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMemberSecurity(int $corporation_id) : Collection
+    public function getCorporationMemberSecurity(int $corporation_id): Collection
     {
 
         return MemberSecurity::where('corporationID', $corporation_id)
@@ -54,7 +54,7 @@ trait Security
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMemberSecurityLogs(int $corporation_id) : Collection
+    public function getCorporationMemberSecurityLogs(int $corporation_id): Collection
     {
 
         return MemberSecurityLog::where('corporationID', $corporation_id)
@@ -69,7 +69,7 @@ trait Security
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMemberSecurityTitles(int $corporation_id) : Collection
+    public function getCorporationMemberSecurityTitles(int $corporation_id): Collection
     {
 
         return MemberSecurityTitle::where('corporationID', $corporation_id)

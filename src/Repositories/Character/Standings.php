@@ -38,7 +38,7 @@ trait Standings
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterStandings(int $character_id) : Collection
+    public function getCharacterStandings(int $character_id): Collection
     {
 
         return Standing::where('characterID', $character_id)

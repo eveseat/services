@@ -94,7 +94,7 @@ trait Industry
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationCustomsOffices(int $corporation_id) : Collection
+    public function getCorporationCustomsOffices(int $corporation_id): Collection
     {
 
         return CustomsOffice::select(

@@ -146,7 +146,7 @@ trait Intel
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function standingsProfiles() : Collection
+    public function standingsProfiles(): Collection
     {
 
         return StandingsProfile::with('standings')
@@ -158,7 +158,7 @@ trait Intel
      *
      * @return \Seat\Web\Models\StandingsProfile
      */
-    public function standingsProfile(int $profile_id) : StandingsProfile
+    public function standingsProfile(int $profile_id): StandingsProfile
     {
 
         return StandingsProfile::with('standings')

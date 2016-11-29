@@ -38,7 +38,7 @@ trait Pi
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterPlanetaryColonies(int $character_id) : Collection
+    public function getCharacterPlanetaryColonies(int $character_id): Collection
     {
 
         return PlanetaryColony::where('ownerID', $character_id)

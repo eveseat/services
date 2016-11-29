@@ -39,7 +39,7 @@ trait Notifications
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterNotifications(int $character_id, int $chunk = 50) : Collection
+    public function getCharacterNotifications(int $character_id, int $chunk = 50): Collection
     {
 
         return NotificationsModel::join('character_notifications_texts',

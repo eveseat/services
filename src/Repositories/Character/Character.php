@@ -35,7 +35,7 @@ trait Character
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function getAllCharacters() : Collection
+    public function getAllCharacters(): Collection
     {
 
         return ApiKeyInfoCharacters::all();
@@ -103,7 +103,7 @@ trait Character
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterAlliances() : Collection
+    public function getCharacterAlliances(): Collection
     {
 
         $user = auth()->user();

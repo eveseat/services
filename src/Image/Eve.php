@@ -198,7 +198,7 @@ class Eve
     {
 
         return $this->img_server . '/' . $this->type . '/' . $this->id .
-        '_' . $size . '.' . $this->extention;
+            '_' . $size . '.' . $this->extention;
 
     }
 }

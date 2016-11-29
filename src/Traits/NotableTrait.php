@@ -41,7 +41,7 @@ trait NotableTrait
      * @return \Seat\Services\Models\Note
      */
     public static function addNote(
-        int $object_id, string $title, string $note) : Note
+        int $object_id, string $title, string $note): Note
     {
 
         return Note::create([
@@ -60,7 +60,7 @@ trait NotableTrait
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function getNotes(int $object_id) : Builder
+    public static function getNotes(int $object_id): Builder
     {
 
         return Note::where('object_type', __CLASS__)
@@ -76,7 +76,7 @@ trait NotableTrait
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function getNote(int $object_id, int $note_id) : Builder
+    public static function getNote(int $object_id, int $note_id): Builder
     {
 
         return Note::where('object_type', __CLASS__)
@@ -93,7 +93,7 @@ trait NotableTrait
      *
      * @return int
      */
-    public static function deleteNote(int $object_id, int $note_id) : int
+    public static function deleteNote(int $object_id, int $note_id): int
     {
 
         return Note::where('object_type', __CLASS__)

@@ -38,7 +38,7 @@ trait ChatChannels
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterChatChannelsFull(int $character_id) : Collection
+    public function getCharacterChatChannelsFull(int $character_id): Collection
     {
 
         return ChatChannel::with('info', 'members')

@@ -38,7 +38,7 @@ trait Research
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterResearchAgents(int $character_id) : Collection
+    public function getCharacterResearchAgents(int $character_id): Collection
     {
 
         return ResearchModel::join(

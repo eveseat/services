@@ -39,7 +39,7 @@ trait JumpClone
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterJumpClones(int $character_id) : Collection
+    public function getCharacterJumpClones(int $character_id): Collection
     {
 
         return DB::table(DB::raw(

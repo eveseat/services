@@ -39,7 +39,7 @@ trait Contacts
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationContacts(int $corporation_id) : Collection
+    public function getCorporationContacts(int $corporation_id): Collection
     {
 
         return ContactList::where('corporationID', $corporation_id)
@@ -59,7 +59,7 @@ trait Contacts
      *
      * @return mixed
      */
-    public function getCorporationContactsLabels(int $corporation_id) : Collection
+    public function getCorporationContactsLabels(int $corporation_id): Collection
     {
 
         return ContactListLabel::where('corporationID', $corporation_id)

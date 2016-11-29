@@ -40,7 +40,7 @@ trait Wallet
      *
      * @return mixed
      */
-    public function getCorporationWalletDivisions(int $corporation_id) : Collection
+    public function getCorporationWalletDivisions(int $corporation_id): Collection
     {
 
         return CorporationSheetWalletDivision::where('corporationID', $corporation_id)
@@ -54,7 +54,7 @@ trait Wallet
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationWalletDivisionSummary(int $corporation_id) : Collection
+    public function getCorporationWalletDivisionSummary(int $corporation_id): Collection
     {
 
         return CorporationSheetWalletDivision::join(

@@ -34,7 +34,7 @@ trait Assets
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterAssets(int $character_id) : Collection
+    public function getCharacterAssets(int $character_id): Collection
     {
 
         return DB::table('character_asset_lists as a')
