@@ -85,7 +85,11 @@ class Seat extends Settings
         'allow_tracking'              => 'yes',
 
         // Currently Installed SDE Version
-        'installed_sde'               => null
+        'installed_sde'               => null,
+
+        // API Updater Class Constraint. This value should
+        // be stored as a json string!
+        'api_constraint'              => '',
     ];
 
 }
