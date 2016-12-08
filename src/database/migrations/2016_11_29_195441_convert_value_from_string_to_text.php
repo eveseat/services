@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class ConvertValueFromStringToText extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -13,6 +14,7 @@ class ConvertValueFromStringToText extends Migration
      */
     public function up()
     {
+
         Schema::table('global_settings', function (Blueprint $table) {
 
             $table->text('value')->change();
@@ -26,6 +28,7 @@ class ConvertValueFromStringToText extends Migration
      */
     public function down()
     {
+
         Schema::table('global_settings', function (Blueprint $table) {
 
             $table->string('value')->change();
