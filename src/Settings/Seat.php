@@ -37,10 +37,11 @@ class Seat extends Settings
      */
     public static $options = [
 
-        'registration'   => ['yes', 'no'],
-        'force_min_mask' => ['yes', 'no'],
-        'allow_sso'      => ['yes', 'no'],
-        'allow_tracking' => ['yes', 'no'],
+        'registration'       => ['yes', 'no'],
+        'force_min_mask'     => ['yes', 'no'],
+        'allow_sso'          => ['yes', 'no'],
+        'allow_tracking'     => ['yes', 'no'],
+        'require_activation' => ['yes', 'no'],
     ];
 
     /**
@@ -90,6 +91,9 @@ class Seat extends Settings
         // API Updater Class Constraint. This value should
         // be stored as a json string!
         'api_constraint'              => '',
+
+        // Require Email Activation
+        'require_activation'          => 'yes',
     ];
 
 }
