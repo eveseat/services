@@ -67,9 +67,9 @@ trait Info
      *
      * @param int $character_id
      *
-     * @return \Seat\Eveapi\Models\Character\CharacterSheet
+     * @return \Seat\Eveapi\Models\Character\CharacterSheet|null
      */
-    public function getCharacterSheet(int $character_id): CharacterSheet
+    public function getCharacterSheet(int $character_id)
     {
 
         return CharacterSheet::find($character_id);
