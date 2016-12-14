@@ -152,6 +152,101 @@ if (!function_exists('clean_ccp_html')) {
     }
 }
 
+if (!function_exists('evemail_threads')) {
+
+    /**
+     * Attempt to 'thread' evemails based on the seperator
+     * that is automatically added using the eve client.
+     *
+     * @param $message
+     *
+     * @return array
+     */
+    function evemail_threads($message)
+    {
+
+        // Explode the messages based on the delimiter added
+        // by the EVE Online Client.
+        $delimiter = '--------------------------------<br>';
+
+        return collect(explode($delimiter, $message))->map(function ($thread) {
+
+            // Message headers array.
+            $headers = [
+                'subject'    => null,
+                'from'       => null,
+                'sent'       => null,
+                'to'         => null,
+                'message'    => null,
+                'headers_ok' => false,
+            ];
+
+            // Start by setting the full message first.
+            $headers['message'] = $thread;
+
+            // Next, parse the headers.
+            //
+            // Example header:
+            // Re: Assistance
+            // From: Some Character
+            // Sent: 2016.11.22 20:38
+            // To: qu1ckkkk
+            //
+            // Example raw header:
+            // Re: Assistance<br>From: Some Character<br>Sent: 2016.11.22 20:38<br>To: qu1ckkkk,  <br>
+
+            // Cleanup the message first:
+            $thread = clean_ccp_html($thread, '<br>');
+
+            // Explode on the <br> characters to get an array.
+            $thread = explode('<br>', $thread, 5);
+
+            // Ensure the message got 4 parts
+            if (count($thread) < 4)
+                return $headers;
+
+            // Check and extract the headers.
+            //
+            // First the subject.
+            $headers['subject'] = $thread[0];
+
+            // And then the From characterName
+            $headers['from'] = strpos($thread[1], 'From') !== false ?
+                ltrim($thread[1], 'From: ') : null;
+
+            // Next the sent date.
+            // We make this a carbon object too while we at it.
+            try {
+
+                $time = carbon()->createFromFormat(
+                    'Y.m.d H:i', ltrim($thread[2], 'Sent: '));
+
+                $headers['sent'] = strpos($thread[2], 'Sent') !== false ? $time : null;
+
+            } catch (InvalidArgumentException $e) {
+            }
+
+            // Lasty the To characterName. We need to trim a trailing
+            // comma (,) here too.
+            $to = ltrim($thread[3], 'To: ');
+            $to = rtrim($to, ',  ');
+            $headers['to'] = strpos($thread[3], 'To') !== false ? $to : null;
+
+            // Ensure that all of the headers resolved.
+            if (
+                !is_null($headers['from']) &&
+                !is_null($headers['sent']) &&
+                !is_null($headers['to'])
+            )
+                $headers['headers_ok'] = true;
+
+            return $headers;
+
+        });
+
+    }
+}
+
 if (!function_exists('setting')) {
 
     /**
