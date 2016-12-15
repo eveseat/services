@@ -247,15 +247,21 @@ trait Search
         return $skills;
     }
 
+    /**
+     * @param string $filter
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function doSearchApiKey(string $filter)
     {
+
         $keys = ApiKey::with('info');
 
-        $keys->where(function($query) use ($filter){
+        $keys->where(function ($query) use ($filter) {
 
             $query->where('key_id', 'like', '%' . $filter . '%')
                 ->orWhere('enabled', 'like', '%' . $filter . '%')
-                ->orWhereHas('info', function($sub_filter) use ($filter){
+                ->orWhereHas('info', function ($sub_filter) use ($filter) {
 
                     $sub_filter->where('type', 'like', '%' . $filter . '%')
                         ->orWhere('expires', 'like', '%' . $filter . '%');
