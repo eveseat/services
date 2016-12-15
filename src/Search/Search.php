@@ -24,6 +24,7 @@ namespace Seat\Services\Search;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\Character\MailMessage;
+use Seat\Eveapi\Models\Eve\ApiKey;
 use Seat\Services\Repositories\Character\Character;
 use Seat\Services\Repositories\Corporation\Corporation;
 
@@ -244,6 +245,29 @@ trait Search
         }
 
         return $skills;
+    }
+
+    public function doSearchApiKey(string $filter)
+    {
+        $keys = ApiKey::with('info');
+
+        $keys->where(function($query) use ($filter){
+
+            $query->where('key_id', 'like', '%' . $filter . '%')
+                ->orWhere('enabled', 'like', '%' . $filter . '%')
+                ->orWhereHas('info', function($sub_filter) use ($filter){
+
+                    $sub_filter->where('type', 'like', '%' . $filter . '%')
+                        ->orWhere('expires', 'like', '%' . $filter . '%');
+
+                });
+        });
+
+        if (!auth()->user()->has('apikey.list', false))
+            $keys = $keys
+                ->where('user_id', auth()->user()->id);
+
+        return $keys->get();
     }
 
 }
