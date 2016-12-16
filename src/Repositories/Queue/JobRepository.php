@@ -65,6 +65,16 @@ trait JobRepository
     }
 
     /**
+     * @param string $job_id
+     */
+    public function deleteJobById(string $job_id)
+    {
+
+        JobTracking::where('job_id', $job_id)
+            ->delete();
+    }
+
+    /**
      * @param int $pagination
      *
      * @return mixed
