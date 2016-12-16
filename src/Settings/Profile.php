@@ -45,7 +45,8 @@ class Profile extends Settings
             'skin-yellow-light'
         ],
         'thousand_seperator' => [' ', ',', '.'],
-        'decimal_seperator'  => [',', '.']
+        'decimal_seperator'  => [',', '.'],
+        'mail_threads'       => ['yes', 'no'],
     ];
 
     /**
@@ -72,6 +73,7 @@ class Profile extends Settings
         'sidebar'             => 'sidebar-full',
         'skin'                => 'skin-black',
         'language'            => 'en',
+        'mail_threads'        => 'yes',
 
         // Main Character
         'main_character_id'   => 1,
