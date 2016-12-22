@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Settings;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Session;
 use Seat\Services\Exceptions\SettingException;
 
 /**
@@ -117,7 +116,7 @@ abstract class Settings
             throw new SettingException(
                 'No prefix defined. Have you extended and declared $prefix?');
 
-        return implode('.', [Session::getId(), static::$prefix, $name]);
+        return implode('.', [static::$prefix, $name]);
     }
 
     /**
