@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace Seat\Services\Settings;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Session;
 use Seat\Services\Exceptions\SettingException;
 
 /**
@@ -116,6 +117,11 @@ abstract class Settings
             throw new SettingException(
                 'No prefix defined. Have you extended and declared $prefix?');
 
+        // Prefix user keys with the session_id
+        if(static::$scope != 'global')
+            return implode('.', [Session::getId(), static::$prefix, $name]);
+
+        // Global keys only with the global prefix.
         return implode('.', [static::$prefix, $name]);
     }
 
