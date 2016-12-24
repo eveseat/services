@@ -130,7 +130,7 @@ trait Skills
             ->where('parentGroupID', '?')// binding at [1]
             ->select(
                 'marketGroupName',
-                DB::raw('COUNT(invTypes.marketGroupID) as amount')
+                DB::raw('COUNT(invTypes.marketGroupID) * 5 as amount')
             )
             ->groupBy('marketGroupName')
             ->toSql();
@@ -149,9 +149,9 @@ trait Skills
             ->where('characterID', '?')// binding at [2]
             ->select(
                 'marketGroupName',
-                DB::raw('COUNT(invTypes.marketGroupID) as amount')
+                DB::raw('COUNT(invTypes.marketGroupID) * character_character_sheet_skills.level as amount')
             )
-            ->groupBy('marketGroupName')
+            ->groupBy(['marketGroupName', 'level'])
             ->toSql();
 
         $skills = DB::table(
@@ -165,8 +165,9 @@ trait Skills
             ->select(
                 'a.marketGroupName',
                 DB::raw('a.amount AS gameAmount'),
-                DB::raw('b.amount AS characterAmount')
+                DB::raw('SUM(b.amount) AS characterAmount')
             )
+            ->groupBy(['a.marketGroupName', 'a.amount'])
             ->addBinding(150, 'select')// binding [1]
             ->addBinding($character_id, 'select')// binding [2]
             ->get();
