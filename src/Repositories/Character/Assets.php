@@ -71,4 +71,23 @@ trait Assets
             ->get();
     }
 
+    /**
+     * Return the nested assets that belong to a Character
+     *
+     * @param int $character_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCharacterAssetContents(int $character_id): Collection
+    {
+
+        return DB::table(DB::raw('character_asset_list_contents as a'))
+            ->select(DB::raw('*'), DB::raw('SUM(a.quantity) as sumquantity'))
+            ->leftJoin('invTypes', 'a.typeID', '=', 'invTypes.typeID')
+            ->leftJoin('invGroups', 'invTypes.groupID', '=', 'invGroups.groupID')
+            ->where('a.characterID', $character_id)
+            ->groupBy(DB::raw('a.itemID, a.typeID'))
+            ->get();
+    }
+
 }
