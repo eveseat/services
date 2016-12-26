@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Character\ContractItems;
 
 /**
  * Class Contracts
@@ -109,6 +111,27 @@ trait Contracts
                 ->paginate($chunk);
 
         return $contracts;
+
+    }
+
+    /**
+     * @param int $character_id
+     * @param int $contract_id
+     *
+     * @return mixed
+     */
+    public function getCharacterContractsItems(int $character_id, int $contract_id): Collection
+    {
+
+        return ContractItems::join('invTypes',
+            'character_contract_items.typeID', '=',
+            'invTypes.typeID')
+            ->join('invGroups',
+                'invTypes.groupID', '=',
+                'invGroups.groupID')
+            ->where('characterID', $character_id)
+            ->where('contractID', $contract_id)
+            ->get();
 
     }
 
