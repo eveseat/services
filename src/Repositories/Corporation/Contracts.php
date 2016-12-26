@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Seat\Services\Repositories\Corporation;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Corporation\ContractItem;
 
 /**
  * Class Contracts
@@ -110,6 +112,28 @@ trait Contracts
                 ->paginate($chunk);
 
         return $contracts;
+    }
+
+    /**
+     * @param int $corporation_id
+     * @param int $contract_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationContractsItems(int $corporation_id, int $contract_id): Collection
+    {
+
+        return ContractItem::leftJoin('invTypes',
+            'corporation_contract_items.typeID', '=',
+            'invTypes.typeID')
+            ->join('invGroups',
+                'invTypes.groupID', '=',
+                'invGroups.groupID')
+            ->where('corporationID', $corporation_id)
+            ->where('contractID', $contract_id)
+            ->take(150) // Limit to 150 for now. Some of these contracts are insanely big.
+            ->get();
+
     }
 
 }
