@@ -82,9 +82,13 @@ trait Assets
     {
 
         return DB::table(DB::raw('character_asset_list_contents as a'))
-            ->select(DB::raw('*'), DB::raw('SUM(a.quantity) as sumquantity'))
-            ->leftJoin('invTypes', 'a.typeID', '=', 'invTypes.typeID')
-            ->leftJoin('invGroups', 'invTypes.groupID', '=', 'invGroups.groupID')
+            ->select(
+                DB::raw('*'),
+                DB::raw('SUM(a.quantity) as sumquantity'))
+            ->leftJoin('invTypes',
+                'a.typeID', '=', 'invTypes.typeID')
+            ->leftJoin('invGroups',
+                'invTypes.groupID', '=', 'invGroups.groupID')
             ->where('a.characterID', $character_id)
             ->groupBy(DB::raw('a.itemID, a.typeID'))
             ->get();
