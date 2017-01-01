@@ -131,7 +131,7 @@ trait Contracts
                 'invGroups.groupID')
             ->where('corporationID', $corporation_id)
             ->where('contractID', $contract_id)
-            ->take(150) // Limit to 150 for now. Some of these contracts are insanely big.
+            ->take(150)// Limit to 150 for now. Some of these contracts are insanely big.
             ->get();
 
     }

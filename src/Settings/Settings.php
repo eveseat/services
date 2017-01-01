@@ -118,7 +118,7 @@ abstract class Settings
                 'No prefix defined. Have you extended and declared $prefix?');
 
         // Prefix user keys with the session_id
-        if(static::$scope != 'global')
+        if (static::$scope != 'global')
             return implode('.', [Session::getId(), static::$prefix, $name]);
 
         // Global keys only with the global prefix.
