@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Corporation;
 
@@ -25,14 +26,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class Ledger
+ * Class Ledger.
  * @package Seat\Services\Repositories\Corporation
  */
 trait Ledger
 {
-
     /**
-     * Return the Bountry Prize Payout dates for a Corporation
+     * Return the Bountry Prize Payout dates for a Corporation.
      *
      * @param int $corporation_id
      *
@@ -50,7 +50,7 @@ trait Ledger
     }
 
     /**
-     * Return the PI Payout dates for a Corporation
+     * Return the PI Payout dates for a Corporation.
      *
      * @param int $corporation_id
      *
@@ -72,7 +72,7 @@ trait Ledger
     }
 
     /**
-     * Get a Corporations Bounty Prizes for a specific year / month
+     * Get a Corporations Bounty Prizes for a specific year / month.
      *
      * @param int $corporation_id
      * @param int $year
@@ -93,15 +93,15 @@ trait Ledger
                 ))
             ->where('corporationID', $corporation_id)
             ->where('refTypeID', '85')
-            ->where(DB::raw('YEAR(date)'), !is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), !is_null($month) ? $month : date('m'))
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->groupBy('ownerName2')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
     }
 
     /**
-     * Get a Corporations PI Payouts for a specific year / month
+     * Get a Corporations PI Payouts for a specific year / month.
      *
      * @param int $corporation_id
      * @param int $year
@@ -121,8 +121,8 @@ trait Ledger
                     'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
                 ))
             ->where('corporationID', $corporation_id)
-            ->where(DB::raw('YEAR(date)'), !is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), !is_null($month) ? $month : date('m'))
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->where(function ($query) {
 
                 $query->where('refTypeID', 96)
@@ -133,5 +133,4 @@ trait Ledger
             ->get();
 
     }
-
 }
