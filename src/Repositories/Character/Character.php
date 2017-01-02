@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Character;
 
@@ -26,12 +27,11 @@ use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 
 /**
- * Class Character
+ * Class Character.
  * @package Seat\Services\Repositories
  */
 trait Character
 {
-
     /**
      * @return \Illuminate\Support\Collection
      */
@@ -43,7 +43,7 @@ trait Character
 
     /**
      * Query the database for characters, keeping filters,
-     * permissions and affiliations in mind
+     * permissions and affiliations in mind.
      *
      * @param bool $get
      *
@@ -72,7 +72,7 @@ trait Character
             ->where('account_api_key_infos.type', '!=', 'Corporation');
 
         // If the user is a super user, return all
-        if (!$user->hasSuperUser()) {
+        if (! $user->hasSuperUser()) {
 
             $characters = $characters->where(function ($query) use ($user) {
 
@@ -99,7 +99,7 @@ trait Character
 
     /**
      * Get a list of alliances the current
-     * authenticated user has access to
+     * authenticated user has access to.
      *
      * @return \Illuminate\Support\Collection
      */
@@ -119,7 +119,7 @@ trait Character
             ->distinct();
 
         // If the user us a super user, return all
-        if (!$user->hasSuperUser()) {
+        if (! $user->hasSuperUser()) {
 
             $corporations = $corporations->orWhere(function ($query) use ($user) {
 
@@ -139,14 +139,14 @@ trait Character
             ->filter(function ($item) {
 
                 // Filter out the null alliance name
-                return !is_null($item);
+                return ! is_null($item);
             });
 
     }
 
     /**
      * Get a list of corporations the current
-     * authenticated user has access to
+     * authenticated user has access to.
      *
      * @return mixed
      */
@@ -162,7 +162,7 @@ trait Character
             ->distinct();
 
         // If the user us a super user, return all
-        if (!$user->hasSuperUser()) {
+        if (! $user->hasSuperUser()) {
 
             $corporations = $corporations->orWhere(function ($query) use ($user) {
 
@@ -183,7 +183,7 @@ trait Character
 
     /**
      * Return the Account Status information for a specific
-     * character
+     * character.
      *
      * @param $character_id
      */
@@ -201,12 +201,10 @@ trait Character
         if ($key_info)
             return AccountStatus::find($key_info->keyID);
 
-        return;
-
     }
 
     /**
-     * Returns the characters on a API Key
+     * Returns the characters on a API Key.
      *
      * @param $key_id
      *
@@ -219,5 +217,4 @@ trait Character
             ->get();
 
     }
-
 }

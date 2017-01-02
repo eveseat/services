@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\People;
 
@@ -27,14 +28,13 @@ use Seat\Web\Models\Person;
 use Seat\Web\Models\PersonMember;
 
 /**
- * Class PeopleRepository
+ * Class PeopleRepository.
  * @package Seat\Services\Repositories\People
  */
 trait PeopleRepository
 {
-
     /**
-     * Get all of the people groups for a user
+     * Get all of the people groups for a user.
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -65,7 +65,7 @@ trait PeopleRepository
                 'results' => Person::select('id', 'main_character_name as text')
                     ->where('main_character_name', 'like', '%' . $query . '%')
                     ->orderBy('main_character_name', 'asc')
-                    ->get()
+                    ->get(),
             ];
 
         return [
@@ -78,13 +78,13 @@ trait PeopleRepository
                 })
                 ->where('main_character_name', 'like', '%' . $query . '%')
                 ->orderBy('main_character_name', 'asc')
-                ->get()
+                ->get(),
         ];
     }
 
     /**
      * Get all of the API keys that are not part
-     * of a specific people group
+     * of a specific people group.
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -98,7 +98,7 @@ trait PeopleRepository
                     ->from('person_members');
             });
 
-        if (!auth()->user()->has('apikey.list', false))
+        if (! auth()->user()->has('apikey.list', false))
             $keys = $keys->where('user_id', auth()->user()->id);
 
         return $keys->get();
@@ -108,7 +108,7 @@ trait PeopleRepository
     /**
      * Create a new people group, setting the character
      * as the main and its source key as a member of
-     * the people group
+     * the people group.
      *
      * @param \Seat\Eveapi\Models\Account\ApiKeyInfoCharacters $character
      */
@@ -117,18 +117,16 @@ trait PeopleRepository
 
         $person = Person::create([
             'main_character_id'   => $character->characterID,
-            'main_character_name' => $character->characterName
+            'main_character_name' => $character->characterName,
         ]);
 
         $person->members()->save(
             new PersonMember(['key_id' => $character->keyID]));
 
-        return;
-
     }
 
     /**
-     * Add an API key to an existing People Group
+     * Add an API key to an existing People Group.
      *
      * @param $group_id
      * @param $key_id
@@ -140,13 +138,13 @@ trait PeopleRepository
 
         return PersonMember::create([
             'person_id' => $group_id,
-            'key_id'    => $key_id
+            'key_id'    => $key_id,
         ]);
     }
 
     /**
      * Remove a people group.
-     * Member cleanup is done in the Person model
+     * Member cleanup is done in the Person model.
      *
      * @param $group_id
      *
@@ -178,12 +176,10 @@ trait PeopleRepository
         if (Person::find($group_id)->members->isEmpty())
             Person::find($group_id)->delete();
 
-        return;
-
     }
 
     /**
-     * Update a groups main character details
+     * Update a groups main character details.
      *
      * @param                                                  $group_id
      * @param \Seat\Eveapi\Models\Account\ApiKeyInfoCharacters $character
@@ -195,12 +191,10 @@ trait PeopleRepository
 
         $group->fill([
             'main_character_id'   => $character->characterID,
-            'main_character_name' => $character->characterName
+            'main_character_name' => $character->characterName,
         ]);
 
         $group->save();
-
-        return;
 
     }
 }

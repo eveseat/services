@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Character;
 
@@ -29,9 +30,8 @@ use Seat\Eveapi\Models\Eve\CharacterInfoEmploymentHistory;
 
 trait Info
 {
-
     /**
-     * Retreive a character name by character id
+     * Retreive a character name by character id.
      *
      * @param int $character_id
      *
@@ -45,7 +45,7 @@ trait Info
     }
 
     /**
-     * Get Information about a specific Character
+     * Get Information about a specific Character.
      *
      * @param int $character_id
      *
@@ -63,7 +63,7 @@ trait Info
     }
 
     /**
-     * Return the character sheet for a character
+     * Return the character sheet for a character.
      *
      * @param int $character_id
      *
@@ -76,7 +76,7 @@ trait Info
     }
 
     /**
-     * Return the employment history for a character
+     * Return the employment history for a character.
      *
      * @param int $character_id
      *
@@ -92,7 +92,7 @@ trait Info
     }
 
     /**
-     * Get Corporation titles related to a specific character
+     * Get Corporation titles related to a specific character.
      *
      * @param int $character_id
      *
@@ -104,5 +104,4 @@ trait Info
         return CharacterSheetCorporationTitles::where('characterID', $character_id)
             ->get();
     }
-
 }

@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Character;
 
@@ -26,9 +27,8 @@ use Illuminate\Support\Facades\DB;
 
 trait Assets
 {
-
     /**
-     * Return the assets that belong to a Character
+     * Return the assets that belong to a Character.
      *
      * @param int $character_id
      *
@@ -38,7 +38,7 @@ trait Assets
     {
 
         return DB::table('character_asset_lists as a')
-            ->select(DB::raw("
+            ->select(DB::raw('
                 *, CASE
                 when a.locationID BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
@@ -60,7 +60,7 @@ trait Assets
                       WHERE c.stationID=a.locationID)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID=a.locationID) end
-                    AS location,a.locationId AS locID"))
+                    AS location,a.locationId AS locID'))
             ->join('invTypes',
                 'a.typeID', '=',
                 'invTypes.typeID')
@@ -72,7 +72,7 @@ trait Assets
     }
 
     /**
-     * Return the nested assets that belong to a Character
+     * Return the nested assets that belong to a Character.
      *
      * @param int $character_id
      *
@@ -93,5 +93,4 @@ trait Assets
             ->groupBy(DB::raw('a.itemID, a.typeID'))
             ->get();
     }
-
 }

@@ -1,35 +1,35 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Character;
 
 use Seat\Eveapi\Models\Character\MailMessage;
 
 /**
- * Class Mail
+ * Class Mail.
  * @package Seat\Services\Repositories\Character
  */
 trait Mail
 {
-
     /**
      * Return only the last X amount of mail for affiliation
      * related characters.
@@ -53,7 +53,7 @@ trait Mail
                 'account_api_key_info_characters.keyID');
 
         // If the user is a super user, return all
-        if (!$user->hasSuperUser()) {
+        if (! $user->hasSuperUser()) {
 
             $messages = $messages->where(function ($query) use ($user) {
 
@@ -76,7 +76,7 @@ trait Mail
     }
 
     /**
-     * Return mail for a character
+     * Return mail for a character.
      *
      * @param int  $character_id
      * @param bool $get
@@ -102,7 +102,7 @@ trait Mail
     }
 
     /**
-     * Retreive a specific message for a character
+     * Retreive a specific message for a character.
      *
      * @param int $character_id
      * @param int $message_id
@@ -154,7 +154,7 @@ trait Mail
                 'account_api_key_info_characters.keyID');
 
         // If the user is a super user, return all
-        if (!$user->hasSuperUser()) {
+        if (! $user->hasSuperUser()) {
 
             $messages = $messages->where(function ($query) use ($user) {
 
@@ -171,7 +171,7 @@ trait Mail
         }
 
         // Filter by messageID if its set
-        if (!is_null($message_id))
+        if (! is_null($message_id))
             return $messages->where('character_mail_messages.messageID', $message_id)
                 ->first();
 
@@ -179,5 +179,4 @@ trait Mail
             ->orderBy('character_mail_messages.sentDate', 'desc')
             ->paginate(25);
     }
-
 }
