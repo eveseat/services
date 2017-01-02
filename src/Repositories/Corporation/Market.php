@@ -1,37 +1,37 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class Market
+ * Class Market.
  * @package Seat\Services\Repositories\Corporation
  */
 trait Market
 {
-
     /**
-     * Return the Market Orders for a Corporation
+     * Return the Market Orders for a Corporation.
      *
      * @param int  $corporation_id
      * @param bool $get
@@ -43,7 +43,7 @@ trait Market
 
         $orders = DB::table(DB::raw('corporation_market_orders as a'))
             ->select(DB::raw(
-                "
+                '
                 --
                 -- Select All
                 --
@@ -73,7 +73,7 @@ trait Market
                       WHERE c.stationID = a.stationID)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID = a.stationID) end
-                    AS stationName"))
+                    AS stationName'))
             ->join(
                 'invTypes',
                 'a.typeID', '=',
@@ -91,5 +91,4 @@ trait Market
         return $orders;
 
     }
-
 }

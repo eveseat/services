@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Corporation;
 
@@ -26,14 +27,13 @@ use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Corporation\CustomsOffice;
 
 /**
- * Class Industry
+ * Class Industry.
  * @package Seat\Services\Repositories\Corporation
  */
 trait Industry
 {
-
     /**
-     * Return the Industry jobs for a Corporation
+     * Return the Industry jobs for a Corporation.
      *
      * @param int  $corporation_id
      * @param bool $get
@@ -44,7 +44,7 @@ trait Industry
     {
 
         $industry = DB::table('corporation_industry_jobs as a')
-            ->select(DB::raw("
+            ->select(DB::raw('
                 *,
 
                 --
@@ -71,7 +71,7 @@ trait Industry
                       WHERE c.stationID = a.stationID)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                 WHERE m.itemID = a.stationID) end
-                AS facilityName"))
+                AS facilityName'))
             ->leftJoin(
                 'ramActivities',
                 'ramActivities.activityID', '=',
@@ -88,7 +88,7 @@ trait Industry
     }
 
     /**
-     * Return a Corporations Customs Offices
+     * Return a Corporations Customs Offices.
      *
      * @param int $corporation_id
      *
@@ -117,5 +117,4 @@ trait Industry
             ->where('corporation_customs_offices.corporationID', $corporation_id)
             ->get();
     }
-
 }

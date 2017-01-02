@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Repositories\Eve;
 
@@ -26,15 +27,14 @@ use Seat\Eveapi\Models\Eve\RefTypes;
 use Seat\Eveapi\Models\Server\ServerStatus;
 
 /**
- * Class EveRepository
+ * Class EveRepository.
  * @package Seat\Services\Repositories\EVe
  */
 trait EveRepository
 {
-
     /**
      * Return the order states that market orders can have.
-     * Order states from: https://neweden-dev.com/Character/Market_Orders
+     * Order states from: https://neweden-dev.com/Character/Market_Orders.
      *
      * @return array
      */
@@ -47,7 +47,7 @@ trait EveRepository
             2 => 'Expired / Fulfilled',
             3 => 'Cancelled',
             4 => 'Pending',
-            5 => 'Deleted'
+            5 => 'Deleted',
         ];
     }
 
@@ -65,13 +65,13 @@ trait EveRepository
             '1' => 'Anchored / Offline',
             '2' => 'Onlining',
             '3' => 'Reinforced',
-            '4' => 'Online'
+            '4' => 'Online',
         ];
     }
 
     /**
      * Return the groups that character skills
-     * fall in
+     * fall in.
      *
      * @return mixed
      */
@@ -89,7 +89,7 @@ trait EveRepository
     }
 
     /**
-     * Return the transaction reference types
+     * Return the transaction reference types.
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -100,7 +100,7 @@ trait EveRepository
     }
 
     /**
-     * Get the last server status
+     * Get the last server status.
      *
      * @return mixed
      */
