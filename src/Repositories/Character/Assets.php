@@ -24,6 +24,7 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Character\AssetListContents;
 
 trait Assets
 {
@@ -72,25 +73,35 @@ trait Assets
     }
 
     /**
-     * Return the nested assets that belong to a Character.
+     * Return an assets contents. If no parent asset / item ids
+     * are specified, then all assets for the corporation is
+     * returned.
      *
      * @param int $character_id
+     * @param int $parent_asset_id
+     * @param int $parent_item_id
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterAssetContents(int $character_id): Collection
+    public function getCharacterAssetContents(int $character_id,
+                                                int $parent_asset_id = null,
+                                                int $parent_item_id = null): Collection
     {
 
-        return DB::table(DB::raw('character_asset_list_contents as a'))
-            ->select(
-                DB::raw('*'),
-                DB::raw('SUM(a.quantity) as sumquantity'))
-            ->leftJoin('invTypes',
-                'a.typeID', '=', 'invTypes.typeID')
-            ->leftJoin('invGroups',
-                'invTypes.groupID', '=', 'invGroups.groupID')
-            ->where('a.characterID', $character_id)
-            ->groupBy(DB::raw('a.itemID, a.typeID'))
-            ->get();
+        $contents = AssetListContents::join('invTypes',
+            'character_asset_list_contents.typeID', '=',
+            'invTypes.typeID')
+            ->where('characterID', $character_id);
+
+        if (! is_null($parent_asset_id))
+            $contents = $contents->where('parentAssetItemID', $parent_asset_id);
+
+        if (! is_null($parent_item_id))
+            $contents = $contents->where('parentItemID', $parent_item_id);
+
+        // TODO: Allow the nested lookups to occur.
+        $contents = $contents->where('parentItemID', null);
+
+        return $contents->get();
     }
 }
