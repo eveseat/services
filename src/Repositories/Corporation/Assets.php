@@ -75,7 +75,7 @@ trait Assets
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID = a.locationID) end
                     AS location'))
-            ->selectSub(function($query) {
+            ->selectSub(function ($query) {
 
                 return $query->from('corporation_asset_list_contents')
                     ->selectRaw('count(*)')
