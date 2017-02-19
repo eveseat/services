@@ -31,7 +31,7 @@ class ScheduleSeeder extends Seeder
 
         [   // EVE Server Status | Every Five Minutes
             'command'           => 'eve:update-server-status',
-            'expression'        => '*/5 * * * * *',
+            'expression'        => '*/5 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
@@ -39,7 +39,7 @@ class ScheduleSeeder extends Seeder
         ],
         [   // EVE API Call List | Daily at 2am
             'command'           => 'eve:update-api-call-list',
-            'expression'        => '0 2 * * * *',
+            'expression'        => '0 2 * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
@@ -47,7 +47,7 @@ class ScheduleSeeder extends Seeder
         ],
         [   // SDE Data | Monthly
             'command'           => 'eve:update-sde',
-            'expression'        => '0 0 1 * * *',
+            'expression'        => '0 0 1 * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
@@ -55,7 +55,7 @@ class ScheduleSeeder extends Seeder
         ],
         [   // EVE Map | Daily at 12am
             'command'           => 'eve:update-map',
-            'expression'        => '0 0 * * * *',
+            'expression'        => '0 0 * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
@@ -63,7 +63,7 @@ class ScheduleSeeder extends Seeder
         ],
         [   // EVE Universe | Daily at 1am
             'command'           => 'eve:update-eve',
-            'expression'        => '0 1 * * * *',
+            'expression'        => '0 1 * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
@@ -71,7 +71,7 @@ class ScheduleSeeder extends Seeder
         ],
         [   // EVE API Keys | Hourly
             'command'           => 'eve:queue-keys',
-            'expression'        => '0 * * * * *',
+            'expression'        => '0 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
@@ -79,7 +79,7 @@ class ScheduleSeeder extends Seeder
         ],
         [   // Clear Expired Commands | Every 6 hours
             'command'           => 'seat:queue:clear-expired',
-            'expression'        => '0 */6 * * *',
+            'expression'        => '0 */6 * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
