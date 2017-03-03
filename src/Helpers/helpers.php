@@ -1,25 +1,26 @@
 <?php
+
 /*
-This file is part of SeAT
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
-
-if (!function_exists('carbon')) {
+if (! function_exists('carbon')) {
 
     /**
      * A helper to get a fresh instance of Carbon.
@@ -31,18 +32,18 @@ if (!function_exists('carbon')) {
     function carbon($data = null)
     {
 
-        if (!is_null($data))
+        if (! is_null($data))
             return new \Carbon\Carbon($data);
 
         return new \Carbon\Carbon;
     }
 }
 
-if (!function_exists('human_diff')) {
+if (! function_exists('human_diff')) {
 
     /**
      * Return the time difference from now in a
-     * format that humans can read
+     * format that humans can read.
      *
      * @param $time
      *
@@ -55,7 +56,7 @@ if (!function_exists('human_diff')) {
     }
 }
 
-if (!function_exists('img')) {
+if (! function_exists('img')) {
 
     /**
      * Return an <img> tag ready for the lazy
@@ -72,14 +73,14 @@ if (!function_exists('img')) {
     function img($type, $id, $size, array $attr, $lazy = true)
     {
 
-        $image = (new \Seat\Services\Image\Eve($type, (int)$id, $size, $attr, $lazy))
+        $image = (new \Seat\Services\Image\Eve($type, (int) $id, $size, $attr, $lazy))
             ->html();
 
         return $image;
     }
 }
 
-if (!function_exists('number')) {
+if (! function_exists('number')) {
 
     /**
      * Return a formatted number.
@@ -97,11 +98,11 @@ if (!function_exists('number')) {
     }
 }
 
-if (!function_exists('number_metric')) {
+if (! function_exists('number_metric')) {
 
     /**
      * Return a shortened number with a suffix.
-     * Depends on php5-intl
+     * Depends on php5-intl.
      *
      * @param $number
      *
@@ -114,10 +115,10 @@ if (!function_exists('number_metric')) {
     }
 }
 
-if (!function_exists('clean_ccp_html')) {
+if (! function_exists('clean_ccp_html')) {
 
     /**
-     * Strip any CCP styling and tags from an HTML string
+     * Strip any CCP styling and tags from an HTML string.
      *
      * @param        $html
      * @param string $acceptable_tags
@@ -152,7 +153,7 @@ if (!function_exists('clean_ccp_html')) {
     }
 }
 
-if (!function_exists('evemail_threads')) {
+if (! function_exists('evemail_threads')) {
 
     /**
      * Attempt to 'thread' evemails based on the seperator
@@ -234,9 +235,9 @@ if (!function_exists('evemail_threads')) {
 
             // Ensure that all of the headers resolved.
             if (
-                !is_null($headers['from']) &&
-                !is_null($headers['sent']) &&
-                !is_null($headers['to'])
+                ! is_null($headers['from']) &&
+                ! is_null($headers['sent']) &&
+                ! is_null($headers['to'])
             )
                 $headers['headers_ok'] = true;
 
@@ -247,7 +248,7 @@ if (!function_exists('evemail_threads')) {
     }
 }
 
-if (!function_exists('setting')) {
+if (! function_exists('setting')) {
 
     /**
      * Work with settings.

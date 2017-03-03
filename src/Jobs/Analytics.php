@@ -1,23 +1,24 @@
 <?php
+
 /*
-This file is part of SeAT
-
-Copyright (C) 2015, 2016  Leon Jacobs
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 namespace Seat\Services\Jobs;
 
@@ -30,12 +31,11 @@ use Seat\Services\Helpers\AnalyticsContainer;
 use Seat\Services\Settings\Seat;
 
 /**
- * Class Analytics
+ * Class Analytics.
  * @package Seat\Services\Jobs
  */
 class Analytics implements ShouldQueue
 {
-
     use InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -78,7 +78,7 @@ class Analytics implements ShouldQueue
     {
 
         // Do nothing if tracking is disabled
-        if (!$this->allowTracking())
+        if (! $this->allowTracking())
             return;
 
         // Send the hit based on the hit type
@@ -99,7 +99,7 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Check if tracking is allowed
+     * Check if tracking is allowed.
      *
      * @return bool
      */
@@ -113,7 +113,7 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Send an 'event' type hit to GA
+     * Send an 'event' type hit to GA.
      */
     public function sendEvent()
     {
@@ -128,7 +128,7 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Send the GA Hit
+     * Send the GA Hit.
      *
      * @param       $type
      * @param array $query
@@ -163,8 +163,7 @@ class Analytics implements ShouldQueue
                 'an'  => 'SeAT',                // App Name
 
                 // Versions of the currently installed packages.
-                'av'  =>
-                    'api/' . config('api.config.version') . ', ' .
+                'av'  => 'api/' . config('api.config.version') . ', ' .
                     'console/' . config('console.config.version') . ', ' .
                     'eveapi/' . config('eveapi.config.version') . ', ' .
                     'notifications/' . config('notifications.config.version') . ', ' .
@@ -183,7 +182,7 @@ class Analytics implements ShouldQueue
                     '/' . php_uname('m'),
 
                 'z' => rand(1, 10000),          // Cache Busting Random Value
-            ], $query)
+            ], $query),
         ]);
 
     }
@@ -197,7 +196,7 @@ class Analytics implements ShouldQueue
 
         $id = Seat::get('analytics_id');
 
-        if (!$id) {
+        if (! $id) {
 
             // Generate a V4 random UUID
             //  https://gist.github.com/dahnielson/508447#file-uuid-php-L74
@@ -218,7 +217,7 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Send an 'exception' type hit to GA
+     * Send an 'exception' type hit to GA.
      */
     public function sendException()
     {
