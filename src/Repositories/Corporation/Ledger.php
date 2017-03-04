@@ -32,6 +32,42 @@ use Illuminate\Support\Facades\DB;
 trait Ledger
 {
     /**
+     * Return the Buy dates for a Corporation.
+     *
+     * @param int $corporation_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerBuyDates(int $corporation_id): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+            ->where('corporationID', $corporation_id)
+            ->whereIn('refTypeID', ['79', '42'])
+            ->orderBy('date', 'desc')
+            ->get();
+    }
+
+    /**
+     * Return the Buy dates for a Corporation.
+     *
+     * @param int $corporation_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerSellDates(int $corporation_id): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+            ->where('corporationID', $corporation_id)
+            ->whereIn('refTypeID', ['2', '71'])
+            ->orderBy('date', 'desc')
+            ->get();
+    }
+
+    /**
      * Return the Bountry Prize Payout dates for a Corporation.
      *
      * @param int $corporation_id
@@ -45,6 +81,24 @@ trait Ledger
             ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
             ->where('refTypeID', '85')
+            ->orderBy('date', 'desc')
+            ->get();
+    }
+
+    /**
+     * Return the Bountry Prize Payout dates for a Corporation.
+     *
+     * @param int $corporation_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerFeeDates(int $corporation_id): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+            ->where('corporationID', $corporation_id)
+            ->whereIn('refTypeID', ['56', '120', '80', '60', '13', '59', '57', '58'])
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -68,6 +122,87 @@ trait Ledger
                     ->orWhere('refTypeID', 97);
             })
             ->orderBy('date', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get a Corporations Buy for a specific year / month.
+     *
+     * @param int $corporation_id
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerBuyByMonth(int $corporation_id, int $year = null, int $month = null): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(
+                DB::raw(
+                    'MONTH(date) as month, YEAR(date) as year, ' .
+                    'ROUND(SUM(amount) * -1) as total, ownerName2, ownerID2, owner2TypeID'
+                ))
+            ->where('corporationID', $corporation_id)
+            ->whereIn('refTypeID', ['79', '42'])
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->groupBy('ownerID2')
+            ->orderBy(DB::raw('SUM(amount) * -1'), 'desc')
+            ->get();
+    }
+
+    /**
+     * Get a Corporations Sell for a specific year / month.
+     *
+     * @param int $corporation_id
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerSellByMonth(int $corporation_id, int $year = null, int $month = null): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(
+                DB::raw(
+                    'MONTH(date) as month, YEAR(date) as year, ' .
+                    'ROUND(SUM(amount)) as total, ownerName2, ownerID2, owner2TypeID'
+                ))
+            ->where('corporationID', $corporation_id)
+            ->whereIn('refTypeID', ['2', '71'])
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->groupBy('ownerID2')
+            ->orderBy(DB::raw('SUM(amount)'), 'desc')
+            ->get();
+    }
+
+    /**
+     * Get a Corporations Fees for a specific year / month.
+     *
+     * @param int $corporation_id
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerFeeByMonth(int $corporation_id, int $year = null, int $month = null): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(
+                DB::raw(
+                    'MONTH(date) as month, YEAR(date) as year, ' .
+                    'ROUND(SUM(amount) * -1) as total, ownerName2, ownerID2, owner2TypeID'
+                ))
+            ->where('corporationID', $corporation_id)
+            ->whereIn('refTypeID', ['56', '120', '80', '60', '13', '59', '57', '58'])
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->groupBy('ownerID2')
+            ->orderBy(DB::raw('SUM(amount) * -1'), 'desc')
             ->get();
     }
 
