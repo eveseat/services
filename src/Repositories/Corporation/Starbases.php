@@ -177,18 +177,18 @@ trait Starbases
             ->first();
 
         // When calculating *actual* silo capacity, we need
-        // to keep in mind that certain towers have bonusses
+        // to keep in mind that certain towers have bonuses
         // to silo cargo capacity, like amarr & gallente
         // towers do now. To calculate this, we will get the
         // siloCapacityBonus value from the starbase and add the
         // % capacity to actual modules that benefit from
-        // the bonusses.
+        // the bonuses.
         $cargo_types_with_bonus = [14343, 17982]; // Silo, Coupling Array
         $assetlist_locations = $this->getCorporationAssetByLocation($corporation_id);
         $module_contents = $this->getCorporationAssetContents($corporation_id);
 
         // Check if we know of *any* assets at the moon where this tower is.
-        if ($assetlist_locations->has($starbase->moonID)) {
+        if ($assetlist_locations != null && $assetlist_locations->has($starbase->moonID)) {
 
             // Set the 'modules' key for the starbase
             $starbase->modules = $assetlist_locations->get($starbase->moonID)
