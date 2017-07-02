@@ -59,7 +59,7 @@ class Eve
      * @var array
      */
     protected $known_types = [
-        'character', 'corporation', 'alliance', 'type', 'auto', ];
+        'character', 'corporation', 'alliance', 'type', 'render', 'auto', ];
 
     /**
      * @var string
