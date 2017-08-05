@@ -33,30 +33,102 @@ use Seat\Eveapi\Models\KillMail\Detail;
 trait Stats
 {
     /**
-     * @return mixed
+     * @return float
      */
-    public function getTotalCharacterIsk()
+    public function getTotalCharacterIsk() : float
     {
 
-        return CharacterSheet::sum('balance');
+        $user = auth()->user();
+
+        // if the user is super, return all balances
+        if ($user->hasSuperUser())
+            return CharacterSheet::sum('balance');
+
+        $characters = [];
+
+        // get affiliations and check which characterID granted its sheet access
+        $characters = $this->getUserGrantedEntityList('character.sheet');
+
+        // filter balance on granted characters
+        return CharacterSheet::whereIn('characterID', $characters)
+            ->sum('balance');
 
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getTotalCharacterSkillpoints()
+    public function getTotalCharacterSkillpoints() : int
     {
 
-        return CharacterSheetSkills::sum('skillpoints');
+        $user = auth()->user();
+
+        // if the user is super, return all balances
+        if ($user->hasSuperUser())
+            return CharacterSheetSkills::sum('skillpoints');
+
+        // get affiliations and check which characterID granted its sheet access
+        $characters = $this->getUserGrantedEntityList('character.sheet');
+
+        // filter skills on granted characters
+        return CharacterSheetSkills::whereIn('characterID', $characters)
+            ->sum('skillpoints');
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getTotalCharacterKillmails()
+    public function getTotalCharacterKillmails() : int
     {
 
-        return Detail::count('killID');
+        $user = auth()->user();
+
+        // if the user is super, return all balances
+        if ($user->hasSuperUser())
+            return Detail::count('killID');
+
+        // get affiliations and check which characterID granted its kill mails access
+        $characters = $this->getUserGrantedEntityList('character.killmails');
+
+        // get affiliations and check which corporationID granted its kill mails access
+        $corporations = $this->getUserGrantedEntityList('corporation.killmails', true);
+
+        // filter skills on granted characters
+        return Detail::whereIn('characterID', $characters)
+            ->orWhereIn('corporationID', $corporations)
+            ->count('killID');
+    }
+
+    /**
+     * @param string $permission The permission which should be checked
+     * @param bool $corporation True if the permission for which the check should be made is for corporation
+     * @return array An array of granted corporationID or characterID
+     */
+    private function getUserGrantedEntityList(string $permission, bool $corporation = false) : array
+    {
+        // a list of characterIDs or corporationIDs according to $corporation parameter
+        $entities = [];
+        // set default entity value to character
+        $entity = 'char';
+        $entityWildcard = 'character.*';
+
+        // switch entity value to corporation if required
+        if ($corporation)
+        {
+            $entity = 'corp';
+            $entityWildcard = 'corporation.*';
+        }
+
+        // get user affiliations
+        $affiliations = auth()->user()->getAffiliationMap();
+
+        // check which entity granted access for $permission parameter
+        foreach ($affiliations[$entity] as $entityID => $permissions)
+        {
+            if (in_array($entityWildcard, $permissions, true) || in_array($permission, $permissions, true))
+                $entities[] = $entityID;
+        }
+
+        return $entities;
     }
 }
