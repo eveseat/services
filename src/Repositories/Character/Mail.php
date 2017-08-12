@@ -43,28 +43,26 @@ trait Mail
 
         $user = auth()->user();
 
-        $messages = MailMessage::join(
-            'account_api_key_info_characters',
-            'character_mail_messages.characterID', '=',
-            'account_api_key_info_characters.characterID')
-            ->join(
-                'eve_api_keys',
-                'eve_api_keys.key_id', '=',
-                'account_api_key_info_characters.keyID');
+        $messages = MailMessage::select('messageID', 'senderID', 'characterID', 'senderName', 'title');
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
 
             $messages = $messages->where(function ($query) use ($user) {
 
-                // If the user has any affiliations and can
-                // list those characters, add them
-                if ($user->has('character.mail', false))
-                    $query = $query->whereIn('account_api_key_info_characters.characterID',
-                        array_keys($user->getAffiliationMap()['char']));
+                $characters = [];
 
-                // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
+                // get all user characters affiliation, including those whose are owned by himself
+                foreach ($user->getAffiliationMap()['char'] as $characterID => $permissions)
+                {
+                    // check for both character wildcard and character mail permission in order to grant the access
+                    if (in_array('character.*', $permissions, true) || in_array('character.mail', $permissions, true))
+                        $characters[] = $characterID;
+                }
+
+                // Add the collected characterID on previous task to mail records filter
+                $query->whereIn('characterID', $characters)
+                    ->orWhereIn('senderID', $characters);
             });
 
         }
