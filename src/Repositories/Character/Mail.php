@@ -53,10 +53,12 @@ trait Mail
                 $characters = [];
 
                 // get all user characters affiliation, including those whose are owned by himself
-                foreach ($user->getAffiliationMap()['char'] as $characterID => $permissions)
-                {
+                foreach ($user->getAffiliationMap()['char'] as $characterID => $permissions) {
+
                     // check for both character wildcard and character mail permission in order to grant the access
-                    if (in_array('character.*', $permissions, true) || in_array('character.mail', $permissions, true))
+                    if (in_array('character.*', $permissions, true) ||
+                        in_array('character.mail', $permissions, true)
+                    )
                         $characters[] = $characterID;
                 }
 
