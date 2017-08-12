@@ -35,7 +35,7 @@ trait Stats
     /**
      * @return float
      */
-    public function getTotalCharacterIsk() : float
+    public function getTotalCharacterIsk(): float
     {
 
         $user = auth()->user();
@@ -43,8 +43,6 @@ trait Stats
         // if the user is super, return all balances
         if ($user->hasSuperUser())
             return CharacterSheet::sum('balance');
-
-        $characters = [];
 
         // get affiliations and check which characterID granted its sheet access
         $characters = $this->getUserGrantedEntityList('character.sheet');
@@ -58,7 +56,7 @@ trait Stats
     /**
      * @return int
      */
-    public function getTotalCharacterSkillpoints() : int
+    public function getTotalCharacterSkillpoints(): int
     {
 
         $user = auth()->user();
@@ -78,7 +76,7 @@ trait Stats
     /**
      * @return int
      */
-    public function getTotalCharacterKillmails() : int
+    public function getTotalCharacterKillmails(): int
     {
 
         $user = auth()->user();
@@ -100,12 +98,14 @@ trait Stats
     }
 
     /**
-     * @param string $permission The permission which should be checked
-     * @param bool $corporation True if the permission for which the check should be made is for corporation
+     * @param string $permission  The permission which should be checked
+     * @param bool   $corporation True if the permission for which the check should be made is for corporation
+     *
      * @return array An array of granted corporationID or characterID
      */
-    private function getUserGrantedEntityList(string $permission, bool $corporation = false) : array
+    private function getUserGrantedEntityList(string $permission, bool $corporation = false): array
     {
+
         // a list of characterIDs or corporationIDs according to $corporation parameter
         $entities = [];
         // set default entity value to character
@@ -113,8 +113,7 @@ trait Stats
         $entityWildcard = 'character.*';
 
         // switch entity value to corporation if required
-        if ($corporation)
-        {
+        if ($corporation) {
             $entity = 'corp';
             $entityWildcard = 'corporation.*';
         }
@@ -123,9 +122,10 @@ trait Stats
         $affiliations = auth()->user()->getAffiliationMap();
 
         // check which entity granted access for $permission parameter
-        foreach ($affiliations[$entity] as $entityID => $permissions)
-        {
-            if (in_array($entityWildcard, $permissions, true) || in_array($permission, $permissions, true))
+        foreach ($affiliations[$entity] as $entityID => $permissions) {
+
+            if (in_array($entityWildcard, $permissions, true) ||
+                in_array($permission, $permissions, true))
                 $entities[] = $entityID;
         }
 
