@@ -72,6 +72,47 @@ trait Ledger
     }
 
     /**
+     * Return the Mission Tax dates for a Corporation.
+     *
+     * @param int $corporation_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerMissionDates(int $corporation_id): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+            ->where('corporationID', $corporation_id)
+            ->where(function ($query) {
+
+                $query->where('refTypeID', 33)
+                    ->orWhere('refTypeID', 34);
+            })
+            ->orderBy('date', 'desc')
+            ->get();
+    }
+
+    /**
+     * Return the Incursion Tax dates for a Corporation.
+     *
+     * @param int $corporation_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerIncursionDates(int $corporation_id): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+            ->where('corporationID', $corporation_id)
+            ->where('ownerName1', "CONCORD")
+            ->where('refTypeID', 99)
+            ->orderBy('date', 'desc')
+            ->get();
+    }
+
+    /**
      * Get a Corporations Bounty Prizes for a specific year / month.
      *
      * @param int $corporation_id
@@ -133,4 +174,73 @@ trait Ledger
             ->get();
 
     }
+
+    /**
+     * Get a Corporations Mission Taxes for a specific year / month.
+     *
+     * @param int $corporation_id
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerMissionTotalsByMonth(int $corporation_id,
+                                                        int $year = null,
+                                                        int $month = null): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(
+                DB::raw(
+                    'MONTH(date) as month, YEAR(date) as year, ' .
+                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
+                ))
+            ->where('corporationID', $corporation_id)
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->where(function ($query) {
+
+                $query->where('refTypeID', 33)
+                    ->orWhere('refTypeID', 34);
+            })
+            ->groupBy('ownerName1')
+            ->orderBy(DB::raw('SUM(amount)'), 'desc')
+            ->get();
+
+    }
+
+    /**
+     * Get a Corporations Incursion Taxes for a specific year / month.
+     *
+     * @param int $corporation_id
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerIncursionTotalsByMonth(int $corporation_id,
+                                                        int $year = null,
+                                                        int $month = null): Collection
+    {
+
+        return DB::table('corporation_wallet_journals')
+            ->select(
+                DB::raw(
+                    'MONTH(date) as month, YEAR(date) as year, ' .
+                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
+                ))
+            ->where('corporationID', $corporation_id)
+            ->where('ownerName1', "CONCORD")
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->where(function ($query) {
+
+                $query->where('refTypeID', 99);
+            })
+            ->groupBy('ownerName1')
+            ->orderBy(DB::raw('SUM(amount)'), 'desc')
+            ->get();
+
+    }
 }
+
