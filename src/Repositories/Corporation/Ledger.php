@@ -106,7 +106,7 @@ trait Ledger
         return DB::table('corporation_wallet_journals')
             ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
-            ->where('ownerName1', 'CONCORD')
+            ->where('ownerName1', "CONCORD")
             ->where('refTypeID', 99)
             ->orderBy('date', 'desc')
             ->get();
@@ -126,19 +126,9 @@ trait Ledger
                                                            int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName2, ownerID2'
-                ))
-            ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '85')
-            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->groupBy('ownerName2')
-            ->orderBy(DB::raw('SUM(amount)'), 'desc')
-            ->get();
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
+            2,  array('85'), array());
+
     }
 
     /**
@@ -155,23 +145,8 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
-                ))
-            ->where('corporationID', $corporation_id)
-            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where(function ($query) {
-
-                $query->where('refTypeID', 96)
-                    ->orWhere('refTypeID', 97);
-            })
-            ->groupBy('ownerName1')
-            ->orderBy(DB::raw('SUM(amount)'), 'desc')
-            ->get();
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
+            1,  array('96', '97'), array());
 
     }
 
@@ -189,23 +164,8 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
-                ))
-            ->where('corporationID', $corporation_id)
-            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where(function ($query) {
-
-                $query->where('refTypeID', 33)
-                    ->orWhere('refTypeID', 34);
-            })
-            ->groupBy('ownerName1')
-            ->orderBy(DB::raw('SUM(amount)'), 'desc')
-            ->get();
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
+            2,  array('33', '34'), array());
 
     }
 
@@ -223,23 +183,61 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
+            2,  array('99'), array('ownerName1' => 'CONCORD'));
+
+    }
+
+    /**
+     * Get a Corporations Incursion Taxes for a specific year / month.
+     *
+     * @param int $corporation_id
+     * @param int $year
+     * @param int $month
+     * @param int $oid
+     * @param array $refTypes
+     * @param array $addWhere
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerTotalsByMonth(int $corporation_id,
+                                                        int $year = null,
+                                                        int $month = null,
+                                                        int $oid = 2,
+                                                        array $ref_types,
+							array $add_where): Collection
+    {
+
+        $select = 'MONTH(date) as month, YEAR(date) as year, ROUND(SUM(amount)) as total, ';
+	$select .= 'ownerName' . $oid . ', ownerID' . $oid;
+
+	$query = DB::table('corporation_wallet_journals')
             ->select(
                 DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
+                    $select 
                 ))
             ->where('corporationID', $corporation_id)
-            ->where('ownerName1', 'CONCORD')
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where(function ($query) {
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'));
 
-                $query->where('refTypeID', 99);
-            })
-            ->groupBy('ownerName1')
-            ->orderBy(DB::raw('SUM(amount)'), 'desc')
-            ->get();
+            if (count($add_where) > 0) {
+                foreach ($add_where as $key => $value) {
+	                $query->where($key, $value);
+	        }
+            }
+            if (count($ref_types) > 0) {
+                $query->where(function ($query) use ($ref_types) {
+                    $query->where('refTypeID', array_shift($ref_types));
+                    foreach ($ref_types as $value) { 
+                        $query->orwhere('refTypeID', $value);
+                    }
+                });
+            }
+
+        $query->groupBy('ownerName'.$oid)
+        ->orderBy(DB::raw('SUM(amount)'), 'desc');
+
+        return $query->get();
 
     }
 }
