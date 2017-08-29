@@ -106,7 +106,7 @@ trait Ledger
         return DB::table('corporation_wallet_journals')
             ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
-            ->where('ownerName1', "CONCORD")
+            ->where('ownerName1', 'CONCORD')
             ->where('refTypeID', 99)
             ->orderBy('date', 'desc')
             ->get();
@@ -127,7 +127,7 @@ trait Ledger
     {
 
         return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            2,  array('85'), array());
+            2,  ['85'], []);
 
     }
 
@@ -146,7 +146,7 @@ trait Ledger
     {
 
         return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            1,  array('96', '97'), array());
+            1,  ['96', '97'], []);
 
     }
 
@@ -165,7 +165,7 @@ trait Ledger
     {
 
         return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            2,  array('33', '34'), array());
+            2,  ['33', '34'], []);
 
     }
 
@@ -184,7 +184,7 @@ trait Ledger
     {
 
         return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            2,  array('99'), array('ownerName1' => 'CONCORD'));
+            2,  ['99'], ['ownerName1' => 'CONCORD']);
 
     }
 
@@ -205,16 +205,16 @@ trait Ledger
                                                         int $month = null,
                                                         int $oid = 2,
                                                         array $ref_types,
-							array $add_where): Collection
+                                                        array $add_where): Collection
     {
 
         $select = 'MONTH(date) as month, YEAR(date) as year, ROUND(SUM(amount)) as total, ';
-	$select .= 'ownerName' . $oid . ', ownerID' . $oid;
+        $select .= 'ownerName' . $oid . ', ownerID' . $oid;
 
-	$query = DB::table('corporation_wallet_journals')
+        $query = DB::table('corporation_wallet_journals')
             ->select(
                 DB::raw(
-                    $select 
+                    $select
                 ))
             ->where('corporationID', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
@@ -222,19 +222,19 @@ trait Ledger
 
             if (count($add_where) > 0) {
                 foreach ($add_where as $key => $value) {
-	                $query->where($key, $value);
-	        }
+                    $query->where($key, $value);
+                }
             }
             if (count($ref_types) > 0) {
                 $query->where(function ($query) use ($ref_types) {
                     $query->where('refTypeID', array_shift($ref_types));
-                    foreach ($ref_types as $value) { 
+                    foreach ($ref_types as $value) {
                         $query->orwhere('refTypeID', $value);
                     }
                 });
             }
 
-        $query->groupBy('ownerName'.$oid)
+        $query->groupBy('ownerName' . $oid)
         ->orderBy(DB::raw('SUM(amount)'), 'desc');
 
         return $query->get();
