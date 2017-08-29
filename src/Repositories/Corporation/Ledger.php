@@ -126,8 +126,8 @@ trait Ledger
                                                            int $month = null): Collection
     {
 
-        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            2,  ['85'], []);
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month,
+            2, ['85'], []);
 
     }
 
@@ -145,8 +145,8 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            1,  ['96', '97'], []);
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month,
+            1, ['96', '97'], []);
 
     }
 
@@ -164,8 +164,8 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            2,  ['33', '34'], []);
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month,
+            2, ['33', '34'], []);
 
     }
 
@@ -183,8 +183,8 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month, 
-            2,  ['99'], ['ownerName1' => 'CONCORD']);
+        return $this->getCorporationLedgerTotalsByMonth($corporation_id, $year, $month,
+            2, ['99'], ['ownerName1' => 'CONCORD']);
 
     }
 
