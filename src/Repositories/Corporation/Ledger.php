@@ -194,7 +194,7 @@ trait Ledger
      * @param int $corporation_id
      * @param int $year
      * @param int $month
-     * @param int $oid
+     * @param int $owner_id_selection
      * @param array $refTypes
      * @param array $addWhere
      *
@@ -203,23 +203,27 @@ trait Ledger
     public function getCorporationLedgerTotalsByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null,
-                                                        int $oid = 2,
+                                                        int $owner_id_selection = 2,
                                                         array $ref_types,
                                                         array $add_where): Collection
     {
 
-        $select = 'MONTH(date) as month, YEAR(date) as year, ROUND(SUM(amount)) as total, ';
-        $select .= 'ownerName' . $oid . ', ownerID' . $oid;
-
         $query = DB::table('corporation_wallet_journals')
             ->select(
                 DB::raw(
-                    $select
+                    'MONTH(date) as month, YEAR(date) as year, ROUND(SUM(amount)) as total'
                 ))
             ->where('corporationID', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'));
 
+            if ($owner_id_selection == 1) {
+                $query->addSelect('ownerName1');
+                $query->addSelect('ownerID1');
+            } else {
+                $query->addSelect('ownerName2');
+                $query->addSelect('ownerID2');
+            }
             if (count($add_where) > 0) {
                 foreach ($add_where as $key => $value) {
                     $query->where($key, $value);
@@ -234,7 +238,7 @@ trait Ledger
                 });
             }
 
-        $query->groupBy('ownerName' . $oid)
+        $query->groupBy('ownerName' . $owner_id_selection)
         ->orderBy(DB::raw('SUM(amount)'), 'desc');
 
         return $query->get();
