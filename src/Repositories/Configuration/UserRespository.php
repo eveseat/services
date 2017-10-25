@@ -81,9 +81,8 @@ trait UserRespository
     {
 
         $user = $this->getUser($user_id);
-        $user->active = $user->active == false ? true : false;
+        $user->account_status = $user->account_active() == false ? true : false;
         $user->save();
-
     }
 
     /**
