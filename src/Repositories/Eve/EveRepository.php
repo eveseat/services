@@ -24,7 +24,7 @@ namespace Seat\Services\Repositories\Eve;
 
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Eve\RefTypes;
-use Seat\Eveapi\Models\Server\ServerStatus;
+use Seat\Eveapi\Models\Status\ServerStatus;
 
 /**
  * Class EveRepository.
@@ -107,8 +107,7 @@ trait EveRepository
     public function getEveLastServerStatus()
     {
 
-        return ServerStatus::orderBy('created_at', 'desc')
-            ->first();
+        return ServerStatus::latest()->first();
     }
 
     /**

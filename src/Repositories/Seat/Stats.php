@@ -22,9 +22,12 @@
 
 namespace Seat\Services\Repositories\Seat;
 
+use Seat\Eveapi\Models\Character\CharacterInfoSkill;
 use Seat\Eveapi\Models\Character\CharacterSheet;
 use Seat\Eveapi\Models\Character\CharacterSheetSkills;
 use Seat\Eveapi\Models\KillMail\Detail;
+use Seat\Eveapi\Models\Killmails\CharacterKillmail;
+use Seat\Eveapi\Models\Wallet\CharacterWalletBalance;
 
 /**
  * Class Stats.
@@ -34,67 +37,41 @@ trait Stats
 {
     /**
      * @return float
+     * @throws \Seat\Services\Exceptions\SettingException
      */
-    public function getTotalCharacterIsk(): float
+    public function getTotalCharacterIsk(): ?float
     {
-
-        $user = auth()->user();
-
-        // if the user is super, return all balances
-        if ($user->hasSuperUser())
-            return CharacterSheet::sum('balance');
-
-        // get affiliations and check which characterID granted its sheet access
-        $characters = $this->getUserGrantedEntityList('character.sheet');
 
         // filter balance on granted characters
-        return CharacterSheet::whereIn('characterID', $characters)
-            ->sum('balance');
+        if ($balance = CharacterWalletBalance::find(setting('main_character_id')))
+            return $balance->balance;
 
+        return null;
     }
 
     /**
      * @return int
+     * @throws \Seat\Services\Exceptions\SettingException
      */
-    public function getTotalCharacterSkillpoints(): int
+    public function getTotalCharacterSkillpoints(): ?int
     {
 
-        $user = auth()->user();
-
-        // if the user is super, return all balances
-        if ($user->hasSuperUser())
-            return CharacterSheetSkills::sum('skillpoints');
-
-        // get affiliations and check which characterID granted its sheet access
-        $characters = $this->getUserGrantedEntityList('character.sheet');
-
         // filter skills on granted characters
-        return CharacterSheetSkills::whereIn('characterID', $characters)
-            ->sum('skillpoints');
+        if ($skills = CharacterInfoSkill::find(setting('main_character_id')))
+            return $skills->total_sp;
+
+        return null;
     }
 
     /**
      * @return int
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function getTotalCharacterKillmails(): int
     {
 
-        $user = auth()->user();
-
-        // if the user is super, return all balances
-        if ($user->hasSuperUser())
-            return Detail::count('killID');
-
-        // get affiliations and check which characterID granted its kill mails access
-        $characters = $this->getUserGrantedEntityList('character.killmails');
-
-        // get affiliations and check which corporationID granted its kill mails access
-        $corporations = $this->getUserGrantedEntityList('corporation.killmails', true);
-
-        // filter skills on granted characters
-        return Detail::whereIn('characterID', $characters)
-            ->orWhereIn('corporationID', $corporations)
-            ->count('killID');
+        return CharacterKillmail::where('character_id', setting('main_character_id'))
+            ->count();
     }
 
     /**
