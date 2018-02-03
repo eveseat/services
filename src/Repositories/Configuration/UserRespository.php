@@ -22,7 +22,8 @@
 
 namespace Seat\Services\Repositories\Configuration;
 
-use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
+use Illuminate\Support\Collection;
+use Seat\Web\Models\User;
 use Seat\Web\Models\User as UserModel;
 
 /**
@@ -58,7 +59,7 @@ trait UserRespository
     public function getFullUser($user_id)
     {
 
-        return UserModel::with('roles.permissions', 'affiliations', 'keys')
+        return UserModel::with('roles.permissions', 'affiliations')
             ->where('id', $user_id)
             ->first();
     }
@@ -98,18 +99,18 @@ trait UserRespository
     }
 
     /**
-     * @param $user_id
+     * Return the characters that are part of a group.
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @param \Illuminate\Support\Collection $groups
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getUserCharacters($user_id)
+    public function getUserGroupCharacters(Collection $groups): Collection
     {
 
-        return ApiKeyInfoCharacters::with('key')
-            ->whereHas('key', function ($query) use ($user_id) {
+        return User::whereHas('groups', function ($query) use ($groups) {
 
-                $query->where('user_id', $user_id);
-            })
-            ->get();
+            $query->whereIn('id', $groups->pluck('id'));
+        })->get();
     }
 }
