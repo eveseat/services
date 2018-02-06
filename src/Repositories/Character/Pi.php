@@ -42,6 +42,9 @@ trait Pi
     {
 
         return CharacterPlanet::where('character_id', $character_id)
+            ->join('mapDenormalize as system', 'system.itemID', '=', 'solar_system_id')
+            ->join('mapDenormalize as planet', 'planet.itemID', '=', 'planet_id')
+            ->select('character_planets.*', 'system.itemName', 'planet.typeID')
             ->get();
     }
 }
