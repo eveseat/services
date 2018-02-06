@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\Research as ResearchModel;
+use Seat\Eveapi\Models\Character\CharacterAgentResearch;
 
 /**
  * Class Research.
@@ -41,15 +41,15 @@ trait Research
     public function getCharacterResearchAgents(int $character_id): Collection
     {
 
-        return ResearchModel::join(
+        return CharacterAgentResearch::join(
             'invNames',
-            'character_researches.agentID', '=',
+            'character_agent_researches.agent_id', '=',
             'invNames.itemID')
             ->join(
                 'invTypes',
-                'character_researches.skillTypeID', '=',
+                'character_researches.skill_type_id', '=',
                 'invTypes.typeID')
-            ->where('characterID', $character_id)
+            ->where('character_id', $character_id)
             ->get();
     }
 }

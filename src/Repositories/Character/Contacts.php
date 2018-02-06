@@ -23,8 +23,8 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\ContactList;
-use Seat\Eveapi\Models\Character\ContactListLabel;
+use Seat\Eveapi\Models\Contacts\CharacterContact;
+use Seat\Eveapi\Models\Contacts\CharacterContactLabel;
 
 trait Contacts
 {
@@ -38,11 +38,7 @@ trait Contacts
     public function getCharacterContacts(int $character_id): Collection
     {
 
-        return ContactList::where('characterID', $character_id)
-            ->join('invTypes', function ($join) {
-
-                $join->on('invTypes.typeID', '=', 'character_contact_lists.contactTypeID');
-            })
+        return CharacterContact::where('character_id', $character_id)
             ->orderBy('standing', 'desc')
             ->get();
     }
@@ -57,7 +53,7 @@ trait Contacts
     public function getCharacterContactLabels(int $character_id): Collection
     {
 
-        return ContactListLabel::where('characterID', $character_id)
+        return CharacterContactLabel::where('character_id', $character_id)
             ->get();
     }
 }

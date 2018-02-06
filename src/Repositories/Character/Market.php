@@ -43,7 +43,7 @@ trait Market
         int $character_id, bool $get = true, int $chunk = 200)
     {
 
-        $market = DB::table(DB::raw('character_market_orders as a'))
+        $market = DB::table(DB::raw('character_orders as a'))
             ->select(DB::raw(
                 '
                 --
@@ -55,36 +55,36 @@ trait Market
                 -- Start stationName Lookup
                 --
                 CASE
-                when a.stationID BETWEEN 66015148 AND 66015151 then
+                when a.location_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID-6000000)
-                when a.stationID BETWEEN 66000000 AND 66014933 then
+                      WHERE s.stationID = a.location_id-6000000)
+                when a.location_id BETWEEN 66000000 AND 66014933 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID-6000001)
-                when a.stationID BETWEEN 66014934 AND 67999999 then
+                      WHERE s.stationID = a.location_id-6000001)
+                when a.location_id BETWEEN 66014934 AND 67999999 then
                     (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID-6000000)
-                when a.stationID BETWEEN 60014861 AND 60014928 then
+                      WHERE c.stationID = a.location_id-6000000)
+                when a.location_id BETWEEN 60014861 AND 60014928 then
                     (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID)
-                when a.stationID BETWEEN 60000000 AND 61000000 then
+                      WHERE c.stationID = a.location_id)
+                when a.location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID)
-                when a.stationID >= 61000000 then
+                      WHERE s.stationID = a.location_id)
+                when a.location_id >= 61000000 then
                     (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID)
+                      WHERE c.stationID = a.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                    WHERE m.itemID = a.stationID) end
+                    WHERE m.itemID = a.location_id) end
                     AS stationName'))
             ->join(
                 'invTypes',
-                'a.typeID', '=',
+                'a.type_id', '=',
                 'invTypes.typeID')
             ->join(
                 'invGroups',
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
-            ->where('a.charID', $character_id);
+            ->where('a.character_id', $character_id);
 
         if ($get)
             return $market->orderBy('a.issued', 'desc')

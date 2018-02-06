@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\UpcomingCalendarEvent;
+use Seat\Eveapi\Models\Calendar\CharacterCalendarEvent;
 
 /**
  * Class Calendar.
@@ -41,7 +41,8 @@ trait Calendar
     public function getCharacterUpcomingCalendarEvents(int $character_id): Collection
     {
 
-        return UpcomingCalendarEvent::where('characterID', $character_id)
+        return CharacterCalendarEvent::where('character_id', $character_id)
+            ->whereDate('event_date', '>', carbon()->toDateTimeString())
             ->get();
     }
 }

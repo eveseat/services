@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\CharacterSheetImplants;
+use Seat\Eveapi\Models\Clones\CharacterImplant;
 
 /**
  * Class Implants.
@@ -41,7 +41,7 @@ trait Implants
     public function getCharacterImplants(int $character_id): Collection
     {
 
-        return CharacterSheetImplants::where('characterID', $character_id)
+        return CharacterImplant::where('character_id', $character_id)
             ->get();
     }
 }
