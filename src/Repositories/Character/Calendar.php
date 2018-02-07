@@ -41,7 +41,8 @@ trait Calendar
     public function getCharacterUpcomingCalendarEvents(int $character_id): Collection
     {
 
-        return CharacterCalendarEvent::where('character_id', $character_id)
+        return CharacterCalendarEvent::with('detail', 'attendees')
+            ->where('character_id', $character_id)
             ->whereDate('event_date', '>', carbon()->toDateTimeString())
             ->get();
     }
