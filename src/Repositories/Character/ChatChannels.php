@@ -44,7 +44,7 @@ trait ChatChannels
         return CharacterChatChannel::join('character_chat_channel_infos',
             'character_chat_channel_infos.channel_id',
             '=',
-            'character_chat_channel.channel_id')
+            'character_chat_channels.channel_id')
             ->join('character_chat_channel_members',
                 'character_chat_channel_members.channel_id',
                 '=',
