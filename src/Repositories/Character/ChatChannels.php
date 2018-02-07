@@ -41,17 +41,8 @@ trait ChatChannels
     public function getCharacterChatChannelsFull(int $character_id): Collection
     {
 
-        return CharacterChatChannel::join('character_chat_channel_infos',
-            'character_chat_channel_infos.channel_id',
-            '=',
-            'character_chat_channels.channel_id')
-            ->join('character_chat_channel_members',
-                'character_chat_channel_members.channel_id',
-                '=',
-                'character_chat_channels.channel_id')
-            ->where('owner_id', $character_id)
+        return CharacterChatChannel::with('info', 'members')
             ->orWhere('character_id', $character_id)
-            ->orWhere('accessor_id', $character_id)
             ->get();
     }
 }
