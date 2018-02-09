@@ -81,11 +81,9 @@ trait Mail
      * @param int  $character_id
      * @param bool $get
      * @param int  $chunk
-     *
-     * @return \Illuminate\Support\Collection
      */
     public function getCharacterMail(
-        int $character_id, bool $get = true, int $chunk = 50) : Collection
+        int $character_id, bool $get = true, int $chunk = 50)
     {
 
         $mail = MailHeader::join('mail_bodies', 'mail_bodies.mail_id', '=', 'mail_headers.mail_id')
