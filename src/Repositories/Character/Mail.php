@@ -86,7 +86,7 @@ trait Mail
         int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        $mail = MailHeader::join('mail_bodies', 'mail_bodies.mail_id', '=', 'mail_headers.mail_id')
+        $mail = MailHeader::with('body', 'recipients')
                           ->where('character_id', $character_id);
 
         if ($get)
@@ -94,7 +94,7 @@ trait Mail
                 ->orderBy('timestamp', 'desc')
                 ->get();
 
-        return $mail;
+        return $mail->groupBy('mail_id');
     }
 
     /**
@@ -108,9 +108,8 @@ trait Mail
     public function getCharacterMailMessage(int $character_id, int $message_id)
     {
 
-        return MailHeader::join('mail_bodies', 'mail_bodies.mail_id', '=', 'mail_headers.mail_id')
-            ->where('characterI_id', $character_id)
-            ->where('mail_headers.mail_id', $message_id)
+        return MailHeader::where('character_id', $character_id)
+            ->where('mail_id', $message_id)
             ->orderBy('timestamp', 'desc')
             ->first();
     }
