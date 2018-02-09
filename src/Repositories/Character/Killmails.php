@@ -61,7 +61,7 @@ trait Killmails
                 'killmail_victims.ship_type_id', '=',
                 'invTypes.typeID')
             ->leftJoin('mapDenormalize',
-                'kill_mail_details.solar_system_id', '=',
+                'killmail_details.solar_system_id', '=',
                 'mapDenormalize.itemID')
             ->where('character_killmails.character_id', $character_id);
 
