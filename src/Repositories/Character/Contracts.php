@@ -64,17 +64,20 @@ trait Contracts
                     (SELECT s.stationName FROM start_location_id AS s
                       WHERE s.stationID = a.start_location_id-6000001)
                 when a.start_location_id BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.start_location_id-6000000)
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.start_location_id-6000000)
                 when a.start_location_id BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.start_location_id)
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.start_location_id)
                 when a.start_location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
                       WHERE s.stationID = a.start_location_id)
                 when a.start_location_id >= 61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.start_location_id)
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.start_location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID = a.start_location_id) end
                 AS startlocation,
@@ -90,17 +93,20 @@ trait Contracts
                     (SELECT s.stationName FROM staStations AS s
                       WHERE s.stationID = a.end_location_id-6000001)
                 when a.end_location_id BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.end_location_id-6000000)
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.end_location_id-6000000)
                 when a.end_location_id BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.end_location_id)
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.end_location_id)
                 when a.end_location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
                       WHERE s.stationID = a.end_location_id)
                 when a.end_location_id >= 61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.end_location_id)
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.end_location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID = a.endStationID) end
                 AS endlocation '))
