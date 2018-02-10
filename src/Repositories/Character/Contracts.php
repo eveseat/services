@@ -61,7 +61,7 @@ trait Contracts
                     (SELECT s.stationName FROM staStations AS s
                       WHERE s.stationID = a.start_location_id-6000000)
                 when a.start_location_id BETWEEN 66000000 AND 66014933 then
-                    (SELECT s.stationName FROM start_location_id AS s
+                    (SELECT s.stationName FROM staStations AS s
                       WHERE s.stationID = a.start_location_id-6000001)
                 when a.start_location_id BETWEEN 66014934 AND 67999999 then
                     (SELECT d.name FROM `sovereignty_structures` AS c
@@ -108,7 +108,7 @@ trait Contracts
                       JOIN universe_stations d ON c.structure_id = d.station_id
                       WHERE c.structure_id = a.end_location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                    WHERE m.itemID = a.endStationID) end
+                    WHERE m.itemID = a.end_location_id) end
                 AS endlocation '))
             ->join('character_contracts', 'character_contracts.contract_id', '=', 'a.contract_id')
             ->where('character_contracts.character_id', $character_id);
@@ -136,9 +136,9 @@ trait Contracts
             ->join('invGroups',
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
-            ->join('character_contracts', 'character_contracts.contract_id', '=', 'contracts_items.contract_id')
+            ->join('character_contracts', 'character_contracts.contract_id', '=', 'contract_items.contract_id')
             ->where('character_id', $character_id)
-            ->where('contract_id', $contract_id)
+            ->where('character_contracts.contract_id', $contract_id)
             ->get();
 
     }
