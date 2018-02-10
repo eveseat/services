@@ -47,7 +47,7 @@ trait Research
             'invNames.itemID')
             ->join(
                 'invTypes',
-                'character_researches.skill_type_id', '=',
+                'character_agent_researches.skill_type_id', '=',
                 'invTypes.typeID')
             ->where('character_id', $character_id)
             ->get();
