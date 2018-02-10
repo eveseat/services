@@ -43,7 +43,10 @@ trait Industry
 
         $industry = DB::table('character_industry_jobs as a')
             ->select(DB::raw('
-                *,
+                a.*,
+                ramActivities.*,
+                blueprintType.typeName as blueprintTypeName,
+                productType.typeName as productTypeName,
 
                 --
                 -- Start Facility Name Lookup
@@ -77,6 +80,16 @@ trait Industry
                 'ramActivities',
                 'ramActivities.activityID', '=',
                 'a.activity_id')// character_industry_jobs aliased to a
+            ->join(
+                'invTypes as blueprintType',
+                'blueprintType.typeID', '=',
+                'a.blueprint_type_id'
+            )
+            ->join(
+                'invTypes as productType',
+                'productType.typeID', '=',
+                'a.product_type_id'
+            )
             ->where('a.character_id', $character_id);
 
         if ($get)
