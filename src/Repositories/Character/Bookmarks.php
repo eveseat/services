@@ -41,7 +41,7 @@ trait Bookmarks
     public function getCharacterBookmarks(int $character_id): Collection
     {
 
-        return CharacterBookmark::where('character_id', $character_id)
+        return CharacterBookmark::with('folder')->where('character_id', $character_id)
             ->get();
     }
 }
