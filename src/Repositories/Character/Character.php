@@ -69,18 +69,21 @@ trait Character
         })->flatten()->toArray();
 
         // Start the character information query
-        $characters = CharacterInfo::whereIn('character_id', $user_character_ids);
+        $characters = new CharacterInfo;
 
-        // If the user is a super user, return all
+        // If the user is not a super user, return only the characters the
+        // user has access to.
         if (! $user->hasSuperUser()) {
 
-            $characters = $characters->where(function ($query) use ($user) {
+            $characters = $characters->where(function ($query) use ($user, $user_character_ids) {
 
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.list', false))
                     $query->orWhereIn('character_id',
                         array_keys($user->getAffiliationMap()['char']));
+
+                $query->orWhereIn('character_id', $user_character_ids);
             });
 
         }
