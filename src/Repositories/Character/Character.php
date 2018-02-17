@@ -46,8 +46,6 @@ trait Character
      *
      * @param bool $get
      *
-     * @deprecated replace by new ACL system. Must be move to ACL trait
-     *
      * @return $this|\Illuminate\Database\Eloquent\Collection|static[]
      */
     public function getAllCharactersWithAffiliations(bool $get = true): Collection
@@ -59,20 +57,19 @@ trait Character
         // checks
         $user = auth()->user();
 
-        $characters = ApiKeyInfoCharacters::with('key', 'key.owner', 'key_info')
-            ->join(
-                'account_api_key_infos',
-                'account_api_key_infos.keyID', '=',
-                'account_api_key_info_characters.keyID')
-            ->join(
-                'eve_api_keys',
-                'eve_api_keys.key_id', '=',
-                'account_api_key_info_characters.keyID')
-            ->join(
-                'eve_character_infos',
-                'eve_character_infos.characterID', '=',
-                'account_api_key_info_characters.characterID')
-            ->where('account_api_key_infos.type', '!=', 'Corporation');
+        // Which characters does the currently logged in user have?
+        // This query gets the currenty logged in users groups, then
+        // iterates each group that it is a member of and enumerates
+        // the users in that group. Finally, we pluck the 'id' for
+        // the user as that is also the character_id used to in eve.
+        $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
+
+            return $group->users->pluck('id');
+
+        })->flatten()->toArray();
+
+        // Start the character information query
+        $characters = CharacterInfo::whereIn('character_id', $user_character_ids);
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
@@ -82,11 +79,8 @@ trait Character
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.list', false))
-                    $query = $query->whereIn('character_id',
+                    return $query = $query->orWhereIn('character_id',
                         array_keys($user->getAffiliationMap()['char']));
-
-                // Add any characters from owner API keys
-                $query->orWhere('character_id', $user->id);
             });
 
         }
