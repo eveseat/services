@@ -48,8 +48,13 @@ class ServicesServiceProvider extends ServiceProvider
 
                     if ($char === '?') {
 
-                        $full_query = $full_query . '"' .
-                            $query->bindings[$positional] . '"';
+                        $value = $query->bindings[$positional];
+
+                        if (is_scalar($value))
+                            $full_query = $full_query . '"' . $value . '"';
+                        else
+                            $full_query = $full_query . '[' . gettype($value) . ']';
+
                         $positional++;
 
                     } else {
