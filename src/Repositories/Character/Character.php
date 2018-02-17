@@ -23,8 +23,8 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Account\AccountStatus;
 use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
+use Seat\Eveapi\Models\Character\CharacterInfo;
 
 /**
  * Class Character.
@@ -38,7 +38,7 @@ trait Character
     public function getAllCharacters(): Collection
     {
 
-        return ApiKeyInfoCharacters::all();
+        return CharacterInfo::all();
     }
 
     /**
@@ -46,11 +46,14 @@ trait Character
      * permissions and affiliations in mind.
      *
      * @param bool $get
+     * @deprecated replace by new ACL system. Must be move to ACL trait
      *
      * @return $this|\Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function getAllCharactersWithAffiliations(bool $get = true)
+    public function getAllCharactersWithAffiliations(bool $get = true) : Collection
     {
+
+        // TODO : rewrite the method according to the new ACL mechanic
 
         // Get the User for permissions and affiliation
         // checks
@@ -79,19 +82,18 @@ trait Character
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.list', false))
-                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                    $query = $query->whereIn('character_id',
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
+                $query->orWhere('character_id', $user->id);
             });
 
         }
 
         if ($get)
             return $characters
-                ->groupBy('account_api_key_info_characters.characterID')
-                ->orderBy('account_api_key_info_characters.characterName')
+                ->orderBy('name')
                 ->get();
 
         return $characters;
@@ -108,34 +110,34 @@ trait Character
 
         $user = auth()->user();
 
-        $corporations = ApiKeyInfoCharacters::join(
-            'eve_api_keys',
-            'eve_api_keys.key_id', '=',
-            'account_api_key_info_characters.keyID')
-            ->join(
-                'eve_character_infos',
-                'eve_character_infos.characterID', '=',
-                'account_api_key_info_characters.characterID')
-            ->distinct();
+        $alliances = CharacterInfo::join(
+            'alliance_members',
+            'alliance_members.corporation_id',
+            'character_infos.corporation_id')
+        ->join(
+            'alliances',
+            'alliances.alliance_id',
+            'alliance_members.alliance_id')
+        ->distinct();
 
         // If the user us a super user, return all
         if (! $user->hasSuperUser()) {
 
-            $corporations = $corporations->orWhere(function ($query) use ($user) {
+            $alliances = $alliances->orWhere(function ($query) use ($user) {
 
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.list', false))
-                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                    $query = $query->whereIn('character_id',
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
+                $query->orWhere('character_id', $user->id);
             });
         }
 
-        return $corporations->orderBy('corporationName')
-            ->pluck('eve_character_infos.alliance')
+        return $alliances->orderBy('alliances.name')
+            ->pluck('alliances.name')
             ->filter(function ($item) {
 
                 // Filter out the null alliance name
@@ -148,10 +150,14 @@ trait Character
      * Get a list of corporations the current
      * authenticated user has access to.
      *
+     * @deprecated replace by new ACL system. Must be move to ACL trait
+     *
      * @return mixed
      */
     public function getCharacterCorporations()
     {
+
+        // TODO : rewrite the method according to the new ACL mechanic
 
         $user = auth()->user();
 
@@ -179,42 +185,5 @@ trait Character
 
         return $corporations->orderBy('corporationName')
             ->pluck('corporationName');
-    }
-
-    /**
-     * Return the Account Status information for a specific
-     * character.
-     *
-     * @param $character_id
-     */
-    public function getCharacterAccountInfo($character_id)
-    {
-
-        $key_info = ApiKeyInfoCharacters::where('characterID', $character_id)
-            ->leftJoin(
-                'account_api_key_infos',
-                'account_api_key_infos.keyID', '=',
-                'account_api_key_info_characters.keyID')
-            ->where('account_api_key_infos.type', '!=', 'Corporation')
-            ->first();
-
-        if ($key_info)
-            return AccountStatus::find($key_info->keyID);
-
-    }
-
-    /**
-     * Returns the characters on a API Key.
-     *
-     * @param $key_id
-     *
-     * @return mixed
-     */
-    public function getCharactersOnApiKey($key_id)
-    {
-
-        return ApiKeyInfoCharacters::where('keyID', $key_id)
-            ->get();
-
     }
 }

@@ -22,8 +22,8 @@
 
 namespace Seat\Services\Repositories\Character;
 
-use Seat\Eveapi\Models\Character\WalletJournal;
-use Seat\Eveapi\Models\Character\WalletTransaction;
+use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
+use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
 
 /**
  * Class Wallet.
@@ -44,10 +44,7 @@ trait Wallet
         int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        $journal = WalletJournal::leftJoin('eve_ref_types',
-            'character_wallet_journals.refTypeID', '=',
-            'eve_ref_types.refTypeID')
-            ->where('characterID', $character_id);
+        $journal = CharacterWalletJournal::where('character_id', $character_id);
 
         if ($get)
             return $journal->orderBy('date', 'desc')
@@ -69,10 +66,10 @@ trait Wallet
         int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        $transactions = WalletTransaction::where('characterID', $character_id);
+        $transactions = CharacterWalletTransaction::where('character_id', $character_id);
 
         if ($get)
-            return $transactions->orderBy('transactionDateTime', 'desc')
+            return $transactions->orderBy('date', 'desc')
                 ->paginate($chunk);
 
         return $transactions;

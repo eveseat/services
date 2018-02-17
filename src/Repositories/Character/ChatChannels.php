@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\ChatChannel;
+use Seat\Eveapi\Models\Character\CharacterChatChannel;
 
 /**
  * Class ChatChannels.
@@ -41,8 +41,8 @@ trait ChatChannels
     public function getCharacterChatChannelsFull(int $character_id): Collection
     {
 
-        return ChatChannel::with('info', 'members')
-            ->where('characterID', $character_id)
+        return CharacterChatChannel::with('info', 'members')
+            ->orWhere('character_id', $character_id)
             ->get();
     }
 }

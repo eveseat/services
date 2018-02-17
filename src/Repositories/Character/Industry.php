@@ -43,41 +43,57 @@ trait Industry
 
         $industry = DB::table('character_industry_jobs as a')
             ->select(DB::raw('
-                *,
+                a.*,
+                ramActivities.*,
+                blueprintType.typeName as blueprintTypeName,
+                productType.typeName as productTypeName,
 
                 --
                 -- Start Facility Name Lookup
                 --
                 CASE
-                when a.stationID BETWEEN 66015148 AND 66015151 then
+                when a.station_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID-6000000)
-                when a.stationID BETWEEN 66000000 AND 66014933 then
+                      WHERE s.stationID = a.station_id-6000000)
+                when a.station_id BETWEEN 66000000 AND 66014933 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID-6000001)
-                when a.stationID BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID-6000000)
-                when a.stationID BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID)
-                when a.stationID BETWEEN 60000000 AND 61000000 then
+                      WHERE s.stationID = a.station_id-6000001)
+                when a.station_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.station_id-6000000)
+                when a.station_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.station_id)
+                when a.station_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID)
-                when a.stationID >= 61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID)
+                      WHERE s.stationID = a.station_id)
+                when a.station_id >= 61000000 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.station_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                WHERE m.itemID = a.stationID) end
+                WHERE m.itemID = a.station_id) end
                 AS facilityName'))
             ->leftJoin(
                 'ramActivities',
                 'ramActivities.activityID', '=',
-                'a.activityID')// character_industry_jobs aliased to a
-            ->where('a.characterID', $character_id);
+                'a.activity_id')// character_industry_jobs aliased to a
+            ->join(
+                'invTypes as blueprintType',
+                'blueprintType.typeID', '=',
+                'a.blueprint_type_id'
+            )
+            ->join(
+                'invTypes as productType',
+                'productType.typeID', '=',
+                'a.product_type_id'
+            )
+            ->where('a.character_id', $character_id);
 
         if ($get)
-            return $industry->orderBy('endDate', 'desc')
+            return $industry->orderBy('end_date', 'desc')
                 ->get();
 
         return $industry;

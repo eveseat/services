@@ -22,7 +22,8 @@
 
 namespace Seat\Services\Repositories\Character;
 
-use Seat\Eveapi\Models\Character\MailMessage;
+use Illuminate\Support\Collection;
+use Seat\Eveapi\Models\Mail\MailHeader;
 
 /**
  * Class Mail.
@@ -36,14 +37,14 @@ trait Mail
      *
      * @param int $limit
      *
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getAllCharacterNewestMail(int $limit = 10)
+    public function getAllCharacterNewestMail(int $limit = 10) : Collection
     {
 
         $user = auth()->user();
 
-        $messages = MailMessage::select('messageID', 'senderID', 'characterID', 'senderName', 'title');
+        $messages = MailHeader::select('mail_id', 'from', 'character_id', 'subject');
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
@@ -63,14 +64,13 @@ trait Mail
                 }
 
                 // Add the collected characterID on previous task to mail records filter
-                $query->whereIn('characterID', $characters)
-                    ->orWhereIn('senderID', $characters);
+                $query->whereIn('character_id', $characters)
+                    ->orWhereIn('from', $characters);
             });
 
         }
 
-        return $messages->groupBy('character_mail_messages.messageID')
-            ->orderBy('character_mail_messages.sentDate', 'desc')
+        return $messages->orderBy('timestamp', 'desc')
             ->limit($limit)
             ->get();
     }
@@ -81,24 +81,20 @@ trait Mail
      * @param int  $character_id
      * @param bool $get
      * @param int  $chunk
-     *
-     * @return
      */
     public function getCharacterMail(
         int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        $mail = MailMessage::join('character_mail_message_bodies',
-            'character_mail_messages.messageID', '=',
-            'character_mail_message_bodies.messageID')
-            ->where('characterID', $character_id);
+        $mail = MailHeader::with('body', 'recipients')
+                          ->where('character_id', $character_id);
 
         if ($get)
             return $mail->take($chunk)
-                ->orderBy('sentDate', 'desc')
+                ->orderBy('timestamp', 'desc')
                 ->get();
 
-        return $mail;
+        return $mail->groupBy('mail_id');
     }
 
     /**
@@ -107,17 +103,14 @@ trait Mail
      * @param int $character_id
      * @param int $message_id
      *
-     * @return \Seat\Eveapi\Models\Character\MailMessage
+     * @return
      */
-    public function getCharacterMailMessage(int $character_id, int $message_id): MailMessage
+    public function getCharacterMailMessage(int $character_id, int $message_id)
     {
 
-        return MailMessage::join('character_mail_message_bodies',
-            'character_mail_messages.messageID', '=',
-            'character_mail_message_bodies.messageID')
-            ->where('characterID', $character_id)
-            ->where('character_mail_messages.messageID', $message_id)
-            ->orderBy('sentDate', 'desc')
+        return MailHeader::where('character_id', $character_id)
+            ->where('mail_id', $message_id)
+            ->orderBy('timestamp', 'desc')
             ->first();
     }
 
@@ -141,17 +134,11 @@ trait Mail
         // checks
         $user = auth()->user();
 
-        $messages = MailMessage::join('character_mail_message_bodies',
-            'character_mail_messages.messageID', '=',
-            'character_mail_message_bodies.messageID')
+        $messages = MailHeader::join('mail_bodies', 'mail_bodies.mail_id', '=', 'mail_headers.mail_id')
             ->join(
-                'account_api_key_info_characters',
-                'character_mail_messages.characterID', '=',
-                'account_api_key_info_characters.characterID')
-            ->join(
-                'eve_api_keys',
-                'eve_api_keys.key_id', '=',
-                'account_api_key_info_characters.keyID');
+                'mail_recipients',
+                'mail_recipients.mail_id', '=',
+                'mail_headers.mail_id');
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
@@ -161,22 +148,21 @@ trait Mail
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.mail', false))
-                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                    $query = $query->whereIn('recipient_id',
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
+                $query->orWhere('recipient_id', $user->id);
             });
 
         }
 
         // Filter by messageID if its set
         if (! is_null($message_id))
-            return $messages->where('character_mail_messages.messageID', $message_id)
+            return $messages->where('mail_headers.mail_id', $message_id)
                 ->first();
 
-        return $messages->groupBy('character_mail_messages.messageID')
-            ->orderBy('character_mail_messages.sentDate', 'desc')
+        return $messages->orderBy('timestamp', 'desc')
             ->paginate(25);
     }
 }

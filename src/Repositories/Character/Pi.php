@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\PlanetaryColony;
+use Seat\Eveapi\Models\PlanetaryInteraction\CharacterPlanet;
 
 /**
  * Class Pi.
@@ -41,7 +41,10 @@ trait Pi
     public function getCharacterPlanetaryColonies(int $character_id): Collection
     {
 
-        return PlanetaryColony::where('ownerID', $character_id)
+        return CharacterPlanet::where('character_id', $character_id)
+            ->join('mapDenormalize as system', 'system.itemID', '=', 'solar_system_id')
+            ->join('mapDenormalize as planet', 'planet.itemID', '=', 'planet_id')
+            ->select('character_planets.*', 'system.itemName', 'planet.typeID')
             ->get();
     }
 }
