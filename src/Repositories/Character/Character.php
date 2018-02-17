@@ -79,7 +79,7 @@ trait Character
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.list', false))
-                    return $query = $query->orWhereIn('character_id',
+                    $query->orWhereIn('character_id',
                         array_keys($user->getAffiliationMap()['char']));
             });
 
