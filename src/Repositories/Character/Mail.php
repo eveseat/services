@@ -39,7 +39,7 @@ trait Mail
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getAllCharacterNewestMail(int $limit = 10) : Collection
+    public function getAllCharacterNewestMail(int $limit = 10): Collection
     {
 
         $user = auth()->user();
@@ -81,13 +81,14 @@ trait Mail
      * @param int  $character_id
      * @param bool $get
      * @param int  $chunk
+     *
      */
     public function getCharacterMail(
         int $character_id, bool $get = true, int $chunk = 50)
     {
 
         $mail = MailHeader::with('body', 'recipients')
-                          ->where('character_id', $character_id);
+            ->where('character_id', $character_id);
 
         if ($get)
             return $mail->take($chunk)

@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -37,7 +38,7 @@ trait Market
      * @param bool $get
      * @param int  $chunk
      *
-     * @return
+     * @return \Illuminate\Support\Collection
      */
     public function getCharacterMarketOrders(
         int $character_id, bool $get = true, int $chunk = 200)

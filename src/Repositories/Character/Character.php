@@ -23,7 +23,6 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
 use Seat\Eveapi\Models\Character\CharacterInfo;
 
 /**
@@ -46,11 +45,12 @@ trait Character
      * permissions and affiliations in mind.
      *
      * @param bool $get
+     *
      * @deprecated replace by new ACL system. Must be move to ACL trait
      *
      * @return $this|\Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function getAllCharactersWithAffiliations(bool $get = true) : Collection
+    public function getAllCharactersWithAffiliations(bool $get = true): Collection
     {
 
         // TODO : rewrite the method according to the new ACL mechanic
@@ -114,11 +114,11 @@ trait Character
             'alliance_members',
             'alliance_members.corporation_id',
             'character_infos.corporation_id')
-        ->join(
-            'alliances',
-            'alliances.alliance_id',
-            'alliance_members.alliance_id')
-        ->distinct();
+            ->join(
+                'alliances',
+                'alliances.alliance_id',
+                'alliance_members.alliance_id')
+            ->distinct();
 
         // If the user us a super user, return all
         if (! $user->hasSuperUser()) {

@@ -40,7 +40,7 @@ trait Intel
      *
      * @return \Illuminate\Support\Collection
      */
-    public function characterTopWalletJournalInteractions(int $character_id) : Collection
+    public function characterTopWalletJournalInteractions(int $character_id): Collection
     {
 
         // TODO: Optimize this piece of crap!

@@ -56,12 +56,12 @@ trait Skills
      *
      * @return \Seat\Eveapi\Models\Skills\CharacterSkillQueue
      */
-    public function getCharacterSkillInTraining(int $character_id) : CharacterSkillQueue
+    public function getCharacterSkillInTraining(int $character_id): CharacterSkillQueue
     {
 
         return CharacterSkillQueue::where('character_id', $character_id)
-                                  ->where('queue_position', 0)
-                                  ->first();
+            ->where('queue_position', 0)
+            ->first();
     }
 
     /**
@@ -117,7 +117,7 @@ trait Skills
     public function getCharacterSkillCoverage(int $character_id): Collection
     {
 
-        $inGameSkills = DB::table('invTypes')
+        $in_game_skills = DB::table('invTypes')
             ->join(
                 'invMarketGroups',
                 'invMarketGroups.marketGroupID', '=', 'invTypes.marketGroupID'
@@ -130,11 +130,11 @@ trait Skills
             ->groupBy('marketGroupName')
             ->toSql();
 
-        $characterSkills = CharacterSkill::join(
-                'invTypes',
-                'invTypes.typeID', '=',
-                'character_skills.skill_id'
-            )
+        $character_skills = CharacterSkill::join(
+            'invTypes',
+            'invTypes.typeID', '=',
+            'character_skills.skill_id'
+        )
             ->join(
                 'invMarketGroups',
                 'invMarketGroups.marketGroupID', '=',
@@ -149,10 +149,10 @@ trait Skills
             ->toSql();
 
         $skills = DB::table(
-            DB::raw('(' . $inGameSkills . ') a')
+            DB::raw('(' . $in_game_skills . ') a')
         )
             ->leftJoin(
-                DB::raw('(' . $characterSkills . ') b'),
+                DB::raw('(' . $character_skills . ') b'),
                 'a.marketGroupName',
                 'b.marketGroupName'
             )

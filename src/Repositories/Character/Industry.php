@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -36,7 +37,7 @@ trait Industry
      * @param int  $character_id
      * @param bool $get
      *
-     * @return
+     * @return \Illuminate\Support\Collection
      */
     public function getCharacterIndustry(int $character_id, bool $get = true)
     {

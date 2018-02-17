@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Killmails\CharacterKillmail;
 
 /**
@@ -37,7 +38,7 @@ trait Killmails
      * @param bool $get
      * @param int  $chunk
      *
-     * @return
+     * @return \Illuminate\Support\Collection
      */
     public function getCharacterKillmails(
         int $character_id, bool $get = true, int $chunk = 200)

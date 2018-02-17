@@ -39,7 +39,7 @@ trait Contracts
      * @param bool $get
      * @param int  $chunk
      *
-     * @return
+     * @return \Illuminate\Support\Collection
      */
     public function getCharacterContracts(
         int $character_id, bool $get = true, int $chunk = 50)

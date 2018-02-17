@@ -27,6 +27,10 @@ use Seat\Eveapi\Models\Character\CharacterCorporationHistory;
 use Seat\Eveapi\Models\Character\CharacterInfo;
 use Seat\Eveapi\Models\Character\CharacterTitle;
 
+/**
+ * Trait Info
+ * @package Seat\Services\Repositories\Character
+ */
 trait Info
 {
     /**

@@ -43,7 +43,6 @@ trait Assets
     public function getCharacterAssets(int $character_id): Collection
     {
 
-        //return DB::table('character_assets as a')
         return CharacterAsset::with('content', 'type')
             ->select(DB::raw('
                 *, CASE
@@ -90,8 +89,8 @@ trait Assets
      * @return \Illuminate\Support\Collection
      */
     public function getCharacterAssetContents(int $character_id,
-                                                int $parent_asset_id = null,
-                                                int $parent_item_id = null): Collection
+                                              int $parent_asset_id = null,
+                                              int $parent_item_id = null): Collection
     {
 
         $contents = AssetListContents::join('invTypes',
