@@ -42,6 +42,8 @@ trait Standings
     {
 
         return CorporationStanding::where('corporation_id', $corporation_id)
+            ->leftJoin('chrFactions', 'from_id', '=', 'factionID')
+            ->orderBy('from_type')
             ->get();
     }
 }
