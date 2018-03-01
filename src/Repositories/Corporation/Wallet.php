@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\CorporationSheetWalletDivision;
+use Seat\Eveapi\Models\Corporation\CorporationDivision;
 use Seat\Eveapi\Models\Corporation\WalletJournal;
 use Seat\Eveapi\Models\Corporation\WalletTransaction;
 
@@ -43,7 +43,9 @@ trait Wallet
     public function getCorporationWalletDivisions(int $corporation_id): Collection
     {
 
-        return CorporationSheetWalletDivision::where('corporationID', $corporation_id)
+        return CorporationDivision::where('corporation_id', $corporation_id)
+            ->where('type', 'wallet')
+            ->orderBy('division')
             ->get();
     }
 
