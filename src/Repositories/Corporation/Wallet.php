@@ -24,8 +24,8 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Corporation\CorporationDivision;
-use Seat\Eveapi\Models\Corporation\WalletJournal;
-use Seat\Eveapi\Models\Corporation\WalletTransaction;
+use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
+use Seat\Eveapi\Models\Wallet\CorporationWalletTransaction;
 
 /**
  * Class Wallet.
@@ -85,13 +85,7 @@ trait Wallet
         int $corporation_id, bool $get = true, int $chunk = 50)
     {
 
-        $journal = WalletJournal::leftJoin(
-            'eve_ref_types', function ($join) {
-
-            $join->on('corporation_wallet_journals.refTypeID', '=',
-                'eve_ref_types.refTypeID');
-        })
-            ->where('corporationID', $corporation_id);
+        $journal = CorporationWalletJournal::where('corporation_id', $corporation_id);
 
         if ($get)
             return $journal->orderBy('date', 'desc')
@@ -114,10 +108,10 @@ trait Wallet
         int $corporation_id, bool $get = true, int $chunk = 50)
     {
 
-        $transactions = WalletTransaction::where('corporationID', $corporation_id);
+        $transactions = CorporationWalletTransaction::where('corporation_id', $corporation_id);
 
         if ($get)
-            return $transactions->orderBy('transactionDateTime', 'desc')
+            return $transactions->orderBy('date', 'desc')
                 ->paginate($chunk);
 
         return $transactions;
