@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
+use Seat\Eveapi\Models\Corporation\CorporationDivision;
 
 /**
  * Class Divisions.
@@ -41,7 +41,9 @@ trait Divisions
     public function getCorporationDivisions(int $corporation_id): Collection
     {
 
-        return CorporationSheetDivision::where('corporationID', $corporation_id)
+        return CorporationDivision::where('corporation_id', $corporation_id)
+            ->where('type', 'hangar')
+            ->orderBy('division')
             ->get();
     }
 }

@@ -22,7 +22,8 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Seat\Eveapi\Models\Corporation\CorporationSheet;
+use Seat\Eveapi\Models\Corporation\CorporationInfo;
+use Seat\Services\Repositories\Configuration\UserRespository;
 
 /**
  * Class Corporation.
@@ -30,13 +31,15 @@ use Seat\Eveapi\Models\Corporation\CorporationSheet;
  */
 trait Corporation
 {
+    use UserRespository;
+
     /**
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
     public function getAllCorporations()
     {
 
-        return CorporationSheet::all();
+        return CorporationInfo::all();
     }
 
     /**
@@ -52,7 +55,7 @@ trait Corporation
         $user = auth()->user();
 
         // Start a fresh query
-        $corporations = new CorporationSheet;
+        $corporations = new CorporationInfo();
 
         // Check if this user us a superuser. If not,
         // limit to stuff only they can see.
@@ -62,36 +65,24 @@ trait Corporation
             // corporation.list_all permission
             if ($user->has('corporation.list_all', false))
                 $corporations = $corporations->orWhereIn(
-                    'corporationID', array_keys($user->getAffiliationMap()['corp']));
+                    'corporation_id', array_keys($user->getAffiliationMap()['corp']));
 
-            // Add any keys the user may own. This is a slightly
+            // TODO : ensure user is granted - we're not checking if the user has enough permission to get access to
+            //        attached corporation
+
+            // Add any character the user may own. This is a slightly
             // complex case as we need to sub select a few things
-            $corporations = $corporations->orWhereIn('corporationID',
+            $corporations = $corporations->orWhereIn('corporation_id',
 
-                // The return array of all of the below is a
-                // nested mess. We can just flatten it.
-                $user->keys()
-                    // Include info.characters so that we can
-                    // filter it down in the map() function
-                    // below.
-                    ->with('info.characters')
-                    // Info itself has a constraint applied, checking
-                    // if the api key type is that of a corp.
-                    ->whereHas('info', function ($query) {
+                $this->getUserGroupCharacters($user->groups)->map(function($item) {
+                    return $item->character->corporation_id;
+                })
 
-                        $query->where('type', 'Corporation');
+            );
 
-                    })->get()->map(function ($item) {
-
-                        // We finally map the resultant Collection
-                        // object and list the corporationID out of
-                        // the $key->info->characters relation.
-                        return $item->info->characters
-                            ->pluck('corporationID')->toArray();
-                    }));
         }
 
-        return $corporations->orderBy('corporationName', 'desc')
+        return $corporations->orderBy('name', 'desc')
             ->get();
 
     }
@@ -106,7 +97,7 @@ trait Corporation
     public function getCorporationSheet($corporation_id)
     {
 
-        return CorporationSheet::where('corporationID', $corporation_id)
+        return CorporationInfo::where('corporation_id', $corporation_id)
             ->first();
     }
 }

@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\Standing;
+use Seat\Eveapi\Models\Corporation\CorporationStanding;
 
 /**
  * Class Standings.
@@ -41,7 +41,9 @@ trait Standings
     public function getCorporationStandings(int $corporation_id): Collection
     {
 
-        return Standing::where('corporationID', $corporation_id)
+        return CorporationStanding::where('corporation_id', $corporation_id)
+            ->leftJoin('chrFactions', 'from_id', '=', 'factionID')
+            ->orderBy('from_type')
             ->get();
     }
 }
