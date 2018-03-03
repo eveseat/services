@@ -24,7 +24,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Corporation\CustomsOffice;
+use Seat\Eveapi\Models\PlanetaryInteraction\CorporationCustomsOffice;
 
 /**
  * Class Industry.
@@ -113,24 +113,7 @@ trait Industry
     public function getCorporationCustomsOffices(int $corporation_id): Collection
     {
 
-        return CustomsOffice::select(
-            'corporation_customs_offices.*',
-            'corporation_customs_office_locations.itemName as planetName',
-            'mapDenormalize.typeID AS planetTypeID',
-            'invTypes.typeName AS planetTypeName')
-            ->join(
-                'corporation_customs_office_locations',
-                'corporation_customs_offices.itemID', '=',
-                'corporation_customs_office_locations.itemID')
-            ->join(
-                'mapDenormalize',
-                'corporation_customs_office_locations.mapID', '=',
-                'mapDenormalize.itemID')
-            ->join(
-                'invTypes',
-                'invTypes.typeID', '=',
-                'mapDenormalize.typeID')
-            ->where('corporation_customs_offices.corporationID', $corporation_id)
+        return CorporationCustomsOffice::where('corporation_id', $corporation_id)
             ->get();
     }
 }
