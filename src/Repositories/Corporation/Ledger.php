@@ -44,7 +44,7 @@ trait Ledger
         return DB::table('corporation_wallet_journals')
             ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '85')
+            ->whereIn('refTypeID', [17, 85])
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -92,7 +92,7 @@ trait Ledger
                     'ROUND(SUM(amount)) as total, ownerName2, ownerID2'
                 ))
             ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '85')
+            ->whereIn('refTypeID', [17, 85])
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->groupBy('ownerName2')
