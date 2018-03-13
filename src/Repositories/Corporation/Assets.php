@@ -124,23 +124,17 @@ trait Assets
      * @return \Illuminate\Support\Collection
      */
     public function getCorporationAssetContents(int $corporation_id,
-                                                int $parent_asset_id = null,
                                                 int $parent_item_id = null): Collection
     {
 
-        $contents = AssetListContents::join('invTypes',
-            'corporation_asset_list_contents.typeID', '=',
-            'invTypes.typeID')
-            ->where('corporationID', $corporation_id);
-
-        if (! is_null($parent_asset_id))
-            $contents = $contents->where('parentAssetItemID', $parent_asset_id);
+        $contents = CorporationAsset::join('invTypes', 'corporation_assets.type_id', '=', 'invTypes.typeID')
+            ->where('corporation_id', $corporation_id);
 
         if (! is_null($parent_item_id))
-            $contents = $contents->where('parentItemID', $parent_item_id);
+            $contents = $contents->where('location_id', $parent_item_id);
 
         // TODO: Allow the nested lookups to occur.
-        $contents = $contents->where('parentItemID', null);
+        //$contents = $contents->where('location_id', null);
 
         return $contents->get();
     }

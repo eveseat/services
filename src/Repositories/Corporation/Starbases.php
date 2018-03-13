@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
+use Seat\Eveapi\Models\Corporation\CorporationStarbase;
 use Seat\Eveapi\Models\Corporation\Starbase;
 
 /**
@@ -43,12 +44,13 @@ trait Starbases
     public function getCorporationStarbases(int $corporation_id, int $starbase_id = null)
     {
 
+        return CorporationStarbase::where('corporation_id', $corporation_id)->get();
+
         $starbase = Starbase::select(
             'corporation_starbases.itemID',
             'corporation_starbases.moonID',
             'corporation_starbases.state',
             'corporation_starbases.stateTimeStamp',
-            'corporation_starbases.onlineTimeStamp',
             'corporation_starbases.onlineTimeStamp',
             'corporation_starbase_details.useStandingsFrom',
             'corporation_starbase_details.onAggression',
