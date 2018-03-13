@@ -59,15 +59,8 @@ trait Wallet
     public function getCorporationWalletDivisionSummary(int $corporation_id): Collection
     {
 
-        return CorporationSheetWalletDivision::join(
-            'corporation_account_balances',
-            'corporation_sheet_wallet_divisions.accountKey', '=',
-            'corporation_account_balances.accountKey')
-            ->select(
-                'corporation_account_balances.balance',
-                'corporation_sheet_wallet_divisions.description')
-            ->where('corporation_account_balances.corporationID', $corporation_id)
-            ->where('corporation_sheet_wallet_divisions.corporationID', $corporation_id)
+        return CorporationDivision::where('corporation_divisions.corporation_id', $corporation_id)
+            ->where('type', 'wallet')
             ->get();
 
     }
