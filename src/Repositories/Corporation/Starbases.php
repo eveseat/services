@@ -79,7 +79,7 @@ trait Starbases
         $attribute = $starbase->type->dogmaAttributes->where('attributeID', 650)->first();
 
         if (!is_null($attribute))
-            $maxStructureDistance = ((is_null($attribute->valueFloat)) ? $attribute->valueInt : $attribute->valueFloat) / 2;
+            $maxStructureDistance = (is_null($attribute->valueFloat)) ? $attribute->valueInt : $attribute->valueFloat;
 
         // computing allowed starbase area
         $starbaseArea = [
@@ -94,10 +94,9 @@ trait Starbases
             if (is_null($candidate->x) || is_null($candidate->y) || is_null($candidate->z))
                 return false;
 
-            return ($starbaseArea['x'][0] <= $candidate->x && $starbaseArea['x'][1] >= $candidate->x &&
-                $starbaseArea['y'][0] <= $candidate->y && $starbaseArea['y'][1] >= $candidate->y &&
-                $starbaseArea['z'][0] <= $candidate->z && $starbaseArea['z'][1] >= $candidate->z);
-
+            return ($candidate->x >= $starbaseArea['x'][0] && $candidate->x <= $starbaseArea['x'][1] &&
+                $candidate->y >= $starbaseArea['y'][0] && $candidate->y <= $starbaseArea['y'][1] &&
+                $candidate->z >= $starbaseArea['z'][0] && $candidate->z <= $starbaseArea['z'][1]);
         });
     }
 
