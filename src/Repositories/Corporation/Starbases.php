@@ -71,7 +71,7 @@ trait Starbases
             ->where('location_id', $starbase->system_id)
             ->where('categoryID', 23)
             ->where('item_id', '<>', $starbase_id)
-            //->with('dogmaAttributes')
+            ->select('item_id', 'quantity', 'location_id', 'x', 'y', 'z', 'name', 'type_id', 'typeName', 'capacity', 'volume')
             ->get();
 
         // get maximum distance between starbase and module
