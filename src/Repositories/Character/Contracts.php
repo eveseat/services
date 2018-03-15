@@ -24,7 +24,7 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Contacts\ContractItem;
+use Seat\Eveapi\Models\Contracts\ContractItem;
 
 /**
  * Class Contracts.

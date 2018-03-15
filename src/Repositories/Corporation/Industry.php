@@ -24,7 +24,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Corporation\CustomsOffice;
+use Seat\Eveapi\Models\PlanetaryInteraction\CorporationCustomsOffice;
 
 /**
  * Class Industry.
@@ -45,42 +45,58 @@ trait Industry
 
         $industry = DB::table('corporation_industry_jobs as a')
             ->select(DB::raw('
-                *,
+                a.*,
+                ramActivities.*,
+                blueprintType.typeName as blueprintTypeName,
+                productType.typeName as productTypeName,
 
                 --
                 -- Start Facility Name Lookup
                 --
                 CASE
-                when a.stationID BETWEEN 66015148 AND 66015151 then
+                when a.location_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID-6000000)
-                when a.stationID BETWEEN 66000000 AND 66014933 then
+                      WHERE s.stationID = a.location_id-6000000)
+                when a.location_id BETWEEN 66000000 AND 66014933 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID-6000001)
-                when a.stationID BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID-6000000)
-                when a.stationID BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID)
-                when a.stationID BETWEEN 60000000 AND 61000000 then
+                      WHERE s.stationID = a.location_id-6000001)
+                when a.location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.location_id-6000000)
+                when a.location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.location_id)
+                when a.location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.stationID)
-                when a.stationID >= 61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.stationID)
+                      WHERE s.stationID = a.location_id)
+                when a.location_id >= 61000000 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                WHERE m.itemID = a.stationID) end
+                WHERE m.itemID = a.location_id) end
                 AS facilityName'))
             ->leftJoin(
                 'ramActivities',
                 'ramActivities.activityID', '=',
-                'a.activityID')// corporation_industry_jobs aliased to a
-            ->where('a.corporationID', $corporation_id);
+                'a.activity_id')// corporation_industry_jobs aliased to a
+            ->join(
+                'invTypes as blueprintType',
+                'blueprintType.typeID', '=',
+                'a.blueprint_type_id'
+            )
+            ->join(
+                'invTypes as productType',
+                'productType.typeID', '=',
+                'a.product_type_id'
+            )
+            ->where('a.corporation_id', $corporation_id);
 
         if ($get)
             return $industry
-                ->orderBy('endDate', 'desc')
+                ->orderBy('end_date', 'desc')
                 ->get();
 
         return $industry;
@@ -97,24 +113,7 @@ trait Industry
     public function getCorporationCustomsOffices(int $corporation_id): Collection
     {
 
-        return CustomsOffice::select(
-            'corporation_customs_offices.*',
-            'corporation_customs_office_locations.itemName as planetName',
-            'mapDenormalize.typeID AS planetTypeID',
-            'invTypes.typeName AS planetTypeName')
-            ->join(
-                'corporation_customs_office_locations',
-                'corporation_customs_offices.itemID', '=',
-                'corporation_customs_office_locations.itemID')
-            ->join(
-                'mapDenormalize',
-                'corporation_customs_office_locations.mapID', '=',
-                'mapDenormalize.itemID')
-            ->join(
-                'invTypes',
-                'invTypes.typeID', '=',
-                'mapDenormalize.typeID')
-            ->where('corporation_customs_offices.corporationID', $corporation_id)
+        return CorporationCustomsOffice::where('corporation_id', $corporation_id)
             ->get();
     }
 }

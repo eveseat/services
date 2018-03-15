@@ -24,6 +24,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Assets\CorporationAsset;
 use Seat\Eveapi\Models\Corporation\AssetListContents;
 use Seat\Eveapi\Models\Corporation\Locations;
 
@@ -43,7 +44,7 @@ trait Assets
     public function getCorporationAssets(int $corporation_id): Collection
     {
 
-        return DB::table('corporation_asset_lists as a')
+        return CorporationAsset::with('content', 'type')
             ->select(DB::raw('
                 --
                 -- Select All Fields
@@ -54,42 +55,35 @@ trait Assets
                 -- Start the Lookation Lookup
                 --
                 CASE
-                when a.locationID BETWEEN 66015148 AND 66015151 then
+                when corporation_assets.location_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.locationID-6000000)
-                when a.locationID BETWEEN 66000000 AND 66014933 then
+                      WHERE s.stationID=corporation_assets.location_id-6000000)
+                when corporation_assets.location_id BETWEEN 66000000 AND 66014933 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.locationID-6000001)
-                when a.locationID BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.locationID-6000000)
-                when a.locationID BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.locationID)
-                when a.locationID BETWEEN 60000000 AND 61000000 then
+                      WHERE s.stationID=corporation_assets.location_id-6000001)
+                when corporation_assets.location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=corporation_assets.location_id-6000000)
+                when corporation_assets.location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=corporation_assets.location_id)
+                when corporation_assets.location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.locationID)
-                when a.locationID >= 61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.locationID)
+                      WHERE s.stationID=corporation_assets.location_id)
+                when corporation_assets.location_id BETWEEN 61000000 AND 61001146 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=corporation_assets.location_id)
+                when corporation_assets.location_id > 61001146 then
+                    (SELECT name FROM `universe_structures` AS c
+                     WHERE c.structure_id = corporation_assets.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                    WHERE m.itemID = a.locationID) end
-                    AS location'))
-            ->selectSub(function ($query) {
-
-                return $query->from('corporation_asset_list_contents')
-                    ->selectRaw('count(*)')
-                    ->where('parentAssetItemID',
-                        $query->raw('a.itemID'));
-
-            }, 'childContentCount')
-            ->join('invTypes',
-                'a.typeID', '=',
-                'invTypes.typeID')
-            ->join('invGroups',
-                'invTypes.groupID', '=',
-                'invGroups.groupID')
-            ->where('a.corporationID', $corporation_id)
+                    WHERE m.itemID=corporation_assets.location_id) end
+                AS locationName,
+                corporation_assets.location_id AS location'))
+            ->where('corporation_assets.corporation_id', $corporation_id)
             ->get();
 
     }
@@ -130,23 +124,17 @@ trait Assets
      * @return \Illuminate\Support\Collection
      */
     public function getCorporationAssetContents(int $corporation_id,
-                                                int $parent_asset_id = null,
                                                 int $parent_item_id = null): Collection
     {
 
-        $contents = AssetListContents::join('invTypes',
-            'corporation_asset_list_contents.typeID', '=',
-            'invTypes.typeID')
-            ->where('corporationID', $corporation_id);
-
-        if (! is_null($parent_asset_id))
-            $contents = $contents->where('parentAssetItemID', $parent_asset_id);
+        $contents = CorporationAsset::join('invTypes', 'corporation_assets.type_id', '=', 'invTypes.typeID')
+            ->where('corporation_id', $corporation_id);
 
         if (! is_null($parent_item_id))
-            $contents = $contents->where('parentItemID', $parent_item_id);
+            $contents = $contents->where('location_id', $parent_item_id);
 
         // TODO: Allow the nested lookups to occur.
-        $contents = $contents->where('parentItemID', null);
+        //$contents = $contents->where('location_id', null);
 
         return $contents->get();
     }
