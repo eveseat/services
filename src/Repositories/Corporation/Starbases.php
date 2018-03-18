@@ -40,7 +40,7 @@ trait Starbases
      * @param int $corporation_id
      * @param int $starbase_id
      *
-     * @return
+     * @return Collection
      */
     public function getCorporationStarbases(int $corporation_id, int $starbase_id = null)
     {
@@ -54,12 +54,14 @@ trait Starbases
      *
      * @param int $corporation_id
      * @param int $starbase_id
+     *
      * @return Collection
      */
-    public function getStarbaseModules(int $corporation_id, int $starbase_id) : Collection
+    public function getStarbaseModules(int $corporation_id, int $starbase_id): Collection
     {
+
         // retrieving starbase location
-        $starbase   = CorporationStarbase::where('starbase_id', $starbase_id)
+        $starbase = CorporationStarbase::where('starbase_id', $starbase_id)
             ->where('corporation_id', $corporation_id)
             ->first();
 
@@ -75,21 +77,21 @@ trait Starbases
             ->get();
 
         // get maximum distance between starbase and module
-        $maxStructureDistance = 0.0;
+        $max_structure_distance = 0.0;
         $attribute = $starbase->type->dogmaAttributes->where('attributeID', 650)->first();
 
-        if (!is_null($attribute))
-            $maxStructureDistance = (is_null($attribute->valueFloat)) ? $attribute->valueInt : $attribute->valueFloat;
+        if (! is_null($attribute))
+            $max_structure_distance = (is_null($attribute->valueFloat)) ? $attribute->valueInt : $attribute->valueFloat;
 
         // computing allowed starbase area
         $starbaseArea = [
-            'x' => [$starbase->item->x - $maxStructureDistance, $starbase->item->x + $maxStructureDistance],
-            'y' => [$starbase->item->y - $maxStructureDistance, $starbase->item->y + $maxStructureDistance],
-            'z' => [$starbase->item->z - $maxStructureDistance, $starbase->item->z + $maxStructureDistance],
+            'x' => [$starbase->item->x - $max_structure_distance, $starbase->item->x + $max_structure_distance],
+            'y' => [$starbase->item->y - $max_structure_distance, $starbase->item->y + $max_structure_distance],
+            'z' => [$starbase->item->z - $max_structure_distance, $starbase->item->z + $max_structure_distance],
         ];
 
         // filtering candidates and keep only those which are inside the starbase area
-        return $candidates->filter(function($candidate) use ($starbase, $starbaseArea) {
+        return $candidates->filter(function ($candidate) use ($starbase, $starbaseArea) {
 
             if (is_null($candidate->x) || is_null($candidate->y) || is_null($candidate->z))
                 return false;

@@ -38,7 +38,7 @@ trait Members
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMemberTracking(int $corporation_id) : Collection
+    public function getCorporationMemberTracking(int $corporation_id): Collection
     {
 
         return CorporationMemberTracking::where('corporation_id', $corporation_id)

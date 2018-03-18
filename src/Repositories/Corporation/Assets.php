@@ -118,7 +118,6 @@ trait Assets
      * returned.
      *
      * @param int $corporation_id
-     * @param int $parent_asset_id
      * @param int $parent_item_id
      *
      * @return \Illuminate\Support\Collection
