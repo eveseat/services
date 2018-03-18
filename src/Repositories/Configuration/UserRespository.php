@@ -46,7 +46,7 @@ trait UserRespository
     public function getAllFullUsers()
     {
 
-        return UserModel::with('roles', 'affiliations', 'keys')
+        return UserModel::with('roles', 'affiliations')
             ->get();
     }
 
