@@ -22,7 +22,7 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Seat\Eveapi\Models\Corporation\KillMail;
+use Seat\Eveapi\Models\Killmails\CorporationKillmail;
 
 trait Killmails
 {
@@ -39,25 +39,30 @@ trait Killmails
         int $corporation_id, bool $get = true, int $chunk = 200)
     {
 
-        $killmails = KillMail::select(
+        $killmails = CorporationKillmail::select(
             '*',
-            'corporation_kill_mails.corporationID as ownerID',
-            'kill_mail_details.corporationID as victimID')
+            'corporation_killmails.corporation_id as ownerID',
+            'killmail_victims.character_id as victimID')
             ->leftJoin(
-                'kill_mail_details',
-                'corporation_kill_mails.killID', '=',
-                'kill_mail_details.killID')
+                'killmail_details',
+                'corporation_killmails.killmail_id', '=',
+                'killmail_details.killmail_id')
+            ->leftJoin(
+                'killmail_victims',
+                'killmail_victims.killmail_id', '=',
+                'corporation_killmails.killmail_id'
+            )
             ->leftJoin(
                 'invTypes',
-                'kill_mail_details.shipTypeID', '=',
+                'killmail_victims.ship_type_id', '=',
                 'invTypes.typeID')
             ->leftJoin('mapDenormalize',
-                'kill_mail_details.solarSystemID', '=',
+                'killmail_details.solar_system_id', '=',
                 'mapDenormalize.itemID')
-            ->where('corporation_kill_mails.corporationID', $corporation_id);
+            ->where('corporation_killmails.corporation_id', $corporation_id);
 
         if ($get)
-            return $killmails->orderBy('corporation_kill_mails.killID', 'desc')
+            return $killmails->orderBy('corporation_killmails.killmail_id', 'desc')
                 ->paginate($chunk);
 
         return $killmails;

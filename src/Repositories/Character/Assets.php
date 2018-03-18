@@ -72,7 +72,8 @@ trait Assets
                      WHERE c.structure_id = character_assets.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID=character_assets.location_id) end
-                    AS locationName,character_assets.location_id AS locID'))
+                AS locationName,
+                character_assets.location_id AS locID'))
             ->where('character_assets.character_id', $character_id)
             ->get();
     }

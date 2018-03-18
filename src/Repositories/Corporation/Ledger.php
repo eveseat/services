@@ -24,6 +24,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
 
 /**
  * Class Ledger.
@@ -41,12 +42,11 @@ trait Ledger
     public function getCorporationLedgerBountyPrizeDates(int $corporation_id): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '85')
-            ->orderBy('date', 'desc')
-            ->get();
+        return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+                                       ->where('corporation_id', $corporation_id)
+                                       ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize'])
+                                       ->orderBy('date', 'desc')
+                                       ->get();
     }
 
     /**
@@ -59,16 +59,12 @@ trait Ledger
     public function getCorporationLedgerPIDates(int $corporation_id): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporationID', $corporation_id)
-            ->where(function ($query) {
-
-                $query->where('refTypeID', 96)
-                    ->orWhere('refTypeID', 97);
-            })
-            ->orderBy('date', 'desc')
-            ->get();
+        // TODO : spawn native indexes on month and year inside corporation_wallet_journal table
+        return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+                                       ->where('corporation_id', $corporation_id)
+                                       ->whereIn('ref_type', ['planetary_import_tax', 'planetary_export_tax'])
+                                       ->orderBy('date', 'desc')
+                                       ->get();
     }
 
     /**
@@ -85,19 +81,18 @@ trait Ledger
                                                            int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName2, ownerID2'
-                ))
-            ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '85')
-            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->groupBy('ownerName2')
-            ->orderBy(DB::raw('SUM(amount)'), 'desc')
-            ->get();
+        return CorporationWalletJournal::select(
+                                            DB::raw(
+                                                'MONTH(date) as month, YEAR(date) as year, ' .
+                                                'ROUND(SUM(amount)) as total, second_party_id'
+                                            ))
+                                        ->where('corporation_id', $corporation_id)
+                                        ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize'])
+                                        ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+                                        ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+                                        ->groupBy('second_party_id')
+                                        ->orderBy(DB::raw('SUM(amount)'), 'desc')
+                                        ->get();
     }
 
     /**
@@ -114,23 +109,19 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
-                ))
-            ->where('corporationID', $corporation_id)
-            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where(function ($query) {
-
-                $query->where('refTypeID', 96)
-                    ->orWhere('refTypeID', 97);
-            })
-            ->groupBy('ownerName1')
-            ->orderBy(DB::raw('SUM(amount)'), 'desc')
-            ->get();
+        // TODO : spawn native indexes on month and year inside corporation_wallet_journal table
+        return CorporationWalletJournal::select(
+                                        DB::raw(
+                                            'MONTH(date) as month, YEAR(date) as year, ' .
+                                            'ROUND(SUM(amount)) as total, first_party_id'
+                                        ))
+                                        ->where('corporation_id', $corporation_id)
+                                        ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+                                        ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+                                        ->whereIn('ref_type', ['planetary_import_tax', 'planetary_export_tax'])
+                                        ->groupBy('first_party_id')
+                                        ->orderBy(DB::raw('SUM(amount)'), 'desc')
+                                        ->get();
 
     }
 }

@@ -24,7 +24,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Corporation\ContractItem;
+use Seat\Eveapi\Models\Contracts\ContractItem;
 
 /**
  * Class Contracts.
@@ -45,7 +45,7 @@ trait Contracts
         int $corporation_id, bool $get = true, int $chunk = 50)
     {
 
-        $contracts = DB::table(DB::raw('corporation_contracts as a'))
+        $contracts = DB::table(DB::raw('contract_details as a'))
             ->select(DB::raw(
                 '
                 --
@@ -57,58 +57,65 @@ trait Contracts
                 -- Start Location Lookup
                 --
                 CASE
-                when a.startStationID BETWEEN 66015148 AND 66015151 then
+                when a.start_location_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.startStationID-6000000)
-                when a.startStationID BETWEEN 66000000 AND 66014933 then
+                      WHERE s.stationID = a.start_location_id-6000000)
+                when a.start_location_id BETWEEN 66000000 AND 66014933 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.startStationID-6000001)
-                when a.startStationID BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.startStationID-6000000)
-                when a.startStationID BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.startStationID)
-                when a.startStationID BETWEEN 60000000 AND 61000000 then
+                      WHERE s.stationID = a.start_location_id-6000001)
+                when a.start_location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.start_location_id-6000000)
+                when a.start_location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.start_location_id)
+                when a.start_location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.startStationID)
-                when a.startStationID >= 61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.startStationID)
+                      WHERE s.stationID = a.start_location_id)
+                when a.start_location_id >= 61000000 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.start_location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                    WHERE m.itemID = a.startStationID) end
+                    WHERE m.itemID = a.start_location_id) end
                 AS startlocation,
 
                 --
                 -- End Location Lookup
                 --
                 CASE
-                when a.endstationID BETWEEN 66015148 AND 66015151 then
+                when a.end_location_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.endStationID-6000000)
-                when a.endStationID BETWEEN 66000000 AND 66014933 then
+                      WHERE s.stationID = a.end_location_id-6000000)
+                when a.end_location_id BETWEEN 66000000 AND 66014933 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.endStationID-6000001)
-                when a.endStationID BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.endStationID-6000000)
-                when a.endStationID BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.endStationID)
-                when a.endStationID BETWEEN 60000000 AND 61000000 then
+                      WHERE s.stationID = a.end_location_id-6000001)
+                when a.end_location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.end_location_id-6000000)
+                when a.end_location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.end_location_id)
+                when a.end_location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID = a.endStationID)
-                when a.endStationID >= 61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID = a.endStationID)
+                      WHERE s.stationID = a.end_location_id)
+                when a.end_location_id >= 61000000 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id = a.end_location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                    WHERE m.itemID = a.endStationID) end
+                    WHERE m.itemID = a.end_location_id) end
                 AS endlocation '))
-            ->where('a.corporationID', $corporation_id);
+            ->join('corporation_contracts', 'corporation_contracts.contract_id', '=', 'a.contract_id')
+            ->where('corporation_contracts.corporation_id', $corporation_id);
 
         if ($get)
             return $contracts
-                ->orderBy('dateIssued', 'desc')
+                ->orderBy('date_issued', 'desc')
                 ->paginate($chunk);
 
         return $contracts;
@@ -124,13 +131,14 @@ trait Contracts
     {
 
         return ContractItem::leftJoin('invTypes',
-            'corporation_contract_items.typeID', '=',
+            'contract_items.type_id', '=',
             'invTypes.typeID')
             ->join('invGroups',
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
-            ->where('corporationID', $corporation_id)
-            ->where('contractID', $contract_id)
+            ->join('corporation_contracts',  'corporation_contracts.contract_id', '=', 'contract_items.contract_id')
+            ->where('corporation_id', $corporation_id)
+            ->where('corporation_contracts.contract_id', $contract_id)
             ->take(150)// Limit to 150 for now. Some of these contracts are insanely big.
             ->get();
 
