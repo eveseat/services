@@ -37,7 +37,7 @@ class CreateGlobalSettingsTable extends Migration
 
             $table->increments('id');
             $table->string('name');
-            $table->string('value');
+            $table->mediumText('value');
             $table->timestamps();
 
             // Indexes

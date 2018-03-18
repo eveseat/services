@@ -90,7 +90,7 @@ abstract class Settings
                 ->value('value');
 
             if ($value)
-                return $value;
+                return json_decode($value);
 
             // If we have no value, check if we can return
             // a default setting
@@ -148,6 +148,9 @@ abstract class Settings
         $db = $db->where('name', $name)
             ->first();
 
+        // By default, json encode values.
+        $value = json_encode($value);
+
         // Check if we have a value, else create a new
         // instance
         if (! $db)
@@ -166,7 +169,7 @@ abstract class Settings
         $db->save();
 
         // Update the cached entry with the new value
-        Cache::forever(self::get_key_prefix($name), $value);
+        Cache::forever(self::get_key_prefix($name), json_decode($value));
 
     }
 }

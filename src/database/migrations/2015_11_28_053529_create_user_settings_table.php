@@ -38,7 +38,7 @@ class CreateUserSettingsTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->string('name');
-            $table->string('value');
+            $table->mediumText('value');
             $table->timestamps();
 
             // Indexes
