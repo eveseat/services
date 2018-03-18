@@ -31,8 +31,6 @@ use Seat\Services\Repositories\Configuration\UserRespository;
  */
 trait Corporation
 {
-    use UserRespository;
-
     /**
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -70,16 +68,7 @@ trait Corporation
             // TODO : ensure user is granted - we're not checking if the user has enough permission to get access to
             //        attached corporation
 
-            // Add any character the user may own. This is a slightly
-            // complex case as we need to sub select a few things
-            $corporations = $corporations->orWhereIn('corporation_id',
-
-                $this->getUserGroupCharacters($user->groups)->map(function($item) {
-                    return $item->character->corporation_id;
-                })
-
-            );
-
+            // TODO: Add check to include corporations the characters group is a part of.
         }
 
         return $corporations->orderBy('name', 'desc')

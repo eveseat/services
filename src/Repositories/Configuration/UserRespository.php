@@ -23,7 +23,6 @@
 namespace Seat\Services\Repositories\Configuration;
 
 use Illuminate\Support\Collection;
-use Seat\Web\Models\User;
 use Seat\Web\Models\User as UserModel;
 
 /**
@@ -108,7 +107,7 @@ trait UserRespository
     public function getUserGroupCharacters(Collection $groups): Collection
     {
 
-        return User::whereHas('groups', function ($query) use ($groups) {
+        return UserModel::whereHas('groups', function ($query) use ($groups) {
 
             $query->whereIn('id', $groups->pluck('id'));
         })->get();
