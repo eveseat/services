@@ -67,20 +67,8 @@ class Seat extends Settings
         // User Registration
         'registration'                => 'yes',
 
-        // Allow users to login using EVE Online SSO
-        'allow_sso'                   => 'no',
-
         // Admin contact
         'admin_contact'               => 'seatadmin@localhost.local',
-
-        // Force the Minimum Access Mask for Keys
-        'force_min_mask'              => 'no',
-
-        // Minimum required Access Mask for Character Keys
-        'min_character_access_mask'   => 0,
-
-        // Minimum required Access Mask for Corporation Keys
-        'min_corporation_access_mask' => 0,
 
         // Allow Usage Tracking
         'allow_tracking'              => 'yes',
