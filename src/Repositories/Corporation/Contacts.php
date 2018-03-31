@@ -23,6 +23,7 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
+use Seat\Eveapi\Models\Contacts\CorporationContact;
 use Seat\Eveapi\Models\Corporation\ContactList;
 use Seat\Eveapi\Models\Corporation\ContactListLabel;
 
@@ -42,27 +43,9 @@ trait Contacts
     public function getCorporationContacts(int $corporation_id): Collection
     {
 
-        return ContactList::where('corporationID', $corporation_id)
-            ->join('invTypes', function ($join) {
-
-                $join->on('invTypes.typeID', '=', 'corporation_contact_lists.contactTypeID');
-            })
+        return CorporationContact::where('corporation_id', $corporation_id)
             ->orderBy('standing', 'desc')
             ->get();
 
-    }
-
-    /**
-     * Return the contact labels for a Corporation.
-     *
-     * @param $corporation_id
-     *
-     * @return mixed
-     */
-    public function getCorporationContactsLabels(int $corporation_id): Collection
-    {
-
-        return ContactListLabel::where('corporationID', $corporation_id)
-            ->get();
     }
 }

@@ -134,14 +134,10 @@ trait Mail
         // Get the User for permissions and affiliation
         // checks
         $user = auth()->user();
+        $messages = MailHeader::with('recipients', 'body');
 
-        $messages = MailHeader::join('mail_bodies', 'mail_bodies.mail_id', '=', 'mail_headers.mail_id')
-            ->join(
-                'mail_recipients',
-                'mail_recipients.mail_id', '=',
-                'mail_headers.mail_id');
-
-        // If the user is a super user, return all
+        // If a user is not a super user, only return their own mail and those
+        // which they are affiliated to to receive.
         if (! $user->hasSuperUser()) {
 
             $messages = $messages->where(function ($query) use ($user) {
@@ -149,18 +145,16 @@ trait Mail
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.mail', false))
-                    $query = $query->whereIn('recipient_id',
-                        array_keys($user->getAffiliationMap()['char']));
+                    $query = $query->whereIn('character_id', array_keys($user->getAffiliationMap()['char']));
 
-                // Add any characters from owner API keys
-                $query->orWhere('recipient_id', $user->id);
+                // Add mail owned by *this* character
+                $query->orWhere('character_id', $user->id);
             });
-
         }
 
         // Filter by messageID if its set
         if (! is_null($message_id))
-            return $messages->where('mail_headers.mail_id', $message_id)
+            return $messages->where('mail_id', $message_id)
                 ->first();
 
         return $messages->orderBy('timestamp', 'desc')

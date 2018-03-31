@@ -161,7 +161,7 @@ if (! function_exists('evemail_threads')) {
      *
      * @param $message
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     function evemail_threads($message)
     {
