@@ -29,6 +29,14 @@ class ScheduleSeeder extends Seeder
 {
     protected $schedule = [
 
+        [   // Horizon Metrics | Every Five Minutes
+            'command'           => 'horizon:snapshot',
+            'expression'        => '*/5 * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
         [   // EVE Server Status | Every Five Minutes
             'command'           => 'eve:update-server-status',
             'expression'        => '*/5 * * * *',
