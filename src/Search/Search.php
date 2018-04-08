@@ -23,9 +23,9 @@
 namespace Seat\Services\Search;
 
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Character\CharacterSheetSkills;
-use Seat\Eveapi\Models\Character\MailMessage;
-use Seat\Eveapi\Models\Eve\ApiKey;
+use Seat\Eveapi\Models\Assets\CharacterAsset;
+use Seat\Eveapi\Models\Character\CharacterSkill;
+use Seat\Eveapi\Models\Mail\MailHeader;
 use Seat\Services\Repositories\Character\Character;
 use Seat\Services\Repositories\Corporation\Corporation;
 
@@ -40,22 +40,12 @@ trait Search
     /**
      * @param string $query
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static|static[]
+     * @return mixed
      */
-    public function doSearchCharacters(string $query)
+    public function doSearchCharacters()
     {
 
-        // Get the data
-        $characters = $this->getAllCharactersWithAffiliations();
-
-        // Filter the data
-        $characters = $characters->filter(function ($item) use ($query) {
-
-            return str_contains(
-                strtoupper($item->characterName), strtoupper($query));
-        });
-
-        return $characters;
+        return $this->getAllCharactersWithAffiliations(false);
     }
 
     /**
@@ -63,19 +53,10 @@ trait Search
      *
      * @return mixed
      */
-    public function doSearchCorporations(string $query)
+    public function doSearchCorporations()
     {
 
-        $corporations = $this->getAllCorporationsWithAffiliationsAndFilters();
-
-        $corporations = $corporations->filter(function ($item) use ($query) {
-
-            return str_contains(
-                strtoupper($item->corporationName), strtoupper($query));
-        });
-
-        return $corporations;
-
+        return $this->getAllCorporationsWithAffiliationsAndFilters(false);
     }
 
     /**
@@ -83,24 +64,14 @@ trait Search
      *
      * @return mixed
      */
-    public function doSearchCharacterMail(string $filter)
+    public function doSearchCharacterMail()
     {
 
         // Get the User for permissions and affiliation
         // checks
         $user = auth()->user();
 
-        $messages = MailMessage::join('character_mail_message_bodies',
-            'character_mail_messages.messageID', '=',
-            'character_mail_message_bodies.messageID')
-            ->join(
-                'account_api_key_info_characters',
-                'character_mail_messages.characterID', '=',
-                'account_api_key_info_characters.characterID')
-            ->join(
-                'eve_api_keys',
-                'eve_api_keys.key_id', '=',
-                'account_api_key_info_characters.keyID');
+        $messages = MailHeader::with('body', 'recipients');
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
@@ -109,25 +80,32 @@ trait Search
 
                 // If the user has any affiliations and can
                 // list those characters, add them
-                if ($user->has('character.mail', false))
-                    $query = $query->whereIn('account_api_key_info_characters.characterID',
-                        array_keys($user->getAffiliationMap()['char']));
+                if ($user->has('character.mail', false)) {
+                    $query = $query->orWhereIn('character_id', array_keys($user->getAffiliationMap()['char']))
+                        ->orWhereIn('from', array_keys($user->getAffiliationMap()['char']));
+
+                    $query = $query->orWhereHas('recipients', function($sub_query) {
+                        $sub_query->orWhereIn('recipient_id', array_keys($user->getAffiliationMap()['char']));
+                    });
+                }
 
                 // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
+                $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
+
+                    return $group->users->pluck('id');
+
+                })->flatten()->toArray();
+
+                $query->orWhereIn('character_id', $user_character_ids)
+                      ->orWhereIn('from', $user_character_ids)
+                      ->orWhereHas('recipients', function($sub_query) use ($user_character_ids) {
+                            $sub_query->orWhereIn('recipient_id', $user_character_ids);
+                        });
             });
         }
 
-        // Filter by the query string
-        $messages = $messages->where(function ($query) use ($filter) {
-
-            $query->where('character_mail_messages.title', 'like', '%' . $filter . '%')
-                ->orWhere('character_mail_message_bodies.body', 'like', '%' . $filter . '%');
-        });
-
-        return $messages->orderBy('character_mail_messages.sentDate', 'desc')
-            ->take(150)// Have to limit a little.
-            ->get();
+        return $messages->orderBy('timestamp', 'desc')
+            ->take(150);
 
     }
 
@@ -141,45 +119,48 @@ trait Search
         $user = auth()->user();
 
         // Start the query with all the joins needed.
-        $assets = DB::table('character_asset_lists as a')
-            ->select(DB::raw('
-                *,
-                CASE
-                when a.locationID BETWEEN 66015148 AND 66015151 then
+        $assets = CharacterAsset::select(DB::raw('
+                character_infos.name AS character_name,
+                invTypes.typeName,
+                invGroups.groupName,
+                character_assets.*, CASE
+                when character_assets.location_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID=a.locationID-6000000)
-                when a.locationID BETWEEN 66000000 AND 66014933 then
+                      WHERE s.stationID=character_assets.location_id-6000000)
+                when character_assets.location_id BETWEEN 66000000 AND 66014933 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID=a.locationID-6000001)
-                when a.locationID BETWEEN 66014934 AND 67999999 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID=a.locationID-6000000)
-                when a.locationID BETWEEN 60014861 AND 60014928 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID=a.locationID)
-                when a.locationID BETWEEN 60000000 AND 61000000 then
+                      WHERE s.stationID=character_assets.location_id-6000001)
+                when character_assets.location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_assets.location_id-6000000)
+                when character_assets.location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_assets.location_id)
+                when character_assets.location_id BETWEEN 60000000 AND 61000000 then
                     (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID=a.locationID)
-                when a.locationID>=61000000 then
-                    (SELECT c.stationName FROM `eve_conquerable_station_lists` AS c
-                      WHERE c.stationID=a.locationID)
+                      WHERE s.stationID=character_assets.location_id)
+                when character_assets.location_id BETWEEN 61000000 AND 61001146 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_assets.location_id)
+                when character_assets.location_id > 61001146 then
+                    (SELECT name FROM `universe_structures` AS c
+                     WHERE c.structure_id = character_assets.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
-                    WHERE m.itemID=a.locationID) end
-                    AS location,a.locationId AS locID'))
+                    WHERE m.itemID=character_assets.location_id) end
+                AS location,
+                character_assets.location_id AS locID'))
+            ->join('character_infos',
+                'character_assets.character_id', '=',
+                'character_infos.character_id')
             ->join('invTypes',
-                'a.typeID', '=',
+                'character_assets.type_id', '=',
                 'invTypes.typeID')
             ->join('invGroups',
                 'invTypes.groupID', '=',
-                'invGroups.groupID')
-            ->join(
-                'account_api_key_info_characters',
-                'a.characterID', '=',
-                'account_api_key_info_characters.characterID')
-            ->join(
-                'eve_api_keys',
-                'eve_api_keys.key_id', '=',
-                'account_api_key_info_characters.keyID');
+                'invGroups.groupID');
 
         // If the user is not a superuser, filter the results.
         if (! $user->hasSuperUser()) {
@@ -189,11 +170,17 @@ trait Search
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.assets', false))
-                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                    $query = $query->whereIn('character_assets.character_id',
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
+                $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
+
+                    return $group->users->pluck('id');
+
+                })->flatten()->toArray();
+
+                $query->orWhere('character_assets.character_id', $user_character_ids);
             });
         }
 
@@ -211,22 +198,19 @@ trait Search
         $user = auth()->user();
 
         // Start the skills query
-        $skills = CharacterSheetSkills::join(
+        $skills = CharacterSkill::join(
             'invTypes',
-            'character_character_sheet_skills.typeID', '=',
+            'character_skills.skill_id', '=',
             'invTypes.typeID')
             ->join(
                 'invGroups',
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
             ->join(
-                'account_api_key_info_characters',
-                'character_character_sheet_skills.characterID', '=',
-                'account_api_key_info_characters.characterID')
-            ->join(
-                'eve_api_keys',
-                'eve_api_keys.key_id', '=',
-                'account_api_key_info_characters.keyID');
+                'character_infos',
+                'character_infos.character_id', '=',
+                'character_skills.character_id'
+            );
 
         // If the user is not a superuser, filter the results.
         if (! $user->hasSuperUser()) {
@@ -236,43 +220,21 @@ trait Search
                 // If the user has any affiliations and can
                 // list those characters, add them
                 if ($user->has('character.skills', false))
-                    $query = $query->whereIn('account_api_key_info_characters.characterID',
+                    $query = $query->whereIn('character_skills.character_id',
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
+                $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
+
+                    return $group->users->pluck('id');
+
+                })->flatten()->toArray();
+
+                $query->orWhereIn('character_skills.character_id', $user_character_ids);
             });
         }
 
         return $skills;
     }
 
-    /**
-     * @param string $filter
-     *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function doSearchApiKey(string $filter)
-    {
-
-        $keys = ApiKey::with('info');
-
-        $keys->where(function ($query) use ($filter) {
-
-            $query->where('key_id', 'like', '%' . $filter . '%')
-                ->orWhere('enabled', 'like', '%' . $filter . '%')
-                ->orWhereHas('info', function ($sub_filter) use ($filter) {
-
-                    $sub_filter->where('type', 'like', '%' . $filter . '%')
-                        ->orWhere('expires', 'like', '%' . $filter . '%');
-
-                });
-        });
-
-        if (! auth()->user()->has('apikey.list', false))
-            $keys = $keys
-                ->where('user_id', auth()->user()->id);
-
-        return $keys->get();
-    }
 }
