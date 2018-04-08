@@ -23,7 +23,6 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Seat\Eveapi\Models\Corporation\CorporationInfo;
-use Seat\Services\Repositories\Configuration\UserRespository;
 
 /**
  * Class Corporation.

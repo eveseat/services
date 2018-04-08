@@ -84,7 +84,7 @@ trait Search
                     $query = $query->orWhereIn('character_id', array_keys($user->getAffiliationMap()['char']))
                         ->orWhereIn('from', array_keys($user->getAffiliationMap()['char']));
 
-                    $query = $query->orWhereHas('recipients', function($sub_query) {
+                    $query = $query->orWhereHas('recipients', function ($sub_query, $user) {
                         $sub_query->orWhereIn('recipient_id', array_keys($user->getAffiliationMap()['char']));
                     });
                 }
@@ -98,7 +98,7 @@ trait Search
 
                 $query->orWhereIn('character_id', $user_character_ids)
                       ->orWhereIn('from', $user_character_ids)
-                      ->orWhereHas('recipients', function($sub_query) use ($user_character_ids) {
+                      ->orWhereHas('recipients', function ($sub_query) use ($user_character_ids) {
                             $sub_query->orWhereIn('recipient_id', $user_character_ids);
                         });
             });
@@ -236,5 +236,4 @@ trait Search
 
         return $skills;
     }
-
 }
