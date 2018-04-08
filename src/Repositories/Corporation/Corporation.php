@@ -43,9 +43,11 @@ trait Corporation
     /**
      * Return the corporations for which a user has access.
      *
+     * @param bool $get
+     *
      * @return mixed
      */
-    public function getAllCorporationsWithAffiliationsAndFilters()
+    public function getAllCorporationsWithAffiliationsAndFilters(bool $get = true)
     {
 
         // Get the User for permissions and affiliation
@@ -71,9 +73,11 @@ trait Corporation
             // TODO: Add check to include corporations the characters group is a part of.
         }
 
-        return $corporations->orderBy('name', 'desc')
-            ->get();
+        if ($get)
+            return $corporations->orderBy('name', 'desc')
+                ->get();
 
+        return $corporations->getQuery();
     }
 
     /**
