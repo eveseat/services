@@ -23,5 +23,12 @@
         "laravel/framework": "5.3.*",
         "coduo/php-humanizer": "^2.0",
         "eveseat/eveapi": "2.0.*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Seat\\Services\\ServicesServiceProvider"
+            ]
+        }
     }
 }
