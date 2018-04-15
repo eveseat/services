@@ -46,9 +46,9 @@ trait Character
      *
      * @param bool $get
      *
-     * @return $this|\Illuminate\Database\Eloquent\Collection|static[]
+     * @return mixed
      */
-    public function getAllCharactersWithAffiliations(bool $get = true): Collection
+    public function getAllCharactersWithAffiliations(bool $get = true)
     {
 
         // TODO : rewrite the method according to the new ACL mechanic
@@ -93,7 +93,7 @@ trait Character
                 ->orderBy('name')
                 ->get();
 
-        return $characters;
+        return $characters->getQuery();
     }
 
     /**
