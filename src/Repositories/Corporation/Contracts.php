@@ -136,7 +136,7 @@ trait Contracts
             ->join('invGroups',
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
-            ->join('corporation_contracts',  'corporation_contracts.contract_id', '=', 'contract_items.contract_id')
+            ->join('corporation_contracts', 'corporation_contracts.contract_id', '=', 'contract_items.contract_id')
             ->where('corporation_id', $corporation_id)
             ->where('corporation_contracts.contract_id', $contract_id)
             ->take(150)// Limit to 150 for now. Some of these contracts are insanely big.

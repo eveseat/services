@@ -1,27 +1,27 @@
 {
-    "name": "eveseat/services",
-    "description": "SeAT Services Components",
-    "license": "GPL-2.0",
-    "authors": [
-        {
-            "name": "Leon Jacobs",
-            "email": "leonja511@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Seat\\Services\\": "src/"
-        },
-        "files": [
-            "src/Helpers/helpers.php"
-        ]
-    },
-    "minimum-stability": "alpha",
-    "prefer-stable": true,
-    "require": {
-        "php": ">=7.0",
-        "laravel/framework": "5.3.*",
-        "coduo/php-humanizer": "^2.0",
-        "eveseat/eveapi": "2.0.*"
+  "name": "eveseat/services",
+  "description": "SeAT Services Components",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Leon Jacobs",
+      "email": "leonja511@gmail.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Seat\\Services\\": "src/"
+    },
+    "files": [
+      "src/Helpers/helpers.php"
+    ]
+  },
+  "minimum-stability": "alpha",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.0",
+    "laravel/framework": "5.3.*",
+    "coduo/php-humanizer": "^2.0",
+    "eveseat/eveapi": "2.0.*"
+  }
 }

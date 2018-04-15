@@ -65,26 +65,26 @@ class Seat extends Settings
     protected static $defaults = [
 
         // User Registration
-        'registration'                => 'yes',
+        'registration'       => 'yes',
 
         // Admin contact
-        'admin_contact'               => 'seatadmin@localhost.local',
+        'admin_contact'      => 'seatadmin@localhost.local',
 
         // Allow Usage Tracking
-        'allow_tracking'              => 'yes',
+        'allow_tracking'     => 'yes',
 
         // Currently Installed SDE Version
-        'installed_sde'               => null,
+        'installed_sde'      => null,
 
         // API Updater Class Constraint. This value should
         // be stored as a json string!
-        'api_constraint'              => '',
+        'api_constraint'     => '',
 
         // Require Email Activation
-        'require_activation'          => 'yes',
+        'require_activation' => 'yes',
 
         // Default Scopes asked for SSO Authentication
-        'sso_scopes'                  => [
+        'sso_scopes'         => [
 
             'esi-alliances.read_contacts.v1',
             'esi-assets.read_assets.v1',

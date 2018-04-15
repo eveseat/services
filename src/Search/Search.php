@@ -85,6 +85,7 @@ trait Search
                         ->orWhereIn('from', array_keys($user->getAffiliationMap()['char']));
 
                     $query = $query->orWhereHas('recipients', function ($sub_query, $user) {
+
                         $sub_query->orWhereIn('recipient_id', array_keys($user->getAffiliationMap()['char']));
                     });
                 }
@@ -97,10 +98,11 @@ trait Search
                 })->flatten()->toArray();
 
                 $query->orWhereIn('character_id', $user_character_ids)
-                      ->orWhereIn('from', $user_character_ids)
-                      ->orWhereHas('recipients', function ($sub_query) use ($user_character_ids) {
-                            $sub_query->orWhereIn('recipient_id', $user_character_ids);
-                        });
+                    ->orWhereIn('from', $user_character_ids)
+                    ->orWhereHas('recipients', function ($sub_query) use ($user_character_ids) {
+
+                        $sub_query->orWhereIn('recipient_id', $user_character_ids);
+                    });
             });
         }
 

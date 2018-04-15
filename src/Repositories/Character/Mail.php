@@ -82,6 +82,7 @@ trait Mail
      * @param bool $get
      * @param int  $chunk
      *
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection
      */
     public function getCharacterMail(
         int $character_id, bool $get = true, int $chunk = 50)
