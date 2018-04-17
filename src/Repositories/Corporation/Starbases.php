@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,8 @@ trait Starbases
         return CorporationStarbase::where('corporation_id', $corporation_id)->get();
     }
 
-
     /**
-     * Retrieving all modules which are inside a starbase area (forcefield and maximum control range)
+     * Retrieving all modules which are inside a starbase area (forcefield and maximum control range).
      *
      * @param int $corporation_id
      * @param int $starbase_id
@@ -96,10 +95,9 @@ trait Starbases
             if (is_null($candidate->x) || is_null($candidate->y) || is_null($candidate->z))
                 return false;
 
-            return ($candidate->x >= $starbaseArea['x'][0] && $candidate->x <= $starbaseArea['x'][1] &&
+            return $candidate->x >= $starbaseArea['x'][0] && $candidate->x <= $starbaseArea['x'][1] &&
                 $candidate->y >= $starbaseArea['y'][0] && $candidate->y <= $starbaseArea['y'][1] &&
-                $candidate->z >= $starbaseArea['z'][0] && $candidate->z <= $starbaseArea['z'][1]);
+                $candidate->z >= $starbaseArea['z'][0] && $candidate->z <= $starbaseArea['z'][1];
         });
     }
-
 }
