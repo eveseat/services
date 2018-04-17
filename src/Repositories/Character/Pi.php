@@ -24,6 +24,7 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\PlanetaryInteraction\CharacterPlanet;
+use Seat\Eveapi\Models\PlanetaryInteraction\CharacterPlanetExtractor;
 
 /**
  * Class Pi.
@@ -45,6 +46,20 @@ trait Pi
             ->join('mapDenormalize as system', 'system.itemID', '=', 'solar_system_id')
             ->join('mapDenormalize as planet', 'planet.itemID', '=', 'planet_id')
             ->select('character_planets.*', 'system.itemName', 'planet.typeID')
+            ->get();
+    }
+
+    public function getCharacterPlanetaryExtractors(int $character_id): Collection
+    {
+
+        return CharacterPlanetExtractor::where('character_planet_extractors.character_id', $character_id)
+            ->join('character_planet_pins as pin', 'pin.pin_id', '=', 'character_planet_extractors.pin_id')
+            ->join('character_planets as planets', 'planets.planet_id', '=', 'character_planet_extractors.planet_id')
+            ->join('mapDenormalize as system', 'system.itemID', '=', 'planets.solar_system_id')
+            ->join('mapDenormalize as planet', 'planet.itemID', '=', 'character_planet_extractors.planet_id')
+            ->join('invTypes as inventory', 'inventory.typeID', '=', 'character_planet_extractors.product_type_id')
+            ->select('character_planet_extractors.*', 'system.itemName', 'planet.typeID', 'pin.expiry_time', 'planets.planet_type', 'inventory.typeName',
+                'planet.celestialIndex')
             ->get();
     }
 }
