@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 namespace Seat\Services\Repositories\Seat;
 
 use Seat\Eveapi\Models\Character\CharacterInfoSkill;
-use Seat\Eveapi\Models\Character\CharacterSheet;
-use Seat\Eveapi\Models\Character\CharacterSheetSkills;
-use Seat\Eveapi\Models\KillMail\Detail;
 use Seat\Eveapi\Models\Killmails\CharacterKillmail;
 use Seat\Eveapi\Models\Wallet\CharacterWalletBalance;
 
