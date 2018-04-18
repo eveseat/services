@@ -25,6 +25,7 @@ namespace Seat\Services\Repositories\Character;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Mail\MailHeader;
+use Seat\Eveapi\Models\Mail\MailMailingList;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
 use Seat\Web\Models\StandingsProfile;
@@ -47,6 +48,7 @@ trait Intel
 
         return CharacterWalletJournal::select(
             DB::raw('count(*) as total'),
+            'ref_type',
             'character_affiliations.character_id',
             'character_affiliations.corporation_id',
             'character_affiliations.alliance_id',
@@ -67,7 +69,8 @@ trait Intel
             })
             // Limit to the character in question...
             ->where('character_wallet_journals.character_id', $character_id)
-            ->groupBy('first_party_id', 'second_party_id');
+            ->groupBy('first_party_id', 'second_party_id')
+            ->get();
 
     }
 
@@ -112,20 +115,22 @@ trait Intel
 
             $join->on(
                 'character_affiliations.character_id', '=',
-                'character_mail_messages.sender_id'
+                'mail_headers.from'
             );
 
         })
-            ->where('character_mail_messages.character_id', $character_id)
-            ->where('character_mail_messages.sender_id', '<>', $character_id)
+            ->where('mail_headers.character_id', $character_id)
+            ->where('mail_headers.from', '<>', $character_id)
+            ->whereNotIn('mail_headers.from', MailMailingList::select('mailing_list_id')->distinct()->get())
             ->select(
                 'character_affiliations.character_id',
                 'character_affiliations.corporation_id',
                 'character_affiliations.alliance_id',
-                'character_affiliations.faction_id'
+                'character_affiliations.faction_id',
+                'mail_headers.from'
             )
-            ->selectRaw('count(sender_id) as total')
-            ->groupBy('sender_id');
+            ->selectRaw('count(`from`) as total')
+            ->groupBy('from');
 
     }
 
