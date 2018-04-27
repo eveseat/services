@@ -24,6 +24,7 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Contacts\CorporationContact;
+use Seat\Eveapi\Models\Contacts\CorporationContactLabel;
 
 /**
  * Class Contacts.
@@ -45,5 +46,19 @@ trait Contacts
             ->orderBy('standing', 'desc')
             ->get();
 
+    }
+
+    /**
+     * Get a corporation contact list labels.
+     *
+     * @param int $corporation_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationContactLabels(int $corporation_id): Collection
+    {
+
+        return CorporationContactLabel::where('corporation_id', $corporation_id)
+            ->get();
     }
 }
