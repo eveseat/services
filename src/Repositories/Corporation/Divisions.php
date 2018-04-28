@@ -32,7 +32,7 @@ use Seat\Eveapi\Models\Corporation\CorporationDivision;
 trait Divisions
 {
     /**
-     * Return the Corporation Divisions for a Corporation.
+     * Return the Divisions for a Corporation.
      *
      * @param int $corporation_id
      *
