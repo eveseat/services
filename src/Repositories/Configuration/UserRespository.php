@@ -46,7 +46,7 @@ trait UserRespository
     public function getAllFullUsers()
     {
 
-        return UserModel::with('roles', 'affiliations')
+        return UserModel::with('roles', 'affiliations', 'refresh_token')
             ->get();
     }
 
