@@ -33,6 +33,8 @@ use Seat\Eveapi\Models\Corporation\Locations;
  */
 trait Assets
 {
+
+
     /**
      * Return the assets list for a Corporation.
      *
@@ -51,7 +53,7 @@ trait Assets
                 *,
 
                 --
-                -- Start the Lookation Lookup
+                -- Start the location lookup
                 --
                 CASE
                 when corporation_assets.location_id BETWEEN 66015148 AND 66015151 then
@@ -80,8 +82,13 @@ trait Assets
                      WHERE c.structure_id = corporation_assets.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID=corporation_assets.location_id) end
-                AS locationName,
-                corporation_assets.location_id AS location'))
+                AS location_name'))
+            ->whereIn('location_flag', [
+                // These locations look like they are top-level. Even though 'OfficeFolder' is
+                // top level, lets just flatten it anyways.
+                'CorpSAG1', 'CorpSAG2', 'CorpSAG3', 'CorpSAG4', 'CorpSAG5', 'CorpSAG6', 'CorpSAG7',
+                'AssetSafety', 'OfficeFolder', 'Impounded', 'CorpDeliveries',
+            ])
             ->where('corporation_assets.corporation_id', $corporation_id)
             ->get();
 
@@ -125,14 +132,11 @@ trait Assets
                                                 int $parent_item_id = null): Collection
     {
 
-        $contents = CorporationAsset::join('invTypes', 'corporation_assets.type_id', '=', 'invTypes.typeID')
+        $contents = CorporationAsset::with('type')
             ->where('corporation_id', $corporation_id);
 
         if (! is_null($parent_item_id))
             $contents = $contents->where('location_id', $parent_item_id);
-
-        // TODO: Allow the nested lookups to occur.
-        //$contents = $contents->where('location_id', null);
 
         return $contents->get();
     }
