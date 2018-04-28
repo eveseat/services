@@ -58,15 +58,7 @@ trait Character
         $user = auth()->user();
 
         // Which characters does the currently logged in user have?
-        // This query gets the currenty logged in users groups, then
-        // iterates each group that it is a member of and enumerates
-        // the users in that group. Finally, we pluck the 'id' for
-        // the user as that is also the character_id used to in eve.
-        $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
-
-            return $group->users->pluck('id');
-
-        })->flatten()->toArray();
+        $user_character_ids = auth()->user()->associatedCharacterIds();
 
         // Start the character information query
         $characters = new CharacterInfo;
