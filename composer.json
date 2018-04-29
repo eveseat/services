@@ -16,12 +16,19 @@
       "src/Helpers/helpers.php"
     ]
   },
-  "minimum-stability": "alpha",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.0",
-    "laravel/framework": "5.3.*",
+    "php": ">=7.1",
+    "laravel/framework": "5.5.*",
     "coduo/php-humanizer": "^2.0",
-    "eveseat/eveapi": "2.0.*"
+    "eveseat/eveapi": "~3"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Seat\\Web\\ServicesServiceProvider"
+      ]
+    }
   }
 }
