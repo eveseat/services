@@ -33,7 +33,7 @@ use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
 trait Ledger
 {
     /**
-     * Return the Bountry Prize Payout dates for a Corporation.
+     * Return the Bounty Prize Payout dates for a Corporation.
      *
      * @param int $corporation_id
      *

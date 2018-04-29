@@ -23,6 +23,7 @@
 namespace Seat\Services\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Seat\Web\Models\User;
 
 /**
  * Class UserSetting.

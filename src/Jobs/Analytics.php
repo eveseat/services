@@ -73,6 +73,7 @@ class Analytics implements ShouldQueue
      * job should just return.
      *
      * @return void
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function handle()
     {
@@ -102,6 +103,7 @@ class Analytics implements ShouldQueue
      * Check if tracking is allowed.
      *
      * @return bool
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function allowTracking()
     {
@@ -188,8 +190,11 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Retreive a client-id from the cache. If none
-     * exists, generate one.
+     * Query the eveseat/resources repository for SDE
+     * related information.
+     *
+     * @return mixed|string
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     private function getClientID()
     {

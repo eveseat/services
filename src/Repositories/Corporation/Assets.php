@@ -97,7 +97,7 @@ trait Assets
     /**
      * Returns a corporation assets grouped by location.
      * Only assets in space will appear here as assets
-     * that are in stations dont have 'locations' entries.
+     * that are in stations don't have 'locations' entries.
      *
      * @param int $corporation_id
      *

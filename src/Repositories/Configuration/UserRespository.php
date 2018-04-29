@@ -53,7 +53,7 @@ trait UserRespository
     /**
      * @param $user_id
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @return \Illuminate\Database\Eloquent\Model|null|object|static
      */
     public function getFullUser($user_id)
     {

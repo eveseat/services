@@ -64,7 +64,7 @@ class Eve
     /**
      * @var string
      */
-    protected $extention = 'png';
+    protected $extension = 'png';
 
     /**
      * @var string
@@ -109,10 +109,10 @@ class Eve
             $this->size = 32;
 
         // Character images are jpg, everything else is
-        // png. So, set the extention to jpg if this
+        // png. So, set the extension to jpg if this
         // is for a character image
         if ($this->type == 'Character')
-            $this->extention = 'jpg';
+            $this->extension = 'jpg';
 
     }
 
@@ -195,7 +195,7 @@ class Eve
     {
 
         return $this->img_server . '/' . $this->type . '/' . $this->id .
-            '_' . $size . '.' . $this->extention;
+            '_' . $size . '.' . $this->extension;
 
     }
 }

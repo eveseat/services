@@ -38,8 +38,6 @@ trait Search
     use Character, Corporation;
 
     /**
-     * @param string $query
-     *
      * @return mixed
      */
     public function doSearchCharacters()
@@ -49,8 +47,6 @@ trait Search
     }
 
     /**
-     * @param string $query
-     *
      * @return mixed
      */
     public function doSearchCorporations()
@@ -60,8 +56,6 @@ trait Search
     }
 
     /**
-     * @param string $filter
-     *
      * @return mixed
      */
     public function doSearchCharacterMail()

@@ -71,7 +71,7 @@ trait Skills
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterSkilQueue(int $character_id): Collection
+    public function getCharacterSkillQueue(int $character_id): Collection
     {
 
         return CharacterSkillQueue::where('characterID', $character_id)

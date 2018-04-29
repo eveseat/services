@@ -31,14 +31,16 @@ use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
  */
 trait Wallet
 {
+
     /**
-     * Retreive Wallet Journal Entries for a Character.
+     * Query the eveseat/resources repository for SDE
+     * related information.
      *
      * @param int  $character_id
      * @param bool $get
      * @param int  $chunk
      *
-     * @return
+     * @return mixed
      */
     public function getCharacterWalletJournal(
         int $character_id, bool $get = true, int $chunk = 50)
@@ -54,13 +56,13 @@ trait Wallet
     }
 
     /**
-     * Retreive Wallet Transaction Entries for a Character.
+     * Retrieve Wallet Transaction Entries for a Character.
      *
      * @param int  $character_id
      * @param bool $get
      * @param int  $chunk
      *
-     * @return
+     * @return mixed
      */
     public function getCharacterWalletTransactions(
         int $character_id, bool $get = true, int $chunk = 50)

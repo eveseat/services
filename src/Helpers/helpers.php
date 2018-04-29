@@ -69,6 +69,7 @@ if (! function_exists('img')) {
      * @param bool|true $lazy
      *
      * @return string
+     * @throws \Seat\Services\Exceptions\EveImageException
      */
     function img($type, $id, $size, array $attr, $lazy = true)
     {
@@ -89,6 +90,7 @@ if (! function_exists('number')) {
      * @param $dec
      *
      * @return string
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     function number($number, $dec = 2)
     {
@@ -156,7 +158,7 @@ if (! function_exists('clean_ccp_html')) {
 if (! function_exists('evemail_threads')) {
 
     /**
-     * Attempt to 'thread' evemails based on the seperator
+     * Attempt to 'thread' evemails based on the separator
      * that is automatically added using the eve client.
      *
      * @param $message
@@ -227,7 +229,7 @@ if (! function_exists('evemail_threads')) {
             } catch (InvalidArgumentException $e) {
             }
 
-            // Lasty the To characterName. We need to trim a trailing
+            // Lastly the To characterName. We need to trim a trailing
             // comma (,) here too.
             $to = ltrim($thread[3], 'To: ');
             $to = rtrim($to, ',  ');
@@ -253,8 +255,8 @@ if (! function_exists('setting')) {
     /**
      * Work with settings.
      *
-     * Providing a string argument will retreive a setting.
-     * Providing an array arguement will set a setting.
+     * Providing a string argument will retrieve a setting.
+     * Providing an array argument will set a setting.
      *
      * @param      $name
      * @param bool $global
@@ -277,9 +279,9 @@ if (! function_exists('setting')) {
             $for_id = $name[2] ?? null;
 
             if ($global)
-                return \Seat\Services\Settings\Seat::set($name[0], $name[1], $for_id);
+                \Seat\Services\Settings\Seat::set($name[0], $name[1], $for_id);
 
-            return \Seat\Services\Settings\Profile::set($name[0], $name[1], $for_id);
+            \Seat\Services\Settings\Profile::set($name[0], $name[1], $for_id);
         }
 
         // If we just got a string, it means we want to get.

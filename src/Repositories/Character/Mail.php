@@ -100,14 +100,14 @@ trait Mail
     }
 
     /**
-     * Retreive a specific message for a character.
+     * Retrieve a specific message for a character.
      *
      * @param int $character_id
      * @param int $message_id
      *
-     * @return
+     * @return \Seat\Eveapi\Models\Mail\MailHeader
      */
-    public function getCharacterMailMessage(int $character_id, int $message_id)
+    public function getCharacterMailMessage(int $character_id, int $message_id): MailHeader
     {
 
         return MailHeader::where('character_id', $character_id)

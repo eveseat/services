@@ -106,9 +106,9 @@ trait Intel
     /**
      * @param int $character_id
      *
-     * @return
+     * @return \Seat\Eveapi\Models\Mail\MailHeader
      */
-    public function characterTopMailInteractions(int $character_id)
+    public function characterTopMailInteractions(int $character_id): MailHeader
     {
 
         return MailHeader::leftJoin('character_affiliations', function ($join) {
@@ -162,9 +162,9 @@ trait Intel
      * @param int $character_id
      * @param int $profile_id
      *
-     * @return
+     * @return \Seat\Eveapi\Models\Wallet\CharacterWalletJournal
      */
-    public function getCharacterJournalStandingsWithProfile(int $character_id, int $profile_id)
+    public function getCharacterJournalStandingsWithProfile(int $character_id, int $profile_id): CharacterWalletJournal
     {
 
         return CharacterWalletJournal::select(

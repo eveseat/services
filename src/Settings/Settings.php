@@ -62,7 +62,7 @@ abstract class Settings
     protected static $scope = 'global';
 
     /**
-     * Retreive a setting by name.
+     * Retrieve a setting by name.
      *
      * @param      $name
      * @param null $for_id
@@ -85,7 +85,7 @@ abstract class Settings
                 $value = $value->where('user_id',
                     is_null($for_id) ? auth()->user()->id : $for_id);
 
-            // Retreive the value
+            // Retrieve the value
             $value = $value->where('name', $name)
                 ->value('value');
 
@@ -144,7 +144,7 @@ abstract class Settings
             $db = $db->where('user_id',
                 is_null($for_id) ? auth()->user()->id : $for_id);
 
-        // Retreive the value
+        // Retrieve the value
         $db = $db->where('name', $name)
             ->first();
 

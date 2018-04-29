@@ -95,7 +95,7 @@ trait Wallet
      * @param bool $get
      * @param int  $chunk
      *
-     * @return
+     * @return mixed
      */
     public function getCorporationWalletTransactions(
         int $corporation_id, bool $get = true, int $chunk = 50)
