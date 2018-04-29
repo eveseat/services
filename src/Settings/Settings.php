@@ -114,8 +114,7 @@ abstract class Settings
 
         // Ensure we have a prefix to work with.
         if (is_null(static::$prefix))
-            throw new SettingException(
-                'No prefix defined. Have you extended and declared $prefix?');
+            throw new SettingException('No prefix defined. Have you extended and declared $prefix?');
 
         // Prefix user keys with the session_id
         if (static::$scope != 'global')

@@ -279,9 +279,9 @@ if (! function_exists('setting')) {
             $for_id = $name[2] ?? null;
 
             if ($global)
-                \Seat\Services\Settings\Seat::set($name[0], $name[1], $for_id);
+                return \Seat\Services\Settings\Seat::set($name[0], $name[1], $for_id);
 
-            \Seat\Services\Settings\Profile::set($name[0], $name[1], $for_id);
+            return \Seat\Services\Settings\Profile::set($name[0], $name[1], $for_id);
         }
 
         // If we just got a string, it means we want to get.
