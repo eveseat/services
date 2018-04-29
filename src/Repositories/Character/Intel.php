@@ -106,9 +106,9 @@ trait Intel
     /**
      * @param int $character_id
      *
-     * @return \Seat\Eveapi\Models\Mail\MailHeader
+     * @return mixed
      */
-    public function characterTopMailInteractions(int $character_id): MailHeader
+    public function characterTopMailInteractions(int $character_id)
     {
 
         return MailHeader::leftJoin('character_affiliations', function ($join) {
