@@ -31,7 +31,6 @@ use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
  */
 trait Wallet
 {
-
     /**
      * Query the eveseat/resources repository for SDE
      * related information.

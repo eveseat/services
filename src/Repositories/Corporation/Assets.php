@@ -33,8 +33,6 @@ use Seat\Eveapi\Models\Corporation\Locations;
  */
 trait Assets
 {
-
-
     /**
      * Return the assets list for a Corporation.
      *

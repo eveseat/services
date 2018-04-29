@@ -208,7 +208,7 @@ class NotificationTypesSeeder extends Seeder
             ['id' => 1030, 'desc' => 'Plex Donation'],
             ['id' => 1031, 'desc' => 'Plex Donation'],
             ['id' => 2001, 'desc' => 'Watched Contact Online'],
-            ['id' => 2002, 'desc' => 'Watched Contact Offline'],]);
+            ['id' => 2002, 'desc' => 'Watched Contact Offline'], ]);
 
     }
 }
