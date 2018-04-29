@@ -16,7 +16,7 @@
       "src/Helpers/helpers.php"
     ]
   },
-  "minimum-stability": "stable",
+  "minimum-stability": "alpha",
   "prefer-stable": true,
   "require": {
     "php": ">=7.1",
@@ -27,7 +27,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Seat\\Web\\ServicesServiceProvider"
+        "Seat\\Services\\ServicesServiceProvider"
       ]
     }
   }
