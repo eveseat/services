@@ -162,9 +162,9 @@ trait Intel
      * @param int $character_id
      * @param int $profile_id
      *
-     * @return \Seat\Eveapi\Models\Wallet\CharacterWalletJournal
+     * @return mixed
      */
-    public function getCharacterJournalStandingsWithProfile(int $character_id, int $profile_id): CharacterWalletJournal
+    public function getCharacterJournalStandingsWithProfile(int $character_id, int $profile_id)
     {
 
         return CharacterWalletJournal::select(
