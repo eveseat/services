@@ -34,7 +34,7 @@ use Seat\Eveapi\Models\Character\CharacterTitle;
 trait Info
 {
     /**
-     * Retreive a character name by character id.
+     * Retrieve a character name by character id.
      *
      * @param int $character_id
      *
@@ -72,7 +72,7 @@ trait Info
     {
 
         return CharacterCorporationHistory::where('character_id', $character_id)
-            ->orderBy('start_date', 'desc')
+            ->orderBy('record_id', 'desc')
             ->get();
 
     }
