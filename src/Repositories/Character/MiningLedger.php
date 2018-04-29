@@ -24,13 +24,24 @@ namespace Seat\Services\Repositories\Character;
 
 use Seat\Eveapi\Models\Industry\CharacterMining;
 
+/**
+ * Trait MiningLedger.
+ *
+ * @package Seat\Services\Repositories\Character
+ */
 trait MiningLedger
 {
+    /**
+     * @param int  $character_id
+     * @param bool $get
+     *
+     * @return mixed
+     */
     public function getCharacterLedger(int $character_id, bool $get = true)
     {
 
         $ledger = CharacterMining::select('date', 'solar_system_id', 'type_id', 'quantity')
-                                 ->where('character_id', $character_id);
+            ->where('character_id', $character_id);
 
         if (! $get)
             return $ledger;

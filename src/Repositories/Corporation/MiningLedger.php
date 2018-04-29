@@ -24,17 +24,28 @@ namespace Seat\Services\Repositories\Corporation;
 
 use Seat\Eveapi\Models\Industry\CharacterMining;
 
+/**
+ * Trait MiningLedger.
+ *
+ * @package Seat\Services\Repositories\Corporation
+ */
 trait MiningLedger
 {
+    /**
+     * @param int  $corporation_id
+     * @param bool $get
+     *
+     * @return mixed
+     */
     public function getCorporationLedgers(int $corporation_id, bool $get = true)
     {
 
         $ledger = CharacterMining::select('year', 'month')
-                                 ->join('corporation_member_trackings', 'corporation_member_trackings.character_id', 'character_minings.character_id')
-                                 ->distinct()
-                                 ->where('corporation_id', $corporation_id)
-                                 ->orderBy('year', 'desc')
-                                 ->orderBy('month', 'desc');
+            ->join('corporation_member_trackings', 'corporation_member_trackings.character_id', 'character_minings.character_id')
+            ->distinct()
+            ->where('corporation_id', $corporation_id)
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc');
 
         if (! $get)
             return $ledger;
@@ -42,13 +53,22 @@ trait MiningLedger
         return $ledger->get();
     }
 
+    /**
+     * @param int  $corporation_id
+     * @param int  $year
+     * @param int  $month
+     * @param bool $get
+     *
+     * @return mixed
+     */
     public function getCorporationLedger(int $corporation_id, int $year, int $month, bool $get = true)
     {
+
         $ledger = CharacterMining::select('character_minings.character_id', 'year', 'month', 'type_id', 'quantity')
-                                 ->join('corporation_member_trackings', 'corporation_member_trackings.character_id', 'character_minings.character_id')
-                                 ->where('corporation_id', $corporation_id)
-                                 ->where('year', $year)
-                                 ->where('month', $month);
+            ->join('corporation_member_trackings', 'corporation_member_trackings.character_id', 'character_minings.character_id')
+            ->where('corporation_id', $corporation_id)
+            ->where('year', $year)
+            ->where('month', $month);
 
         if (! $get)
             return $ledger;
