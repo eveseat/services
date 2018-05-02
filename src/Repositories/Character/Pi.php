@@ -92,6 +92,7 @@ trait Pi
                 'typeName'        => $extractor->typeName,
             ]);
         }
+
         return $clean_extractors;
     }
 }
