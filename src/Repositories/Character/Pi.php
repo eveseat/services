@@ -49,15 +49,26 @@ trait Pi
             ->get();
     }
 
+    /**
+     * @param int $character_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function getCharacterPlanetaryExtractors(int $character_id): Collection
     {
 
-        $extractors = CharacterPlanetExtractor::where('character_planet_extractors.character_id', $character_id)
-            ->join('character_planet_pins as pin', 'pin.pin_id', '=', 'character_planet_extractors.pin_id')
-            ->join('character_planets as planets', 'planets.planet_id', '=', 'character_planet_extractors.planet_id')
-            ->join('mapDenormalize as system', 'system.itemID', '=', 'planets.solar_system_id')
-            ->join('mapDenormalize as planet', 'planet.itemID', '=', 'character_planet_extractors.planet_id')
-            ->join('invTypes as inventory', 'inventory.typeID', '=', 'character_planet_extractors.product_type_id')
+        $extractors = CharacterPlanetExtractor::where(
+            'character_planet_extractors.character_id', $character_id)
+            ->join('character_planet_pins as pin',
+                'pin.pin_id', '=', 'character_planet_extractors.pin_id')
+            ->join('character_planets as planets',
+                'planets.planet_id', '=', 'character_planet_extractors.planet_id')
+            ->join('mapDenormalize as system',
+                'system.itemID', '=', 'planets.solar_system_id')
+            ->join('mapDenormalize as planet',
+                'planet.itemID', '=', 'character_planet_extractors.planet_id')
+            ->join('invTypes as inventory',
+                'inventory.typeID', '=', 'character_planet_extractors.product_type_id')
             ->select(
                 'character_planet_extractors.product_type_id', // Extractor Product Name f.e. Aqueous Liquids
                 'planet.celestialIndex', // arabic planet index
@@ -72,7 +83,7 @@ trait Pi
 
         $extractors = $extractors->map(function ($item) {
 
-            $item->celestialIndex = numberToRomanRepresentation($item->celestialIndex);
+            $item->celestialIndex = number_roman($item->celestialIndex);
 
             return $item;
         });
