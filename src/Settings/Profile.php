@@ -75,10 +75,6 @@ class Profile extends Settings
         'language'            => 'en',
         'mail_threads'        => 'yes',
 
-        // Main Character
-        'main_character_id'   => 1,
-        'main_character_name' => null,
-
         // Numbers
         'thousand_seperator'  => ' ',
         'decimal_seperator'   => '.',

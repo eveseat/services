@@ -34,13 +34,12 @@ trait Stats
 {
     /**
      * @return float
-     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function getTotalCharacterIsk(): ?float
     {
 
         // filter balance on granted characters
-        if ($balance = CharacterWalletBalance::find(setting('main_character_id')))
+        if ($balance = CharacterWalletBalance::find(auth()->user()->group->main_character->id))
             return $balance->balance;
 
         return null;
@@ -48,13 +47,12 @@ trait Stats
 
     /**
      * @return int
-     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function getTotalCharacterSkillpoints(): ?int
     {
 
         // filter skills on granted characters
-        if ($skills = CharacterInfoSkill::find(setting('main_character_id')))
+        if ($skills = CharacterInfoSkill::find(auth()->user()->group->main_character->id))
             return $skills->total_sp;
 
         return null;
@@ -62,12 +60,11 @@ trait Stats
 
     /**
      * @return int
-     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function getTotalCharacterKillmails(): int
     {
 
-        return CharacterKillmail::where('character_id', setting('main_character_id'))
+        return CharacterKillmail::where('character_id', auth()->user()->group->main_character->id)
             ->count();
     }
 

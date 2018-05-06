@@ -23,6 +23,7 @@
 namespace Seat\Services\Repositories\Configuration;
 
 use Illuminate\Support\Collection;
+use Seat\Web\Models\Group;
 use Seat\Web\Models\User as UserModel;
 
 /**
@@ -100,16 +101,16 @@ trait UserRespository
     /**
      * Return the characters that are part of a group.
      *
-     * @param \Illuminate\Support\Collection $groups
+     * @param \Seat\Web\Models\Group $group
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getUserGroupCharacters(Collection $groups): Collection
+    public function getUserGroupCharacters(Group $group = null): Collection
     {
 
-        return UserModel::whereHas('groups', function ($query) use ($groups) {
+        if (! $group)
+            return collect();
 
-            $query->whereIn('id', $groups->pluck('id'));
-        })->get();
+        return Group::with('users')->find($group->id)->users;
     }
 }
