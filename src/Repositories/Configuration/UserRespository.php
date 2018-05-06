@@ -44,6 +44,15 @@ trait UserRespository
     /**
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
+    public function getAllGroups()
+    {
+
+        return Group::all();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function getAllFullUsers()
     {
 
