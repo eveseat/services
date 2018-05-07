@@ -39,6 +39,13 @@ class Analytics implements ShouldQueue
     use InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
      * @var \Seat\Services\Helpers\AnalyticsContainer
      */
     private $hit;
@@ -134,6 +141,8 @@ class Analytics implements ShouldQueue
      *
      * @param       $type
      * @param array $query
+     *
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     private function send($type, array $query)
     {
