@@ -59,7 +59,7 @@ class Eve
      * @var array
      */
     protected $known_types = [
-        'character', 'corporation', 'alliance', 'type', 'render', 'auto', ];
+        'character', 'corporation', 'alliance', 'faction', 'type', 'render', 'auto', ];
 
     /**
      * @var string
@@ -93,6 +93,10 @@ class Eve
         // Check if we should detect the type based on id
         if ($type == 'auto')
             $type = $this->detect_type($id);
+
+        // ccp trick - http://eveonline-third-party-documentation.readthedocs.io/en/latest/imageserver/intro.html#faction-images
+        if ($type == 'faction')
+            $type = 'alliance';
 
         $this->type = ucfirst($type);
         $this->id = $id;
