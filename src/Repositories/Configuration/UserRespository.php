@@ -56,7 +56,7 @@ trait UserRespository
     public function getAllFullUsers()
     {
 
-        return UserModel::with('roles', 'affiliations', 'refresh_token')
+        return UserModel::with('group.roles', 'affiliations', 'refresh_token')
             ->get();
     }
 
@@ -68,7 +68,7 @@ trait UserRespository
     public function getFullUser($user_id)
     {
 
-        return UserModel::with('roles.permissions', 'affiliations')
+        return UserModel::with('group.roles.permissions', 'affiliations')
             ->where('id', $user_id)
             ->first();
     }
