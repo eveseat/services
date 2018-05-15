@@ -70,6 +70,9 @@ class Seat extends Settings
         // Admin contact
         'admin_contact'      => 'seatadmin@localhost.local',
 
+        // The number of workers to spawn.
+        'queue_workers'      => 10,
+
         // Allow Usage Tracking
         'allow_tracking'     => 'yes',
 
