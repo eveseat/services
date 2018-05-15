@@ -159,6 +159,7 @@ trait Mail
                 ->first();
 
         return $messages->orderBy('timestamp', 'desc')
+            ->groupBy('mail_id')
             ->paginate(25);
     }
 }
