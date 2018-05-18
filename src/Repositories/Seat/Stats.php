@@ -38,11 +38,8 @@ trait Stats
     public function getTotalCharacterIsk(): ?float
     {
 
-        // filter balance on granted characters
-        if ($balance = CharacterWalletBalance::find(auth()->user()->group->main_character->id))
-            return $balance->balance;
-
-        return null;
+        return CharacterWalletBalance::whereIn('character_id',
+            auth()->user()->associatedCharacterIds())->sum('balance');
     }
 
     /**
@@ -51,11 +48,8 @@ trait Stats
     public function getTotalCharacterSkillpoints(): ?int
     {
 
-        // filter skills on granted characters
-        if ($skills = CharacterInfoSkill::find(auth()->user()->group->main_character->id))
-            return $skills->total_sp;
-
-        return null;
+        return CharacterInfoSkill::whereIn('character_id',
+            auth()->user()->associatedCharacterIds())->sum('total_sp');
     }
 
     /**
@@ -64,7 +58,7 @@ trait Stats
     public function getTotalCharacterKillmails(): int
     {
 
-        return CharacterKillmail::where('character_id', auth()->user()->group->main_character->id)
+        return CharacterKillmail::whereIn('character_id', auth()->user()->associatedCharacterIds())
             ->count();
     }
 
@@ -73,9 +67,12 @@ trait Stats
      * @param bool   $corporation True if the permission for which the check should be made is for corporation
      *
      * @return array An array of granted corporationID or characterID
+     * @throws \Exception
      */
     private function getUserGrantedEntityList(string $permission, bool $corporation = false): array
     {
+
+        throw new \Exception('Unused method');
 
         // a list of characterIDs or corporationIDs according to $corporation parameter
         $entities = [];
