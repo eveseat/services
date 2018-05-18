@@ -80,9 +80,9 @@ abstract class Settings
             $value = (new static::$model);
 
             // If we are not in the global scope, add a constraint
-            // to be user specific.
+            // to be user group specific.
             if (static::$scope != 'global')
-                $value = $value->where('user_id',
+                $value = $value->where('group_id',
                     is_null($for_id) ? auth()->user()->id : $for_id);
 
             // Retrieve the value
@@ -138,10 +138,10 @@ abstract class Settings
         $db = (new static::$model);
 
         // If we are not in the global scope, add a constraint
-        // to be user specific.
+        // to be user group specific.
         if (static::$scope != 'global')
-            $db = $db->where('user_id',
-                is_null($for_id) ? auth()->user()->id : $for_id);
+            $db = $db->where('group_id',
+                is_null($for_id) ? auth()->user()->group->id : $for_id);
 
         // Retrieve the value
         $db = $db->where('name', $name)
@@ -163,12 +163,11 @@ abstract class Settings
         // Again, if we are not in the global context, then
         // we need to constrain this setting to a user.
         if (static::$scope != 'global')
-            $db->user_id = is_null($for_id) ? auth()->user()->id : $for_id;
+            $db->group_id = is_null($for_id) ? auth()->user()->group->id : $for_id;
 
         $db->save();
 
         // Update the cached entry with the new value
         Cache::forever(self::get_key_prefix($name), json_decode($value));
-
     }
 }

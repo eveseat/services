@@ -75,15 +75,18 @@ class Profile extends Settings
         'language'            => 'en',
         'mail_threads'        => 'yes',
 
+        // A groups main character_id
+        'main_character_id'   => 0,
+
         // Numbers
         'thousand_seperator'  => ' ',
         'decimal_seperator'   => '.',
 
         // Notifications
         'email_notifications' => 'no',
+        'email_address'       => '',
 
         // Multi factor authentication
         'require_mfa'         => 'no',
     ];
-
 }
