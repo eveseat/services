@@ -23,7 +23,6 @@
 namespace Seat\Services\Settings;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Session;
 use Seat\Services\Exceptions\SettingException;
 
 /**
@@ -74,7 +73,7 @@ abstract class Settings
     {
 
         return Cache::rememberForever(
-            self::get_key_prefix($name), function () use ($name, $for_id) {
+            self::get_key_prefix($name, $for_id), function () use ($name, $for_id) {
 
             // Init a new MODEL
             $value = (new static::$model);
@@ -83,7 +82,7 @@ abstract class Settings
             // to be user group specific.
             if (static::$scope != 'global')
                 $value = $value->where('group_id',
-                    is_null($for_id) ? auth()->user()->id : $for_id);
+                    is_null($for_id) ? auth()->user()->group->id : $for_id);
 
             // Retrieve the value
             $value = $value->where('name', $name)
@@ -105,20 +104,21 @@ abstract class Settings
      * Determine the unique prefix for the key by name.
      *
      * @param $name
+     * @param $for_id
      *
      * @return string
      * @throws \Seat\Services\Exceptions\SettingException
      */
-    public static function get_key_prefix($name)
+    public static function get_key_prefix($name, $for_id = null)
     {
 
         // Ensure we have a prefix to work with.
         if (is_null(static::$prefix))
             throw new SettingException('No prefix defined. Have you extended and declared $prefix?');
 
-        // Prefix user keys with the session_id
+        // Prefix user keys with group_id
         if (static::$scope != 'global')
-            return implode('.', [Session::getId(), static::$prefix, $name]);
+            return implode('.', [$for_id, static::$prefix, $name]);
 
         // Global keys only with the global prefix.
         return implode('.', [static::$prefix, $name]);
@@ -168,6 +168,6 @@ abstract class Settings
         $db->save();
 
         // Update the cached entry with the new value
-        Cache::forever(self::get_key_prefix($name), json_decode($value));
+        Cache::forever(self::get_key_prefix($name, $for_id), json_decode($value));
     }
 }
