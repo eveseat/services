@@ -52,6 +52,14 @@ class ScheduleSeeder extends Seeder
             'ping_before'       => null,
             'ping_after'        => null,
         ],
+        [   // SeAT Alerts | Every Five Minutes
+            'command'           => 'alerts:run',
+            'expression'        => '*/5 * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
         [   // SDE Data | Monthly
             'command'           => 'eve:update-sde',
             'expression'        => '0 0 1 * *',
