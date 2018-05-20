@@ -30,7 +30,6 @@ use Seat\Eveapi\Models\Corporation\CorporationStructure;
  */
 trait Structures
 {
-
     /**
      * @param int $corporation_id
      *
