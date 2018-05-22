@@ -58,19 +58,10 @@ trait Corporation
 
         // Check if this user us a superuser. If not,
         // limit to stuff only they can see.
-        if (! $user->hasSuperUser()) {
+        if (! $user->hasSuperUser())
 
-            // Add affiliated corporations based on the
-            // corporation.list_all permission
-            if ($user->has('corporation.list_all', false))
-                $corporations = $corporations->orWhereIn(
-                    'corporation_id', array_keys($user->getAffiliationMap()['corp']));
-
-            // TODO : ensure user is granted - we're not checking if the user has enough permission to get access to
-            //        attached corporation
-
-            // TODO: Add check to include corporations the characters group is a part of.
-        }
+            $corporations = $corporations->whereIn('corporation_id',
+                array_keys($user->getAffiliationMap()['corp']));
 
         if ($get)
             return $corporations->orderBy('name', 'desc')
