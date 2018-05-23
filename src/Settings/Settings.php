@@ -72,8 +72,11 @@ abstract class Settings
     public static function get($name, $for_id = null)
     {
 
-        return Cache::rememberForever(
-            self::get_key_prefix($name, $for_id), function () use ($name, $for_id) {
+        // Pickup the value from the cache if we can. Otherwise,
+        // read the value for the database and cache it for next
+        // time.
+        return Cache::rememberForever(self::get_key_prefix($name,
+            self::get_affected_id($for_id)), function () use ($name, $for_id) {
 
             // Init a new MODEL
             $value = (new static::$model);
@@ -81,8 +84,7 @@ abstract class Settings
             // If we are not in the global scope, add a constraint
             // to be user group specific.
             if (static::$scope != 'global')
-                $value = $value->where('group_id',
-                    is_null($for_id) ? auth()->user()->group->id : $for_id);
+                $value = $value->where('group_id', self::get_affected_id($for_id));
 
             // Retrieve the value
             $value = $value->where('name', $name)
@@ -125,6 +127,31 @@ abstract class Settings
     }
 
     /**
+     * Determine the effected group id.
+     *
+     * If this is for a specific id use that, otherwise
+     * assume the currently logged in user's id. If we
+     * dont have an already logged in session, well then
+     * we make the $for_id null.
+     *
+     * @param $for_id
+     *
+     * @return int|null
+     */
+    public static function get_affected_id($for_id)
+    {
+
+        // Without auth, return what we have.
+        if (! auth()->check())
+            return $for_id;
+
+        if (is_null($for_id))
+            return auth()->user()->group->id;
+
+        return $for_id;
+    }
+
+    /**
      * @param      $name
      * @param      $value
      * @param null $for_id
@@ -140,15 +167,14 @@ abstract class Settings
         // If we are not in the global scope, add a constraint
         // to be user group specific.
         if (static::$scope != 'global')
-            $db = $db->where('group_id',
-                is_null($for_id) ? auth()->user()->group->id : $for_id);
+            $db = $db->where('group_id', self::get_affected_id($for_id));
 
         // Retrieve the value
         $db = $db->where('name', $name)
             ->first();
 
         // By default, json encode values.
-        $value = json_encode($value);
+        $encoded_value = json_encode($value, JSON_NUMERIC_CHECK);
 
         // Check if we have a value, else create a new
         // instance
@@ -157,17 +183,17 @@ abstract class Settings
 
         $db->fill([
             'name'  => $name,
-            'value' => $value,
+            'value' => $encoded_value,
         ]);
 
         // Again, if we are not in the global context, then
         // we need to constrain this setting to a user.
         if (static::$scope != 'global')
-            $db->group_id = is_null($for_id) ? auth()->user()->group->id : $for_id;
+            $db->group_id = self::get_affected_id($for_id);
 
         $db->save();
 
         // Update the cached entry with the new value
-        Cache::forever(self::get_key_prefix($name, $for_id), json_decode($value));
+        Cache::forever(self::get_key_prefix($name, self::get_affected_id($for_id)), $value);
     }
 }
