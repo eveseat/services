@@ -24,6 +24,7 @@ namespace Seat\Services\Repositories\Eve;
 
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Eve\RefTypes;
+use Seat\Eveapi\Models\Status\EsiStatus;
 use Seat\Eveapi\Models\Status\ServerStatus;
 
 /**
@@ -118,8 +119,17 @@ trait EveRepository
     public function getEveServerStatuses(int $limit = 200)
     {
 
-        return ServerStatus::orderBy('created_at', 'desc')
-            ->take($limit)
-            ->get();
+        return ServerStatus::latest()->take($limit)->get();
+    }
+
+    /**
+     * @param int $limit
+     *
+     * @return mixed
+     */
+    public function getEsiResponseTimes(int $limit = 200)
+    {
+
+        return EsiStatus::latest()->take($limit)->get();
     }
 }

@@ -36,6 +36,14 @@ class ScheduleSeeder extends Seeder
      */
     protected $schedule = [
 
+        [   // ESI Status | Every Minute
+            'command'           => 'esi:update:esistatus',
+            'expression'        => '* * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
         [   // Horizon Metrics | Every Five Minutes
             'command'           => 'horizon:snapshot',
             'expression'        => '*/5 * * * *',
