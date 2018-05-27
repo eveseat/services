@@ -42,6 +42,7 @@ class Seat extends Settings
         'allow_sso'          => ['yes', 'no'],
         'allow_tracking'     => ['yes', 'no'],
         'require_activation' => ['yes', 'no'],
+        'cleanup_data'       => ['yes', 'no'],
     ];
 
     /**
@@ -69,6 +70,10 @@ class Seat extends Settings
 
         // Admin contact
         'admin_contact'      => 'seatadmin@localhost.local',
+
+        // Cleanup data in the database for users
+        // that have been deleted.
+        'cleanup_data'       => 'no',
 
         // The number of workers to spawn.
         'queue_workers'      => 10,
