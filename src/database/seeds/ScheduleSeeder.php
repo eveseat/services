@@ -52,6 +52,14 @@ class ScheduleSeeder extends Seeder
             'ping_before'       => null,
             'ping_after'        => null,
         ],
+        [   // SeAT Maintenance | Daily at 12am
+            'command'           => 'seat:admin:maintenance',
+            'expression'        => '0 0 * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
         [   // EVE Server Status | Every Five Minutes
             'command'           => 'esi:update:serverstatus',
             'expression'        => '*/5 * * * *',
