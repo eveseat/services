@@ -32,7 +32,6 @@ use Seat\Eveapi\Models\Contacts\CharacterFittingItem;
  */
 trait Fittings
 {
-
     /**
      * @param int $character_id
      *
