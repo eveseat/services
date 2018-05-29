@@ -76,7 +76,7 @@ class Seat extends Settings
         'cleanup_data'       => 'no',
 
         // The number of workers to spawn.
-        'queue_workers'      => 10,
+        'queue_workers'      => 4,
 
         // Allow Usage Tracking
         'allow_tracking'     => 'yes',
