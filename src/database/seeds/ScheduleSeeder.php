@@ -77,7 +77,7 @@ class ScheduleSeeder extends Seeder
             'ping_after'        => null,
         ],
         [   // SDE Data | Monthly
-            'command'           => 'eve:update-sde',
+            'command'           => 'eve:update:sde',
             'expression'        => '0 0 1 * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
