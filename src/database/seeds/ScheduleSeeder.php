@@ -60,6 +60,14 @@ class ScheduleSeeder extends Seeder
             'ping_before'       => null,
             'ping_after'        => null,
         ],
+        [   // Worker Maintenance | Daily at 1am
+            'command'           => 'queue:restart',
+            'expression'        => '0 1 * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
         [   // EVE Server Status | Every Five Minutes
             'command'           => 'esi:update:serverstatus',
             'expression'        => '*/5 * * * *',
