@@ -85,11 +85,7 @@ trait Search
                 }
 
                 // Add any characters from owner API keys
-                $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
-
-                    return $group->users->pluck('id');
-
-                })->flatten()->toArray();
+                $user_character_ids = auth()->user()->group->users->pluck('id')->toArray();
 
                 $query->orWhereIn('character_id', $user_character_ids)
                     ->orWhereIn('from', $user_character_ids)
@@ -170,11 +166,7 @@ trait Search
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
-                $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
-
-                    return $group->users->pluck('id');
-
-                })->flatten()->toArray();
+                $user_character_ids = auth()->user()->group->users->pluck('id')->toArray();
 
                 $query->orWhere('character_assets.character_id', $user_character_ids);
             });
@@ -220,11 +212,7 @@ trait Search
                         array_keys($user->getAffiliationMap()['char']));
 
                 // Add any characters from owner API keys
-                $user_character_ids = auth()->user()->groups()->get()->map(function ($group) {
-
-                    return $group->users->pluck('id');
-
-                })->flatten()->toArray();
+                $user_character_ids = auth()->user()->group->users->pluck('id')->toArray();
 
                 $query->orWhereIn('character_skills.character_id', $user_character_ids);
             });
