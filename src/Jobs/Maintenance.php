@@ -32,6 +32,7 @@ use Seat\Eveapi\Models\Corporation\CorporationInfo;
 use Seat\Eveapi\Models\FailedJob;
 use Seat\Eveapi\Models\Status\EsiStatus;
 use Seat\Eveapi\Models\Status\ServerStatus;
+use Seat\Web\Models\Group;
 use Seat\Web\Models\User;
 
 /**
@@ -79,6 +80,9 @@ class Maintenance implements ShouldQueue
 
         // Prune ESI statuses older than a week
         EsiStatus::where('created_at', '<', carbon('now')->subWeek(1))->delete();
+
+        // Remove groups with no users
+        Group::doesntHave('users')->delete();
     }
 
     /**
@@ -87,6 +91,7 @@ class Maintenance implements ShouldQueue
      */
     public function cleanup_stale_data()
     {
+
         logger()->info('Performing stale data maintenance');
 
         // First cleanup characters.
