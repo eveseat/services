@@ -34,16 +34,17 @@ trait Standings
     /**
      * Return the standings for a Corporation.
      *
-     * @param $corporation_id
+     * @param int $corporation_id
+     * @param int $chunk
      *
      * @return mixed
      */
-    public function getCorporationStandings(int $corporation_id): Collection
+    public function getCorporationStandings(int $corporation_id, int $chunk = 50)
     {
 
         return CorporationStanding::where('corporation_id', $corporation_id)
             ->leftJoin('chrFactions', 'from_id', '=', 'factionID')
             ->orderBy('from_type')
-            ->get();
+            ->paginate($chunk);
     }
 }
