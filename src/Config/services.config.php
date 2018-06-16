@@ -22,6 +22,6 @@
 
 return [
 
-    'version' => '3.0.0-beta14',
+    'version' => '3.0.0',
 
 ];
