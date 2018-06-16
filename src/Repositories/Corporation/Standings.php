@@ -22,7 +22,6 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Corporation\CorporationStanding;
 
 /**
