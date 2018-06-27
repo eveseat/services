@@ -24,7 +24,6 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\PlanetaryInteraction\CharacterPlanet;
-use Seat\Eveapi\Models\PlanetaryInteraction\CharacterPlanetExtractor;
 
 /**
  * Class Pi.
@@ -57,53 +56,40 @@ trait Pi
     public function getCharacterPlanetaryExtractors(int $character_id): Collection
     {
 
-        $extractors = CharacterPlanetExtractor::where(
-            'character_planet_extractors.character_id', $character_id)
-            ->join('character_planet_pins as pin',
-                'pin.pin_id', '=', 'character_planet_extractors.pin_id')
-            ->join('character_planets as planets',
-                'planets.planet_id', '=', 'character_planet_extractors.planet_id')
-            ->join('mapDenormalize as system',
-                'system.itemID', '=', 'planets.solar_system_id')
+        $extractors = CharacterPlanet::where('character_planets.character_id', $character_id)
+            ->join('character_planet_extractors', function ($join) {
+                $join->on('character_planet_extractors.planet_id', '=', 'character_planets.planet_id')
+                    ->on('character_planet_extractors.character_id', '=', 'character_planets.character_id');
+            })
+            ->join('character_planet_pins', function ($join) {
+                $join->on('character_planet_pins.pin_id', '=', 'character_planet_extractors.pin_id')
+                    ->on('character_planet_pins.planet_id', '=', 'character_planet_extractors.planet_id')
+                    ->on('character_planet_pins.character_id', '=', 'character_planet_extractors.character_id');
+            })
             ->join('mapDenormalize as planet',
-                'planet.itemID', '=', 'character_planet_extractors.planet_id')
-            ->join('invTypes as inventory',
-                'inventory.typeID', '=', 'character_planet_extractors.product_type_id')
+                'planet.itemID', '=', 'character_planets.planet_id')
+            ->join('mapDenormalize as system',
+                'system.itemID', '=', 'character_planets.solar_system_id')
+            ->join('invTypes',
+                'invTypes.typeID', '=', 'character_planet_extractors.product_type_id')
             ->select(
                 'character_planet_extractors.product_type_id', // Extractor Product Name f.e. Aqueous Liquids
                 'planet.celestialIndex', // arabic planet index
-                'system.itemName', // System Name J123456
+                'planet.itemName', // Planet Name
                 'planet.typeID', // Planet Type ID
-                'pin.install_time', //UTC Time of start
-                'pin.expiry_time', // UTC Time of expiry
-                'planets.planet_type', // barren, temperate, gas
-                'inventory.typeName' // Extractor Product Name
+                'system.itemName', // System Name
+                'character_planet_pins.install_time', //UTC Time of start
+                'character_planet_pins.expiry_time', // UTC Time of expiry
+                'character_planets.planet_type', // barren, temperate, gas
+                'invTypes.typeName' // Extractor Product Name
             )
             ->get();
 
-        $extractors = $extractors->map(function ($item) {
+        return $extractors->map(function ($item) {
 
             $item->celestialIndex = number_roman($item->celestialIndex);
 
             return $item;
         });
-
-        $clean_extractors = collect([]);
-
-        foreach ($extractors as $extractor) {
-
-            $clean_extractors->push([
-                'product_type_id' => $extractor->product_type_id,
-                'celestialIndex'  => $extractor->celestialIndex,
-                'itemName'        => $extractor->itemName,
-                'typeID'          => $extractor->typeID,
-                'install_time'    => $extractor->install_time,
-                'expiry_time'     => $extractor->expiry_time,
-                'planet_type'     => $extractor->planet_type,
-                'typeName'        => $extractor->typeName,
-            ]);
-        }
-
-        return $clean_extractors;
     }
 }
