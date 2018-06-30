@@ -43,6 +43,9 @@ trait Stats
             auth()->user()->associatedCharacterIds())->sum('balance');
     }
 
+    /**
+     * @return mixed
+     */
     public function getTotalCharacterMiningIsk()
     {
 
