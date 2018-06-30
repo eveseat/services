@@ -23,6 +23,7 @@
 namespace Seat\Services\Repositories\Seat;
 
 use Seat\Eveapi\Models\Character\CharacterInfoSkill;
+use Seat\Eveapi\Models\Industry\CharacterMining;
 use Seat\Eveapi\Models\Killmails\CharacterKillmail;
 use Seat\Eveapi\Models\Wallet\CharacterWalletBalance;
 
@@ -40,6 +41,16 @@ trait Stats
 
         return CharacterWalletBalance::whereIn('character_id',
             auth()->user()->associatedCharacterIds())->sum('balance');
+    }
+
+    public function getTotalCharacterMiningIsk()
+    {
+
+        return CharacterMining::whereIn('character_id',
+            auth()->user()->associatedCharacterIds())->get()->map(function ($item) {
+
+            return $item->amount;
+        })->sum();
     }
 
     /**
