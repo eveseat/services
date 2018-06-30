@@ -126,7 +126,6 @@ class Seat extends Settings
             'esi-corporations.read_facilities.v1',
             'esi-corporations.read_fw_stats.v1',
             'esi-corporations.read_medals.v1',
-            'esi-corporations.read_outposts.v1',
             'esi-corporations.read_standings.v1',
             'esi-corporations.read_starbases.v1',
             'esi-corporations.read_structures.v1',
