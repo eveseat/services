@@ -45,9 +45,11 @@ trait Stats
 
     public function getTotalCharacterMiningIsk()
     {
+
         return CharacterMining::whereIn('character_id',
-            auth()->user()->associatedCharacterIds())->get()->map(function ($item){
-                return $item->amount;
+            auth()->user()->associatedCharacterIds())->get()->map(function ($item) {
+
+            return $item->amount;
         })->sum();
     }
 
