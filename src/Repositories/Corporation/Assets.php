@@ -84,7 +84,6 @@ trait Assets
             ->whereIn('location_flag', [
                 // These locations look like they are top-level. Even though 'OfficeFolder' is
                 // top level, lets just flatten it anyways.
-                'CorpSAG1', 'CorpSAG2', 'CorpSAG3', 'CorpSAG4', 'CorpSAG5', 'CorpSAG6', 'CorpSAG7',
                 'AssetSafety', 'OfficeFolder', 'Impounded', 'CorpDeliveries',
             ])
             ->where('corporation_assets.corporation_id', $corporation_id)
