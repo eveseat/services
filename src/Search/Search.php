@@ -74,25 +74,24 @@ trait Search
 
                 // If the user has any affiliations and can
                 // list those characters, add them
-                if ($user->has('character.mail', false)) {
-                    $query = $query->orWhereIn('character_id', array_keys($user->getAffiliationMap()['char']))
-                        ->orWhereIn('from', array_keys($user->getAffiliationMap()['char']));
+                // also include all attached characters
 
-                    $query = $query->orWhereHas('recipients', function ($sub_query, $user) {
+                $map = $user->getAffiliationMap();
+                $character_maps = [];
 
-                        $sub_query->orWhereIn('recipient_id', array_keys($user->getAffiliationMap()['char']));
-                    });
+                foreach ($map['char'] as $character_id => $permissions) {
+                    if (in_array('character.*', $permissions))
+                        $character_maps[] = $character_id;
+                    if (in_array('character.mail', $permissions))
+                        $character_maps[] = $character_id;
                 }
 
-                // Add any characters from owner API keys
-                $user_character_ids = auth()->user()->group->users->pluck('id')->toArray();
+                $query = $query->orWhereIn('character_id', $character_maps)
+                    ->orWhereIn('from', $character_maps);
 
-                $query->orWhereIn('character_id', $user_character_ids)
-                    ->orWhereIn('from', $user_character_ids)
-                    ->orWhereHas('recipients', function ($sub_query) use ($user_character_ids) {
-
-                        $sub_query->orWhereIn('recipient_id', $user_character_ids);
-                    });
+                $query = $query->orWhereHas('recipients', function ($sub_query) use ($character_maps) {
+                    $sub_query->whereIn('recipient_id', $character_maps);
+                });
             });
         }
 
