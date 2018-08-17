@@ -72,8 +72,7 @@ trait Industry
                     (SELECT s.stationName FROM staStations AS s
                       WHERE s.stationID = a.location_id)
                 when a.location_id >= 61000000 then
-                    (SELECT d.name FROM `sovereignty_structures` AS c
-                      JOIN universe_stations d ON c.structure_id = d.station_id
+                    (SELECT c.name FROM `universe_structures` AS c
                       WHERE c.structure_id = a.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                 WHERE m.itemID = a.location_id) end
