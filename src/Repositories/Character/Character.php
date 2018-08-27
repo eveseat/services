@@ -177,7 +177,7 @@ trait Character
     }
 
     /**
-     * Query the database for characters in Group
+     * Query the database for characters in Group.
      *
      * @return mixed
      */
