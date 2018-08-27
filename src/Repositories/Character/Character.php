@@ -175,4 +175,24 @@ trait Character
         return $corporations->orderBy('corporationName')
             ->pluck('corporationName');
     }
+
+    /**
+     * Query the database for characters in Group
+     *
+     * @return mixed
+     */
+    public function getAllCharactersInGroup()
+    {
+
+        // Which characters does the currently logged in user have in his group?
+        $user_character_ids = auth()->user()->associatedCharacterIds();
+
+        $characters = new CharacterInfo;
+
+        $characters = $characters->whereIn('character_id', $user_character_ids);
+
+        return $characters
+            ->orderBy('name')
+            ->get();
+    }
 }
