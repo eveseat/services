@@ -52,7 +52,7 @@ trait Stats
         return CharacterMining::whereIn('character_id',
             auth()->user()->associatedCharacterIds())->get()->map(function ($item) {
 
-            return $item->amount;
+            return $item->quantity * $item->average_price;
         })->sum();
     }
 
