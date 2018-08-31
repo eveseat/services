@@ -64,7 +64,7 @@ trait MiningLedger
     public function getCorporationLedger(int $corporation_id, int $year, int $month, bool $get = true)
     {
 
-        $ledger = CharacterMining::select('character_minings.character_id', 'year', 'month', 'type_id', 'quantity')
+        $ledger = CharacterMining::select('character_minings.character_id', 'year', 'month', 'type_id', 'quantity', 'average_price')
             ->join('corporation_member_trackings', 'corporation_member_trackings.character_id', 'character_minings.character_id')
             ->where('corporation_id', $corporation_id)
             ->where('year', $year)
