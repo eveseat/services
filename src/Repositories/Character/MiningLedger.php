@@ -40,7 +40,7 @@ trait MiningLedger
     public function getCharacterLedger(int $character_id, bool $get = true)
     {
 
-        $ledger = CharacterMining::select('date', 'solar_system_id', 'type_id', 'quantity', 'average_price')
+        $ledger = CharacterMining::select('date', 'solar_system_id', 'type_id', 'quantity')
             ->where('character_id', $character_id);
 
         if (! $get)
