@@ -33,7 +33,7 @@ class HistoricalPrices extends Model
 
     protected $table = 'historical_prices';
 
-    protected $primaryKey = ['type_id'];
+    protected $primaryKey = ['type_id', 'date'];
 
     public $incrementing = false;
 

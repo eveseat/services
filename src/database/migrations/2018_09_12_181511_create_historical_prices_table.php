@@ -38,6 +38,7 @@ class CreateHistoricalPricesTable extends Migration
 
             $table->bigInteger('type_id');
             $table->date('date');
+            $table->primary(['type_id', 'date']);
             $table->decimal('average_price');
             $table->decimal('adjusted_price');
             $table->timestamps();
