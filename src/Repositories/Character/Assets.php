@@ -55,7 +55,7 @@ trait Assets
     public function getCharacterAssetsBuilder(Collection $character_ids) : Builder
     {
         return CharacterAsset::with('content', 'type')
-            ->leftJoin('invTypes','character_assets.type_id','=','invTypes.typeID')
+            ->leftJoin('invTypes', 'character_assets.type_id', '=', 'invTypes.typeID')
             ->select(DB::raw('
                 *, CASE
                 when character_assets.location_id BETWEEN 66015148 AND 66015151 then
@@ -87,7 +87,7 @@ trait Assets
                 AS locationName,
                 character_assets.location_id AS locID', 'invTypes.typeName AS typeName'))
             ->whereIn('character_assets.character_id', $character_ids->toArray())
-            ->whereIn('location_flag',['Hangar', 'AssetSafety', 'Deliveries'])
+            ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
             ->orderBy('locationName');
     }
 }
