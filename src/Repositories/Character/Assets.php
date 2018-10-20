@@ -22,10 +22,10 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Assets\CharacterAsset;
-use Seat\Eveapi\Models\Character\AssetListContents;
 
 /**
  * Class Assets.
@@ -34,16 +34,28 @@ use Seat\Eveapi\Models\Character\AssetListContents;
 trait Assets
 {
     /**
-     * Return the assets that belong to a Character.
+     * Return an assets contents. If no parent asset / item ids
+     * are specified, then all assets for the corporation is
+     * returned.
      *
      * @param int $character_id
+     * @param int $parent_asset_id
+     * @param int $parent_item_id
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterAssets(int $character_id): Collection
+    public function getCharacterAssetContentsBuilder(int $character_id, $item_id): Builder
     {
-
         return CharacterAsset::with('content', 'type')
+            ->where('character_id', $character_id)
+            ->where('location_id', $item_id);
+
+    }
+
+    public function getCharacterAssetsBuilder(Collection $character_ids) : Builder //TODO: rename this
+    {
+        return CharacterAsset::with('content', 'type')
+            ->leftJoin('invTypes','character_assets.type_id','=','invTypes.typeID')
             ->select(DB::raw('
                 *, CASE
                 when character_assets.location_id BETWEEN 66015148 AND 66015151 then
@@ -73,41 +85,9 @@ trait Assets
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID=character_assets.location_id) end
                 AS locationName,
-                character_assets.location_id AS locID'))
-            ->where('character_assets.character_id', $character_id)
-            ->get();
-    }
-
-    /**
-     * Return an assets contents. If no parent asset / item ids
-     * are specified, then all assets for the corporation is
-     * returned.
-     *
-     * @param int $character_id
-     * @param int $parent_asset_id
-     * @param int $parent_item_id
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function getCharacterAssetContents(int $character_id,
-                                              int $parent_asset_id = null,
-                                              int $parent_item_id = null): Collection
-    {
-
-        $contents = AssetListContents::join('invTypes',
-            'character_assets.type_id', '=',
-            'invTypes.typeID')
-            ->where('character_id', $character_id);
-
-        if (! is_null($parent_asset_id))
-            $contents = $contents->where('parentAssetItemID', $parent_asset_id);
-
-        if (! is_null($parent_item_id))
-            $contents = $contents->where('parentItemID', $parent_item_id);
-
-        // TODO: Allow the nested lookups to occur.
-        $contents = $contents->where('parentItemID', null);
-
-        return $contents->get();
+                character_assets.location_id AS locID', 'invTypes.typeName AS typeName'))
+            ->whereIn('character_assets.character_id', $character_ids->toArray())
+            ->whereIn('location_flag',['Hangar', 'AssetSafety', 'Deliveries'])
+            ->orderBy('locationName');
     }
 }
