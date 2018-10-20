@@ -52,7 +52,7 @@ trait Assets
 
     }
 
-    public function getCharacterAssetsBuilder(Collection $character_ids) : Builder //TODO: rename this
+    public function getCharacterAssetsBuilder(Collection $character_ids) : Builder
     {
         return CharacterAsset::with('content', 'type')
             ->leftJoin('invTypes','character_assets.type_id','=','invTypes.typeID')
