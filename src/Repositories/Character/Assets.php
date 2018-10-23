@@ -82,6 +82,7 @@ trait Assets
                 when character_assets.location_id > 61001146 then
                     (SELECT name FROM `universe_structures` AS c
                      WHERE c.structure_id = character_assets.location_id)
+                when character_assets.location_id = 2004 THEN "Asset Safety"
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID=character_assets.location_id) end
                 AS locationName,
