@@ -89,6 +89,9 @@ trait Assets
                 character_assets.location_id AS locID', 'invTypes.typeName AS typeName'))
             ->whereIn('character_assets.character_id', $character_ids->toArray())
             ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
+            ->whereNotIn('location_id',function ($query){
+                $query->select('item_id')->from('character_assets');
+            })
             ->orderBy('locationName');
     }
 }
