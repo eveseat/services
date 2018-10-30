@@ -38,22 +38,13 @@ trait Assets
      * are specified, then all assets for the corporation is
      * returned.
      *
-     * @param int $character_id
-     * @param int $parent_asset_id
-     * @param int $parent_item_id
+     * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterAssetContentsBuilder(int $character_id, $item_id): Builder
+    public function getCharacterAssetsBuilder(Collection $character_ids): Builder
     {
-        return CharacterAsset::with('content', 'type')
-            ->where('character_id', $character_id)
-            ->where('location_id', $item_id);
 
-    }
-
-    public function getCharacterAssetsBuilder(Collection $character_ids) : Builder
-    {
         return CharacterAsset::with('content', 'type')
             ->leftJoin('invTypes', 'character_assets.type_id', '=', 'invTypes.typeID')
             ->select(DB::raw('
@@ -89,8 +80,10 @@ trait Assets
                 character_assets.location_id AS locID', 'invTypes.typeName AS typeName'))
             ->whereIn('character_assets.character_id', $character_ids->toArray())
             ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
-            ->whereNotIn('location_id',function ($query){
-                $query->select('item_id')->from('character_assets');
+            ->whereNotIn('location_id', function ($query) {
+
+                //Do not show assets inside an asset wrapper.
+                $query->select('item_id')->where('location_id', '=', 2004)->from('character_assets');
             })
             ->orderBy('locationName');
     }
