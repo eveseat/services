@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Contacts\CharacterContact;
 use Seat\Eveapi\Models\Contacts\CharacterContactLabel;
@@ -33,14 +34,16 @@ trait Contacts
      *
      * @param int $character_id
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterContacts(int $character_id): Collection
+    public function getCharacterContacts(int $character_id): Builder
     {
 
-        return CharacterContact::where('character_id', $character_id)
+        return CharacterContact::where('character_contacts.character_id', $character_id)
             ->orderBy('standing', 'desc')
-            ->get();
+            ->leftJoin('character_infos', 'character_contacts.contact_id', '=', 'character_infos.character_id')
+            ->leftJoin('corporation_infos', 'character_contacts.contact_id', '=', 'corporation_infos.corporation_id')
+            ->select('character_infos.name', 'character_contacts.*', 'corporation_infos.name AS corporationName');
     }
 
     /**
@@ -48,12 +51,11 @@ trait Contacts
      *
      * @param int $character_id
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterContactLabels(int $character_id): Collection
+    public function getCharacterContactLabels(int $character_id): Builder
     {
 
-        return CharacterContactLabel::where('character_id', $character_id)
-            ->get();
+        return CharacterContactLabel::where('character_id', $character_id);
     }
 }
