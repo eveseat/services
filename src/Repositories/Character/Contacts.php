@@ -40,10 +40,9 @@ trait Contacts
     {
 
         return CharacterContact::where('character_contacts.character_id', $character_id)
-            ->orderBy('standing', 'desc')
             ->leftJoin('character_infos', 'character_contacts.contact_id', '=', 'character_infos.character_id')
             ->leftJoin('corporation_infos', 'character_contacts.contact_id', '=', 'corporation_infos.corporation_id')
-            ->select('character_infos.name', 'character_contacts.*', 'corporation_infos.name AS corporationName');
+            ->select('character_infos.name AS characterName', 'character_contacts.*', 'corporation_infos.name AS corporationName');
     }
 
     /**
@@ -51,11 +50,12 @@ trait Contacts
      *
      * @param int $character_id
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Support\Collection
      */
-    public function getCharacterContactLabels(int $character_id): Builder
+    public function getCharacterContactLabels(int $character_id): Collection
     {
 
-        return CharacterContactLabel::where('character_id', $character_id);
+        return CharacterContactLabel::where('character_id', $character_id)
+            ->get();
     }
 }
