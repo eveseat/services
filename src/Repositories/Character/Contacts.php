@@ -40,9 +40,8 @@ trait Contacts
     {
 
         return CharacterContact::where('character_contacts.character_id', $character_id)
-            ->leftJoin('character_infos', 'character_contacts.contact_id', '=', 'character_infos.character_id')
-            ->leftJoin('corporation_infos', 'character_contacts.contact_id', '=', 'corporation_infos.corporation_id')
-            ->select('character_infos.name AS characterName', 'character_contacts.*', 'corporation_infos.name AS corporationName');
+            ->leftJoin('resolved_ids', 'character_contacts.contact_id', '=', 'resolved_ids.id')
+            ->select('resolved_ids.name', 'character_contacts.*');
     }
 
     /**
