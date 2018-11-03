@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Seat;
 
+use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Character\CharacterInfoSkill;
 use Seat\Eveapi\Models\Industry\CharacterMining;
 use Seat\Eveapi\Models\Killmails\CharacterKillmail;
@@ -49,11 +50,14 @@ trait Stats
     public function getTotalCharacterMiningIsk()
     {
 
-        return CharacterMining::whereIn('character_id',
-            auth()->user()->associatedCharacterIds())->get()->map(function ($item) {
-
-            return $item->value;
-        })->sum();
+        return CharacterMining::select(DB::raw('SUM(quantity * IFNULL(adjusted_price, 0)) as total_mined_value'))
+            ->leftJoin('historical_prices', function ($join) {
+                $join->on('historical_prices.type_id', '=', 'character_minings.type_id')
+                     ->on('historical_prices.date', '=', 'character_minings.date');
+            })
+            ->whereIn('character_id', auth()->user()->associatedCharacterIds())
+            ->first()
+            ->total_mined_value;
     }
 
     /**
