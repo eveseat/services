@@ -83,7 +83,7 @@ trait Assets
             ->whereNotIn('location_id', function ($query) {
 
                 //Do not show assets inside an asset wrapper.
-                $query->select('item_id')->where('location_id', '=', 2004)->from('character_assets');
+                $query->select('item_id')->where('type_id', '=', 60)->from('character_assets');
             })
             ->orderBy('locationName');
     }
