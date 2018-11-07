@@ -32,14 +32,14 @@ trait Contacts
     /**
      * Get a characters contact list.
      *
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterContacts(int $character_id): Builder
+    public function getCharacterContacts(Collection $character_ids): Builder
     {
 
-        return CharacterContact::where('character_contacts.character_id', $character_id)
+        return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray())
             ->leftJoin('resolved_ids', 'character_contacts.contact_id', '=', 'resolved_ids.id')
             ->select('resolved_ids.name', 'character_contacts.*');
     }
