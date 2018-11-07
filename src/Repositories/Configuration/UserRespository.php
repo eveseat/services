@@ -33,7 +33,6 @@ use Seat\Web\Models\User as UserModel;
  */
 trait UserRespository
 {
-
     /**
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -50,13 +49,13 @@ trait UserRespository
     {
 
         return UserModel::with('group.roles')->select('users.*')
-            ->leftJoin('user_settings', function ($join){
+            ->leftJoin('user_settings', function ($join) {
                 $join->on('users.group_id', '=', 'user_settings.group_id')
-                    ->where('user_settings.name','main_character_id');
+                    ->where('user_settings.name', 'main_character_id');
             })
             ->addSelect('user_settings.value AS main_character_id')
-            ->orderBy('main_character_id','desc')
-            ->leftJoin('refresh_tokens', 'users.id', '=','refresh_tokens.character_id')
+            ->orderBy('main_character_id', 'desc')
+            ->leftJoin('refresh_tokens', 'users.id', '=', 'refresh_tokens.character_id')
             ->addSelect('refresh_tokens.deleted_at AS refresh_token_deleted_at');
     }
 
