@@ -23,7 +23,6 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Contacts\CharacterContact;
 use Seat\Eveapi\Models\Contacts\CharacterContactLabel;
 
