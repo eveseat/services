@@ -111,9 +111,15 @@ trait Contracts
                     WHERE m.itemID = a.end_location_id) end
                 AS endlocation '))
             ->join('character_contracts', 'character_contracts.contract_id', '=', 'a.contract_id')
-            // Name Joins for search by name
+            // Issuer Name
             ->leftJoin('resolved_ids as resolved_issuer_id', 'a.issuer_id', '=', 'resolved_issuer_id.id')
             ->AddSelect('resolved_issuer_id.name AS issuer_name')
+            // Acceptor Name
+            ->leftJoin('resolved_ids as resolved_acceptor_id', 'a.acceptor_id', '=', 'resolved_acceptor_id.id')
+            ->AddSelect('resolved_acceptor_id.name AS acceptor_name')
+            // Assignee Name
+            ->leftJoin('resolved_ids as resolved_assignee_id', 'a.assignee_id', '=', 'resolved_assignee_id.id')
+            ->AddSelect('resolved_assignee_id.name AS assignee_name')
             ->whereIN('character_contracts.character_id', $character_ids->toArray());
 
     }
