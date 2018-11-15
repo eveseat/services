@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Contracts\ContractItem;
@@ -41,11 +42,10 @@ trait Contracts
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterContracts(
-        int $character_id, bool $get = true, int $chunk = 50)
+    public function getCharacterContracts(Collection $character_ids) : Builder
     {
 
-        $contracts = DB::table(DB::raw('contract_details as a'))
+        return DB::table(DB::raw('contract_details as a'))
             ->select(DB::raw(
                 '
                 --
@@ -111,13 +111,10 @@ trait Contracts
                     WHERE m.itemID = a.end_location_id) end
                 AS endlocation '))
             ->join('character_contracts', 'character_contracts.contract_id', '=', 'a.contract_id')
-            ->where('character_contracts.character_id', $character_id);
-
-        if ($get)
-            return $contracts->orderBy('date_issued', 'desc')
-                ->paginate($chunk);
-
-        return $contracts;
+            // Name Joins for search by name
+            ->leftJoin('resolved_ids as resolved_issuer_id', 'a.issuer_id', '=', 'resolved_issuer_id.id')
+            ->AddSelect('resolved_issuer_id.name AS issuer_name')
+            ->whereIN('character_contracts.character_id', $character_ids->toArray());
 
     }
 
