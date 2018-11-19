@@ -40,7 +40,12 @@ trait MiningLedger
     public function getCharacterLedger(int $character_id, bool $get = true)
     {
 
-        $ledger = CharacterMining::select('date', 'solar_system_id', 'type_id', 'quantity')
+        $ledger = CharacterMining::select('character_minings.date', 'solar_system_id', 'character_minings.type_id')
+            ->join('invTypes', 'invTypes.typeID', 'character_minings.type_id')
+            ->leftJoin('historical_prices', function ($join) {
+                $join->on('historical_prices.type_id', '=', 'character_minings.type_id')
+                     ->on('historical_prices.date', '=', 'character_minings.date');
+            })
             ->where('character_id', $character_id);
 
         if (! $get)
