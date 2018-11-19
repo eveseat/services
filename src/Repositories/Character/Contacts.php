@@ -39,9 +39,7 @@ trait Contacts
     public function getCharacterContacts(Collection $character_ids): Builder
     {
 
-        return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray())
-            ->leftJoin('resolved_ids', 'character_contacts.contact_id', '=', 'resolved_ids.id')
-            ->select('resolved_ids.name', 'character_contacts.*');
+        return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray());
     }
 
     /**
