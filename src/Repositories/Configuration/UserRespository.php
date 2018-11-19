@@ -49,12 +49,7 @@ trait UserRespository
     {
 
         return UserModel::with('refresh_token', 'group.roles')->select('users.*')
-            ->leftJoin('user_settings', function ($join) {
-                $join->on('users.group_id', '=', 'user_settings.group_id')
-                    ->where('user_settings.name', 'main_character_id');
-            })
-            ->addSelect('user_settings.value AS main_character_id')
-            ->orderBy('main_character_id', 'desc');
+            ->orderBy('group_id', 'asc');
     }
 
     /**
