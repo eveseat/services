@@ -42,15 +42,11 @@ trait Wallet
      * @return mixed
      */
     public function getCharacterWalletJournal(
-        int $character_id, bool $get = true, int $chunk = 50)
+        int $character_id, int $chunk = 50)
     {
 
         $journal = CharacterWalletJournal::with('first_party','second_party')
             ->where('character_id', $character_id);
-
-        if ($get)
-            return $journal->orderBy('date', 'desc')
-                ->paginate($chunk);
 
         return $journal;
     }
