@@ -45,7 +45,8 @@ trait Wallet
         int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        $journal = CharacterWalletJournal::where('character_id', $character_id);
+        $journal = CharacterWalletJournal::with('first_party','second_party')
+            ->where('character_id', $character_id);
 
         if ($get)
             return $journal->orderBy('date', 'desc')
