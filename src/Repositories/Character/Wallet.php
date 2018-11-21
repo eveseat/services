@@ -43,7 +43,7 @@ trait Wallet
     public function getCharacterWalletJournal(Collection $character_ids)
     {
 
-        return $journal = CharacterWalletJournal::with('first_party','second_party')
+        return $journal = CharacterWalletJournal::with('first_party', 'second_party')
             ->whereIn('character_id', $character_ids->toArray());
     }
 
