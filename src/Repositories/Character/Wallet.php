@@ -22,7 +22,6 @@
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
 
@@ -36,15 +35,23 @@ trait Wallet
      * Query the eveseat/resources repository for SDE
      * related information.
      *
-     * @param \Illuminate\Support\Collection $character_ids
+     * @param int  $character_id
+     * @param bool $get
+     * @param int  $chunk
      *
      * @return mixed
      */
-    public function getCharacterWalletJournal(Collection $character_ids)
+    public function getCharacterWalletJournal(
+        int $character_id, bool $get = true, int $chunk = 50)
     {
 
-        return $journal = CharacterWalletJournal::with('first_party','second_party')
-            ->whereIn('character_id', $character_ids->toArray());
+        $journal = CharacterWalletJournal::where('character_id', $character_id);
+
+        if ($get)
+            return $journal->orderBy('date', 'desc')
+                ->paginate($chunk);
+
+        return $journal;
     }
 
     /**
