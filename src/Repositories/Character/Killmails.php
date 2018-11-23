@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Killmails\CharacterKillmail;
 
 /**
@@ -33,16 +34,16 @@ trait Killmails
     /**
      * Return the killmails for a character.
      *
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_id
      *
      * @return \Illuminate\Database\Eloquent\Builder|\Seat\Eveapi\Models\Killmails\CharacterKillmail
      */
-    public function getCharacterKillmails(int $character_id)
+    public function getCharacterKillmails(Collection $character_id)
     {
 
-        return CharacterKillmail::with('killmail_details', 'killmail_details.solar_system', 'killmail_victims','killmail_victims.ship_type')
-            ->select('*')
-            ->where('character_id', $character_id);
+        return CharacterKillmail::with('killmail_details', 'killmail_details.solar_system', 'killmail_victims','killmail_victims.ship_type',
+            'killmail_victims.victim_character', 'killmail_victims.victim_corporation','killmail_victims.victim_alliance')
+            ->whereIn('character_killmails.character_id', $character_id->toArray());
 
     }
 }
