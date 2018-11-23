@@ -42,7 +42,7 @@ trait Killmails
     {
 
         return CharacterKillmail::with('killmail_details', 'killmail_details.solar_system', 'killmail_victims','killmail_victims.ship_type',
-            'killmail_victims.victim_character', 'killmail_victims.victim_corporation','killmail_victims.victim_alliance')
+            'killmail_victims.victim_character', 'killmail_victims.victim_corporation', 'killmail_victims.victim_alliance')
             ->whereIn('character_killmails.character_id', $character_id->toArray());
 
     }
