@@ -34,12 +34,15 @@ trait Contacts
      *
      * @param \Illuminate\Support\Collection $character_ids
      *
+     * @param array                          $standings
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterContacts(Collection $character_ids): Builder
+    public function getCharacterContacts(Collection $character_ids, array $standings): Builder
     {
 
-        return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray());
+        return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray())
+            ->whereIn('standing',$standings);
     }
 
     /**
