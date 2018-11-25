@@ -42,7 +42,7 @@ trait Contacts
     {
 
         return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray())
-            ->whereIn('standing',$standings);
+            ->whereIn('standing', $standings);
     }
 
     /**
