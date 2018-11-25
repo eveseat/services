@@ -49,7 +49,7 @@ trait UserRespository
     {
 
         return UserModel::with('refresh_token', 'group.roles')->select('users.*')
-            ->where('id','<>', '1')
+            ->where('id', '<>', 1)
             ->orderBy('group_id', 'asc');
     }
 
