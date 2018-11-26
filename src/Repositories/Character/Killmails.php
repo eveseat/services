@@ -41,8 +41,8 @@ trait Killmails
     public function getCharacterKillmails(Collection $character_id)
     {
 
-        return CharacterKillmail::with('killmail_details', 'killmail_details.solar_system', 'killmail_victims','killmail_victims.ship_type',
-            'killmail_victims.victim_character', 'killmail_victims.victim_corporation', 'killmail_victims.victim_alliance')
+        return CharacterKillmail::with('killmail_detail', 'killmail_detail.solar_system', 'killmail_victim','killmail_victim.ship_type',
+            'killmail_victim.victim_character', 'killmail_victim.victim_corporation', 'killmail_victim.victim_alliance')
             ->whereIn('character_killmails.character_id', $character_id->toArray());
 
     }
