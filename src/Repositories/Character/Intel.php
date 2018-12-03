@@ -46,27 +46,8 @@ trait Intel
 
         // TODO: Optimize this piece of crap!
 
-        return CharacterWalletJournal::select(
-            DB::raw('count(*) as total'),
-            'ref_type',
-            'character_affiliations.character_id',
-            'character_affiliations.corporation_id',
-            'character_affiliations.alliance_id',
-            'character_affiliations.faction_id'
-        )
-            ->leftJoin('character_affiliations', function ($join) {
-
-                $join->on(
-                    'character_affiliations.character_id', '=',
-                    'character_wallet_journals.first_party_id'
-                );
-
-                $join->orOn(
-                    'character_affiliations.character_id', '=',
-                    'character_wallet_journals.second_party_id'
-                );
-
-            })
+        return CharacterWalletJournal::with('first_party','second_party')
+            ->select('*', DB::raw('count(*) as total'))
             // Limit to the character in question...
             ->where('character_wallet_journals.character_id', $character_id)
             ->groupBy('first_party_id', 'second_party_id')
