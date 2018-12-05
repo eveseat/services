@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\CharacterSheetImplants;
+use Seat\Eveapi\Models\Clones\CharacterImplant;
 
 /**
  * Class Implants.
@@ -41,7 +41,7 @@ trait Implants
     public function getCharacterImplants(int $character_id): Collection
     {
 
-        return CharacterSheetImplants::where('characterID', $character_id)
+        return CharacterImplant::where('character_id', $character_id)
             ->get();
     }
 }

@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,12 +59,12 @@ class Eve
      * @var array
      */
     protected $known_types = [
-        'character', 'corporation', 'alliance', 'type', 'render', 'auto', ];
+        'character', 'corporation', 'alliance', 'faction', 'type', 'render', 'auto', ];
 
     /**
      * @var string
      */
-    protected $extention = 'png';
+    protected $extension = 'png';
 
     /**
      * @var string
@@ -94,6 +94,10 @@ class Eve
         if ($type == 'auto')
             $type = $this->detect_type($id);
 
+        // ccp trick - http://eveonline-third-party-documentation.readthedocs.io/en/latest/imageserver/intro.html#faction-images
+        if ($type == 'faction')
+            $type = 'alliance';
+
         $this->type = ucfirst($type);
         $this->id = $id;
         $this->attributes = $attr;
@@ -109,10 +113,10 @@ class Eve
             $this->size = 32;
 
         // Character images are jpg, everything else is
-        // png. So, set the extention to jpg if this
+        // png. So, set the extension to jpg if this
         // is for a character image
         if ($this->type == 'Character')
-            $this->extention = 'jpg';
+            $this->extension = 'jpg';
 
     }
 
@@ -195,7 +199,7 @@ class Eve
     {
 
         return $this->img_server . '/' . $this->type . '/' . $this->id .
-            '_' . $size . '.' . $this->extention;
+            '_' . $size . '.' . $this->extension;
 
     }
 }

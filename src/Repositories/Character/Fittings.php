@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,26 +23,50 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\ChatChannel;
+use Seat\Eveapi\Models\Contacts\CharacterFitting;
+use Seat\Eveapi\Models\Contacts\CharacterFittingItem;
 
 /**
- * Class ChatChannels.
+ * Trait Fitting.
  * @package Seat\Services\Repositories\Character
  */
-trait ChatChannels
+trait Fittings
 {
     /**
-     * Get a characters Chat Channels.
-     *
      * @param int $character_id
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterChatChannelsFull(int $character_id): Collection
+    public function getCharacterFullFittings(int $character_id): Collection
     {
 
-        return ChatChannel::with('info', 'members')
-            ->where('characterID', $character_id)
+        return CharacterFitting::with('shiptype', 'items', 'items.type')
+            ->where('character_id', $character_id)->get();
+    }
+
+    /**
+     * @param int $character_id
+     * @param int $fitting_id
+     *
+     * @return \Seat\Eveapi\Models\Contacts\CharacterFitting
+     */
+    public function getCharacterFitting(int $character_id, int $fitting_id): CharacterFitting
+    {
+
+        return CharacterFitting::where('character_id', $character_id)
+            ->where('fitting_id', $fitting_id)->first();
+
+    }
+
+    /**
+     * @param int $fitting_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCharacterFittingItems(int $fitting_id): Collection
+    {
+
+        return CharacterFittingItem::with('type')->where('fitting_id', $fitting_id)
             ->get();
     }
 }

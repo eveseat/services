@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\Research as ResearchModel;
+use Seat\Eveapi\Models\Character\CharacterAgentResearch;
 
 /**
  * Class Research.
@@ -41,15 +41,15 @@ trait Research
     public function getCharacterResearchAgents(int $character_id): Collection
     {
 
-        return ResearchModel::join(
+        return CharacterAgentResearch::join(
             'invNames',
-            'character_researches.agentID', '=',
+            'character_agent_researches.agent_id', '=',
             'invNames.itemID')
             ->join(
                 'invTypes',
-                'character_researches.skillTypeID', '=',
+                'character_agent_researches.skill_type_id', '=',
                 'invTypes.typeID')
-            ->where('characterID', $character_id)
+            ->where('character_id', $character_id)
             ->get();
     }
 }

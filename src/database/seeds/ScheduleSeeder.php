@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,28 +25,67 @@ namespace Seat\Services\database\seeds;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Class ScheduleSeeder.
+ * @package Seat\Services\database\seeds
+ */
 class ScheduleSeeder extends Seeder
 {
+    /**
+     * @var array
+     */
     protected $schedule = [
 
-        [   // EVE Server Status | Every Five Minutes
-            'command'           => 'eve:update-server-status',
+        [   // ESI Status | Every Minute
+            'command'           => 'esi:update:esistatus',
+            'expression'        => '* * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
+        [   // Horizon Metrics | Every Five Minutes
+            'command'           => 'horizon:snapshot',
             'expression'        => '*/5 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
             'ping_after'        => null,
         ],
-        [   // EVE API Call List | Daily at 2am
-            'command'           => 'eve:update-api-call-list',
-            'expression'        => '0 2 * * *',
+        [   // SeAT Maintenance | Daily at 12am
+            'command'           => 'seat:admin:maintenance',
+            'expression'        => '0 0 * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
+        [   // Worker Maintenance | Daily at 1am
+            'command'           => 'queue:restart',
+            'expression'        => '0 1 * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
+        [   // EVE Server Status | Every Five Minutes
+            'command'           => 'esi:update:serverstatus',
+            'expression'        => '*/5 * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
+        [   // SeAT Alerts | Every Five Minutes
+            'command'           => 'alerts:run',
+            'expression'        => '*/5 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
             'ping_after'        => null,
         ],
         [   // SDE Data | Monthly
-            'command'           => 'eve:update-sde',
+            'command'           => 'eve:update:sde',
             'expression'        => '0 0 1 * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
@@ -54,32 +93,24 @@ class ScheduleSeeder extends Seeder
             'ping_after'        => null,
         ],
         [   // EVE Map | Daily at 12am
-            'command'           => 'eve:update-map',
+            'command'           => 'esi:update:public',
             'expression'        => '0 0 * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
             'ping_after'        => null,
         ],
-        [   // EVE Universe | Daily at 1am
-            'command'           => 'eve:update-eve',
-            'expression'        => '0 1 * * *',
-            'allow_overlap'     => false,
-            'allow_maintenance' => false,
-            'ping_before'       => null,
-            'ping_after'        => null,
-        ],
-        [   // EVE API Keys | Hourly
-            'command'           => 'eve:queue-keys',
+        [   // Characters | Hourly
+            'command'           => 'esi:update:characters',
             'expression'        => '0 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
             'ping_after'        => null,
         ],
-        [   // Clear Expired Commands | Every 6 hours
-            'command'           => 'seat:queue:clear-expired',
-            'expression'        => '0 */6 * * *',
+        [   // Corporations | Every two hours
+            'command'           => 'esi:update:corporations',
+            'expression'        => '0 */2 * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
@@ -99,13 +130,8 @@ class ScheduleSeeder extends Seeder
         // insert them
         foreach ($this->schedule as $job) {
 
-            $existing = DB::table('schedules')
-                ->where('command', $job['command'])
-                ->first();
-
-            if (! $existing)
+            if (! DB::table('schedules')->where('command', $job['command'])->first())
                 DB::table('schedules')->insert($job);
         }
-
     }
 }

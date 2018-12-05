@@ -20,19 +20,26 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Models;
+namespace Seat\Services\Repositories\Corporation;
 
-use Illuminate\Database\Eloquent\Model;
+use Seat\Eveapi\Models\Corporation\CorporationStructure;
 
 /**
- * Class Note.
- * @package Seat\Services\Models
+ * Trait Structures.
+ * @package Seat\Services\Repositories\Corporation
  */
-class Note extends Model
+trait Structures
 {
     /**
-     * @var array
+     * @param int $corporation_id
+     *
+     * @return mixed
      */
-    protected $fillable = ['object_type', 'object_id', 'title', 'note'];
+    public function getCorporationStructures(int $corporation_id)
+    {
 
+        return CorporationStructure::with('services', 'type', 'system')
+            ->where('corporation_id', $corporation_id)
+            ->get();
+    }
 }

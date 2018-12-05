@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 namespace Seat\Services\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Seat\Web\Models\User;
 
 /**
  * Class UserSetting.
@@ -41,6 +42,6 @@ class UserSetting extends Model
     public function user()
     {
 
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'group_id', 'group_id');
     }
 }

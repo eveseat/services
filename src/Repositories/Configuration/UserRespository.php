@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,8 @@
 
 namespace Seat\Services\Repositories\Configuration;
 
-use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
+use Illuminate\Support\Collection;
+use Seat\Web\Models\Group;
 use Seat\Web\Models\User as UserModel;
 
 /**
@@ -43,22 +44,31 @@ trait UserRespository
     /**
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
+    public function getAllGroups()
+    {
+
+        return Group::all();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function getAllFullUsers()
     {
 
-        return UserModel::with('roles', 'affiliations', 'keys')
+        return UserModel::with('group.roles', 'affiliations', 'refresh_token')
             ->get();
     }
 
     /**
      * @param $user_id
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @return \Illuminate\Database\Eloquent\Model|null|object|static
      */
     public function getFullUser($user_id)
     {
 
-        return UserModel::with('roles.permissions', 'affiliations', 'keys')
+        return UserModel::with('group', 'group.users', 'group.roles.permissions', 'affiliations')
             ->where('id', $user_id)
             ->first();
     }
@@ -98,18 +108,18 @@ trait UserRespository
     }
 
     /**
-     * @param $user_id
+     * Return the characters that are part of a group.
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @param \Seat\Web\Models\Group $group
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getUserCharacters($user_id)
+    public function getUserGroupCharacters(Group $group = null): Collection
     {
 
-        return ApiKeyInfoCharacters::with('key')
-            ->whereHas('key', function ($query) use ($user_id) {
+        if (! $group)
+            return collect();
 
-                $query->where('user_id', $user_id);
-            })
-            ->get();
+        return Group::with('users')->find($group->id)->users;
     }
 }

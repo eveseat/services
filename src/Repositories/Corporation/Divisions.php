@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
+use Seat\Eveapi\Models\Corporation\CorporationDivision;
 
 /**
  * Class Divisions.
@@ -32,7 +32,7 @@ use Seat\Eveapi\Models\Corporation\CorporationSheetDivision;
 trait Divisions
 {
     /**
-     * Return the Corporation Divisions for a Corporation.
+     * Return the Divisions for a Corporation.
      *
      * @param int $corporation_id
      *
@@ -41,7 +41,9 @@ trait Divisions
     public function getCorporationDivisions(int $corporation_id): Collection
     {
 
-        return CorporationSheetDivision::where('corporationID', $corporation_id)
+        return CorporationDivision::where('corporation_id', $corporation_id)
+            ->where('type', 'hangar')
+            ->orderBy('division')
             ->get();
     }
 }

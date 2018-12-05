@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\MemberSecurity;
-use Seat\Eveapi\Models\Corporation\MemberSecurityLog;
-use Seat\Eveapi\Models\Corporation\MemberSecurityTitle;
+use Seat\Eveapi\Models\Corporation\CorporationMemberTitle;
+use Seat\Eveapi\Models\Corporation\CorporationRole;
+use Seat\Eveapi\Models\Corporation\CorporationRoleHistory;
 
 /**
  * Class Security.
@@ -40,10 +40,10 @@ trait Security
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMemberSecurity(int $corporation_id): Collection
+    public function getCorporationMemberRoles(int $corporation_id): Collection
     {
 
-        return MemberSecurity::where('corporationID', $corporation_id)
+        return CorporationRole::where('corporation_id', $corporation_id)
             ->get();
     }
 
@@ -57,8 +57,8 @@ trait Security
     public function getCorporationMemberSecurityLogs(int $corporation_id): Collection
     {
 
-        return MemberSecurityLog::where('corporationID', $corporation_id)
-            ->orderBy('changeTime', 'desc')
+        return CorporationRoleHistory::where('corporation_id', $corporation_id)
+            ->latest()
             ->get();
     }
 
@@ -72,7 +72,9 @@ trait Security
     public function getCorporationMemberSecurityTitles(int $corporation_id): Collection
     {
 
-        return MemberSecurityTitle::where('corporationID', $corporation_id)
+        return CorporationMemberTitle::join('corporation_titles', 'corporation_member_titles.title_id', '=',
+            'corporation_titles.title_id')
+            ->where('corporation_member_titles.corporation_id', $corporation_id)
             ->get();
     }
 }

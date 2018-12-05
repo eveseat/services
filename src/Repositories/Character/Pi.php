@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\PlanetaryColony;
+use Seat\Eveapi\Models\PlanetaryInteraction\CharacterPlanet;
 
 /**
  * Class Pi.
@@ -41,7 +41,55 @@ trait Pi
     public function getCharacterPlanetaryColonies(int $character_id): Collection
     {
 
-        return PlanetaryColony::where('ownerID', $character_id)
+        return CharacterPlanet::where('character_id', $character_id)
+            ->join('mapDenormalize as system', 'system.itemID', '=', 'solar_system_id')
+            ->join('mapDenormalize as planet', 'planet.itemID', '=', 'planet_id')
+            ->select('character_planets.*', 'system.itemName', 'planet.typeID')
             ->get();
+    }
+
+    /**
+     * @param int $character_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCharacterPlanetaryExtractors(int $character_id): Collection
+    {
+
+        $extractors = CharacterPlanet::where('character_planets.character_id', $character_id)
+            ->join('character_planet_extractors', function ($join) {
+                $join->on('character_planet_extractors.planet_id', '=', 'character_planets.planet_id')
+                    ->on('character_planet_extractors.character_id', '=', 'character_planets.character_id');
+            })
+            ->join('character_planet_pins', function ($join) {
+                $join->on('character_planet_pins.pin_id', '=', 'character_planet_extractors.pin_id')
+                    ->on('character_planet_pins.planet_id', '=', 'character_planet_extractors.planet_id')
+                    ->on('character_planet_pins.character_id', '=', 'character_planet_extractors.character_id');
+            })
+            ->join('mapDenormalize as planet',
+                'planet.itemID', '=', 'character_planets.planet_id')
+            ->join('mapDenormalize as system',
+                'system.itemID', '=', 'character_planets.solar_system_id')
+            ->join('invTypes',
+                'invTypes.typeID', '=', 'character_planet_extractors.product_type_id')
+            ->select(
+                'character_planet_extractors.product_type_id', // Extractor Product Name f.e. Aqueous Liquids
+                'planet.celestialIndex', // arabic planet index
+                'planet.itemName', // Planet Name
+                'planet.typeID', // Planet Type ID
+                'system.itemName', // System Name
+                'character_planet_pins.install_time', //UTC Time of start
+                'character_planet_pins.expiry_time', // UTC Time of expiry
+                'character_planets.planet_type', // barren, temperate, gas
+                'invTypes.typeName' // Extractor Product Name
+            )
+            ->get();
+
+        return $extractors->map(function ($item) {
+
+            $item->celestialIndex = number_roman($item->celestialIndex);
+
+            return $item;
+        });
     }
 }

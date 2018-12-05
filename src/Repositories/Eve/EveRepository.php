@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,8 @@ namespace Seat\Services\Repositories\Eve;
 
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Eve\RefTypes;
-use Seat\Eveapi\Models\Server\ServerStatus;
+use Seat\Eveapi\Models\Status\EsiStatus;
+use Seat\Eveapi\Models\Status\ServerStatus;
 
 /**
  * Class EveRepository.
@@ -107,8 +108,7 @@ trait EveRepository
     public function getEveLastServerStatus()
     {
 
-        return ServerStatus::orderBy('created_at', 'desc')
-            ->first();
+        return ServerStatus::latest()->first();
     }
 
     /**
@@ -119,8 +119,17 @@ trait EveRepository
     public function getEveServerStatuses(int $limit = 200)
     {
 
-        return ServerStatus::orderBy('created_at', 'desc')
-            ->take($limit)
-            ->get();
+        return ServerStatus::latest()->take($limit)->get();
+    }
+
+    /**
+     * @param int $limit
+     *
+     * @return mixed
+     */
+    public function getEsiResponseTimes(int $limit = 200)
+    {
+
+        return EsiStatus::latest()->take($limit)->get();
     }
 }

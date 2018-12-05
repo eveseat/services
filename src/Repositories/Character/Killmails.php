@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
-use Seat\Eveapi\Models\Character\KillMail;
+use Seat\Eveapi\Models\Killmails\CharacterKillmail;
 
 /**
  * Class Killmails.
@@ -37,31 +37,36 @@ trait Killmails
      * @param bool $get
      * @param int  $chunk
      *
-     * @return
+     * @return \Illuminate\Support\Collection
      */
     public function getCharacterKillmails(
         int $character_id, bool $get = true, int $chunk = 200)
     {
 
-        $killmails = KillMail::select(
+        $killmails = CharacterKillmail::select(
             '*',
-            'character_kill_mails.characterID as ownerID',
-            'kill_mail_details.characterID as victimID')
+            'character_killmails.character_id as ownerID',
+            'killmail_victims.character_id as victimID')
             ->leftJoin(
-                'kill_mail_details',
-                'character_kill_mails.killID', '=',
-                'kill_mail_details.killID')
+                'killmail_details',
+                'character_killmails.killmail_id', '=',
+                'killmail_details.killmail_id')
+            ->leftJoin(
+                'killmail_victims',
+                'killmail_victims.killmail_id', '=',
+                'character_killmails.killmail_id'
+            )
             ->leftJoin(
                 'invTypes',
-                'kill_mail_details.shipTypeID', '=',
+                'killmail_victims.ship_type_id', '=',
                 'invTypes.typeID')
             ->leftJoin('mapDenormalize',
-                'kill_mail_details.solarSystemID', '=',
+                'killmail_details.solar_system_id', '=',
                 'mapDenormalize.itemID')
-            ->where('character_kill_mails.characterID', $character_id);
+            ->where('character_killmails.character_id', $character_id);
 
         if ($get)
-            return $killmails->orderBy('character_kill_mails.killID', 'desc')
+            return $killmails->orderBy('character_killmails.killmail_id', 'desc')
                 ->paginate($chunk);
 
         return $killmails;

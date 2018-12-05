@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,13 @@ class ServicesServiceProvider extends ServiceProvider
 
                     if ($char === '?') {
 
-                        $full_query = $full_query . '"' .
-                            $query->bindings[$positional] . '"';
+                        $value = $query->bindings[$positional];
+
+                        if (is_scalar($value))
+                            $full_query = $full_query . '"' . $value . '"';
+                        else
+                            $full_query = $full_query . '[' . gettype($value) . ']';
+
                         $positional++;
 
                     } else {

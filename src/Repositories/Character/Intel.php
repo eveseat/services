@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,10 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Character\MailMessage;
-use Seat\Eveapi\Models\Character\WalletJournal;
-use Seat\Eveapi\Models\Character\WalletTransaction;
+use Seat\Eveapi\Models\Mail\MailHeader;
+use Seat\Eveapi\Models\Mail\MailMailingList;
+use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
+use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
 use Seat\Web\Models\StandingsProfile;
 
 /**
@@ -40,44 +41,36 @@ trait Intel
      *
      * @return \Illuminate\Support\Collection
      */
-    public function characterTopWalletJournalInteractions(int $character_id)
+    public function characterTopWalletJournalInteractions(int $character_id): Collection
     {
 
-        // TODO: Optimize this peice of crap!
+        // TODO: Optimize this piece of crap!
 
-        return WalletJournal::select(
+        return CharacterWalletJournal::select(
             DB::raw('count(*) as total'),
-            'eve_ref_types.refTypeName',
-            'character_affiliations.characterID',
-            'character_affiliations.characterName',
-            'character_affiliations.corporationID',
-            'character_affiliations.corporationName',
-            'character_affiliations.allianceID',
-            'character_affiliations.allianceName'
+            'ref_type',
+            'character_affiliations.character_id',
+            'character_affiliations.corporation_id',
+            'character_affiliations.alliance_id',
+            'character_affiliations.faction_id'
         )
             ->leftJoin('character_affiliations', function ($join) {
 
                 $join->on(
-                    'character_affiliations.characterID', '=',
-                    'character_wallet_journals.ownerID1'
+                    'character_affiliations.character_id', '=',
+                    'character_wallet_journals.first_party_id'
                 );
 
                 $join->orOn(
-                    'character_affiliations.characterID', '=',
-                    'character_wallet_journals.ownerID2'
+                    'character_affiliations.character_id', '=',
+                    'character_wallet_journals.second_party_id'
                 );
 
-            })
-            ->join('eve_ref_types', function ($join) {
-
-                $join->on(
-                    'eve_ref_types.refTypeID', '=',
-                    'character_wallet_journals.refTypeID'
-                );
             })
             // Limit to the character in question...
-            ->where('character_wallet_journals.characterID', $character_id)
-            ->groupBy('ownerID1', 'ownerID2');
+            ->where('character_wallet_journals.character_id', $character_id)
+            ->groupBy('first_party_id', 'second_party_id')
+            ->get();
 
     }
 
@@ -89,57 +82,55 @@ trait Intel
     public function characterTopWalletTransactionInteractions(int $character_id)
     {
 
-        return WalletTransaction::leftJoin('character_affiliations', function ($join) {
+        return CharacterWalletTransaction::leftJoin('character_affiliations', function ($join) {
 
             $join->on(
-                'character_affiliations.characterID', '=',
-                'character_wallet_transactions.clientID'
+                'character_affiliations.character_id', '=',
+                'character_wallet_transactions.client_id'
             );
 
         })
-            ->where('character_wallet_transactions.characterID', $character_id)
-            ->where('character_wallet_transactions.clientID', '<>', $character_id)
+            ->where('character_wallet_transactions.character_id', $character_id)
+            ->where('character_wallet_transactions.client_id', '<>', $character_id)
             ->select(
-                'character_affiliations.characterID',
-                'character_affiliations.characterName',
-                'character_affiliations.corporationID',
-                'character_affiliations.corporationName',
-                'character_affiliations.allianceID',
-                'character_affiliations.allianceName'
+                'character_affiliations.character_id',
+                'character_affiliations.corporation_id',
+                'character_affiliations.alliance_id',
+                'character_affiliations.faction_id'
             )
-            ->selectRaw('count(clientID) as total')
-            ->groupBy('clientID');
+            ->selectRaw('count(client_id) as total')
+            ->groupBy('client_id');
 
     }
 
     /**
      * @param int $character_id
      *
-     * @return
+     * @return mixed
      */
     public function characterTopMailInteractions(int $character_id)
     {
 
-        return MailMessage::leftJoin('character_affiliations', function ($join) {
+        return MailHeader::leftJoin('character_affiliations', function ($join) {
 
             $join->on(
-                'character_affiliations.characterID', '=',
-                'character_mail_messages.senderID'
+                'character_affiliations.character_id', '=',
+                'mail_headers.from'
             );
 
         })
-            ->where('character_mail_messages.characterID', $character_id)
-            ->where('character_mail_messages.senderID', '<>', $character_id)
+            ->where('mail_headers.character_id', $character_id)
+            ->where('mail_headers.from', '<>', $character_id)
+            ->whereNotIn('mail_headers.from', MailMailingList::select('mailing_list_id')->distinct()->get())
             ->select(
-                'character_affiliations.characterID',
-                'character_affiliations.characterName',
-                'character_affiliations.corporationID',
-                'character_affiliations.corporationName',
-                'character_affiliations.allianceID',
-                'character_affiliations.allianceName'
+                'character_affiliations.character_id',
+                'character_affiliations.corporation_id',
+                'character_affiliations.alliance_id',
+                'character_affiliations.faction_id',
+                'mail_headers.from'
             )
-            ->selectRaw('count(senderID) as total')
-            ->groupBy('senderID');
+            ->selectRaw('count(`from`) as total')
+            ->groupBy('from');
 
     }
 
@@ -171,52 +162,50 @@ trait Intel
      * @param int $character_id
      * @param int $profile_id
      *
-     * @return
+     * @return mixed
      */
     public function getCharacterJournalStandingsWithProfile(int $character_id, int $profile_id)
     {
 
-        return WalletJournal::select(
+        return CharacterWalletJournal::select(
             DB::raw('count(*) as total'),
-            'character_affiliations.characterName',
-            'character_affiliations.characterID',
-            'character_affiliations.corporationName',
-            'character_affiliations.corporationID',
-            'character_affiliations.allianceName',
-            'character_affiliations.allianceID',
+            'character_affiliations.character_id',
+            'character_affiliations.corporation_id',
+            'character_affiliations.alliance_id',
+            'character_affiliations.faction_id',
             'standings_profile_standings.elementID as standing_match_on',
             'standings_profile_standings.type as standing_type',
             'standings_profile_standings.standing as standing'
         )->leftJoin('character_affiliations', function ($join) {
 
             $join->on(
-                'character_affiliations.characterID', '=',
-                'character_wallet_journals.ownerID1'
+                'character_affiliations.character_id', '=',
+                'character_wallet_journals.first_party_id'
             );
 
             $join->orOn(
-                'character_affiliations.characterID', '=',
-                'character_wallet_journals.ownerID2'
+                'character_affiliations.character_id', '=',
+                'character_wallet_journals.second_party_id'
             );
 
         })->join('standings_profile_standings', function ($join) {
 
             $join->on(
                 'standings_profile_standings.elementID', '=',
-                'character_affiliations.characterID'
+                'character_affiliations.character_id'
             );
 
             $join->orOn(
                 'standings_profile_standings.elementID', '=',
-                'character_affiliations.corporationID'
+                'character_affiliations.corporation_id'
             );
 
             $join->orOn(
                 'standings_profile_standings.elementID', '=',
-                'character_affiliations.allianceID'
+                'character_affiliations.alliance_id'
             );
 
-        })->where('character_wallet_journals.characterID', $character_id)
+        })->where('character_wallet_journals.character_id', $character_id)
             ->where('standings_profile_standings.standings_profile_id', $profile_id)
             ->groupBy('standings_profile_standings.elementID');
 

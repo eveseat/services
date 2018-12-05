@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,10 @@
 
 namespace Seat\Services\Repositories\Seat;
 
-use Seat\Eveapi\Models\Character\CharacterSheet;
-use Seat\Eveapi\Models\Character\CharacterSheetSkills;
-use Seat\Eveapi\Models\KillMail\Detail;
+use Seat\Eveapi\Models\Character\CharacterInfoSkill;
+use Seat\Eveapi\Models\Industry\CharacterMining;
+use Seat\Eveapi\Models\Killmails\CharacterKillmail;
+use Seat\Eveapi\Models\Wallet\CharacterWalletBalance;
 
 /**
  * Class Stats.
@@ -35,42 +36,34 @@ trait Stats
     /**
      * @return float
      */
-    public function getTotalCharacterIsk(): float
+    public function getTotalCharacterIsk(): ?float
     {
 
-        $user = auth()->user();
+        return CharacterWalletBalance::whereIn('character_id',
+            auth()->user()->associatedCharacterIds())->sum('balance');
+    }
 
-        // if the user is super, return all balances
-        if ($user->hasSuperUser())
-            return CharacterSheet::sum('balance');
+    /**
+     * @return mixed
+     */
+    public function getTotalCharacterMiningIsk()
+    {
 
-        // get affiliations and check which characterID granted its sheet access
-        $characters = $this->getUserGrantedEntityList('character.sheet');
+        return CharacterMining::whereIn('character_id',
+            auth()->user()->associatedCharacterIds())->get()->map(function ($item) {
 
-        // filter balance on granted characters
-        return CharacterSheet::whereIn('characterID', $characters)
-            ->sum('balance');
-
+            return $item->value;
+        })->sum();
     }
 
     /**
      * @return int
      */
-    public function getTotalCharacterSkillpoints(): int
+    public function getTotalCharacterSkillpoints(): ?int
     {
 
-        $user = auth()->user();
-
-        // if the user is super, return all balances
-        if ($user->hasSuperUser())
-            return CharacterSheetSkills::sum('skillpoints');
-
-        // get affiliations and check which characterID granted its sheet access
-        $characters = $this->getUserGrantedEntityList('character.sheet');
-
-        // filter skills on granted characters
-        return CharacterSheetSkills::whereIn('characterID', $characters)
-            ->sum('skillpoints');
+        return CharacterInfoSkill::whereIn('character_id',
+            auth()->user()->associatedCharacterIds())->sum('total_sp');
     }
 
     /**
@@ -79,22 +72,8 @@ trait Stats
     public function getTotalCharacterKillmails(): int
     {
 
-        $user = auth()->user();
-
-        // if the user is super, return all balances
-        if ($user->hasSuperUser())
-            return Detail::count('killID');
-
-        // get affiliations and check which characterID granted its kill mails access
-        $characters = $this->getUserGrantedEntityList('character.killmails');
-
-        // get affiliations and check which corporationID granted its kill mails access
-        $corporations = $this->getUserGrantedEntityList('corporation.killmails', true);
-
-        // filter skills on granted characters
-        return Detail::whereIn('characterID', $characters)
-            ->orWhereIn('corporationID', $corporations)
-            ->count('killID');
+        return CharacterKillmail::whereIn('character_id', auth()->user()->associatedCharacterIds())
+            ->count();
     }
 
     /**
@@ -102,9 +81,12 @@ trait Stats
      * @param bool   $corporation True if the permission for which the check should be made is for corporation
      *
      * @return array An array of granted corporationID or characterID
+     * @throws \Exception
      */
     private function getUserGrantedEntityList(string $permission, bool $corporation = false): array
     {
+
+        throw new \Exception('Unused method');
 
         // a list of characterIDs or corporationIDs according to $corporation parameter
         $entities = [];

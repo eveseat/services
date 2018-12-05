@@ -22,8 +22,9 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateSchedulesTable extends Migration
+class CreateHistoricalPricesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -33,19 +34,17 @@ class CreateSchedulesTable extends Migration
     public function up()
     {
 
-        Schema::create('schedules', function (Blueprint $table) {
+        Schema::create('historical_prices', function (Blueprint $table) {
 
-            $table->increments('id');
-            $table->string('command');
-            $table->string('expression');
-            $table->boolean('allow_overlap')->default(false);
-            $table->boolean('allow_maintenance')->default(false);
-            $table->string('ping_before')->nullable();
-            $table->string('ping_after')->nullable();
-
+            $table->bigInteger('type_id');
+            $table->date('date');
+            $table->decimal('average_price');
+            $table->decimal('adjusted_price');
             $table->timestamps();
+            $table->primary(['type_id', 'date']);
+            $table->index(['date', 'average_price', 'adjusted_price']);
+            $table->index(['average_price', 'adjusted_price']);
         });
-
     }
 
     /**
@@ -56,6 +55,6 @@ class CreateSchedulesTable extends Migration
     public function down()
     {
 
-        Schema::drop('schedules');
+        Schema::dropIfExists('historical_prices');
     }
 }

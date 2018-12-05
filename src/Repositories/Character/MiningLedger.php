@@ -22,28 +22,35 @@
 
 namespace Seat\Services\Repositories\Character;
 
-use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Calendar\CharacterCalendarEvent;
+use Seat\Eveapi\Models\Industry\CharacterMining;
 
 /**
- * Class Calendar.
+ * Trait MiningLedger.
+ *
  * @package Seat\Services\Repositories\Character
  */
-trait Calendar
+trait MiningLedger
 {
     /**
-     * Get Calendar events for a specific character.
+     * @param int  $character_id
+     * @param bool $get
      *
-     * @param int $character_id
-     *
-     * @return \Illuminate\Support\Collection
+     * @return mixed
      */
-    public function getCharacterUpcomingCalendarEvents(int $character_id): Collection
+    public function getCharacterLedger(int $character_id, bool $get = true)
     {
 
-        return CharacterCalendarEvent::with('detail', 'attendees')
-            ->where('character_id', $character_id)
-            ->whereDate('event_date', '>', carbon()->toDateTimeString())
-            ->get();
+        $ledger = CharacterMining::select('character_minings.date', 'solar_system_id', 'character_minings.type_id')
+            ->join('invTypes', 'invTypes.typeID', 'character_minings.type_id')
+            ->leftJoin('historical_prices', function ($join) {
+                $join->on('historical_prices.type_id', '=', 'character_minings.type_id')
+                     ->on('historical_prices.date', '=', 'character_minings.date');
+            })
+            ->where('character_id', $character_id);
+
+        if (! $get)
+            return $ledger;
+
+        return $ledger->get();
     }
 }

@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,9 +75,8 @@ class Profile extends Settings
         'language'            => 'en',
         'mail_threads'        => 'yes',
 
-        // Main Character
-        'main_character_id'   => 1,
-        'main_character_name' => null,
+        // A groups main character_id
+        'main_character_id'   => 0,
 
         // Numbers
         'thousand_seperator'  => ' ',
@@ -85,9 +84,9 @@ class Profile extends Settings
 
         // Notifications
         'email_notifications' => 'no',
+        'email_address'       => '',
 
         // Multi factor authentication
         'require_mfa'         => 'no',
     ];
-
 }

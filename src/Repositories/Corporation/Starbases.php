@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Seat\Eveapi\Models\Corporation\Starbase;
+use Illuminate\Support\Collection;
+use Seat\Eveapi\Models\Assets\CorporationAsset;
+use Seat\Eveapi\Models\Corporation\CorporationStarbase;
 
 /**
  * Class Starbases.
@@ -38,183 +40,64 @@ trait Starbases
      * @param int $corporation_id
      * @param int $starbase_id
      *
-     * @return
+     * @return Collection
      */
     public function getCorporationStarbases(int $corporation_id, int $starbase_id = null)
     {
 
-        $starbase = Starbase::select(
-            'corporation_starbases.itemID',
-            'corporation_starbases.moonID',
-            'corporation_starbases.state',
-            'corporation_starbases.stateTimeStamp',
-            'corporation_starbases.onlineTimeStamp',
-            'corporation_starbases.onlineTimeStamp',
-            'corporation_starbase_details.useStandingsFrom',
-            'corporation_starbase_details.onAggression',
-            'corporation_starbase_details.onCorporationWar',
-            'corporation_starbase_details.allowCorporationMembers',
-            'corporation_starbase_details.allowAllianceMembers',
-            'corporation_starbase_details.fuelBlocks',
-            'corporation_starbase_details.strontium',
-            'corporation_starbase_details.starbaseCharter',
-            'invTypes.typeID as starbaseTypeID',
-            'invTypes.typeName as starbaseTypeName',
-            'mapDenormalize.itemName as mapName',
-            'mapDenormalize.security as mapSecurity',
-            'invNames.itemName as moonName',
-            'map_sovereignties.solarSystemName',
-            'corporation_starbase_details.updated_at')
-            ->selectSub(function ($query) {
+        return CorporationStarbase::where('corporation_id', $corporation_id)->get();
+    }
 
-                return $query->from('invControlTowerResources')
-                    ->select('quantity')
-                    // from invControlTowerResources, we can see
-                    // that fuelBlock resourceTypeID's are around
-                    // 4051 -> 4312. For that reason, we can just
-                    // approximate the range that fuel blocks will
-                    // fall in.
-                    ->whereBetween('resourceTypeID', [4000, 5000])
-                    ->where('purpose', 1)
-                    ->where('controlTowerTypeID',
-                        $query->raw('corporation_starbases.typeID'));
+    /**
+     * Retrieving all modules which are inside a starbase area (forcefield and maximum control range).
+     *
+     * @param int $corporation_id
+     * @param int $starbase_id
+     *
+     * @return Collection
+     */
+    public function getStarbaseModules(int $corporation_id, int $starbase_id): Collection
+    {
 
-            }, 'baseFuelUsage')
-            ->selectSub(function ($query) {
-
-                return $query->from('invControlTowerResources')
-                    ->select('quantity')
-                    ->where('resourceTypeID', '=', 16275)
-                    ->where('purpose', 4)
-                    ->where('controlTowerTypeID',
-                        $query->raw('corporation_starbases.typeID'));
-
-            }, 'baseStrontUsage')
-            ->selectSub(function ($query) {
-
-                return $query->from('invTypes')
-                    ->select('capacity')
-                    ->where('groupID', 365)
-                    ->where('typeID',
-                        $query->raw('corporation_starbases.typeID'));
-
-            }, 'fuelBaySize')
-            ->selectSub(function ($query) {
-
-                return $query->from('dgmTypeAttributes')
-                    ->select('valueFloat')
-                    ->where('dgmTypeAttributes.attributeID', 1233)
-                    ->where('typeID',
-                        $query->raw('corporation_starbases.typeID'));
-
-            }, 'strontBaySize')
-            ->selectSub(function ($query) {
-
-                return $query->from('corporation_locations')
-                    ->select('itemName')
-                    ->where('itemID',
-                        $query->raw('corporation_starbases.itemID'));
-
-            }, 'starbaseName')
-            ->selectSub(function ($query) use ($corporation_id) {
-
-                return $query->from('map_sovereignties')
-                    ->selectRaw(
-                        'IF(solarSystemID, TRUE, FALSE) inSovSystem')
-                    ->where('factionID', 0)
-                    ->whereIn('allianceID', function ($subquery) use ($corporation_id) {
-
-                        $subquery->from('corporation_sheets')
-                            ->select('allianceID')
-                            ->where('corporationID', $corporation_id);
-                    })
-                    ->where('solarSystemID',
-                        $query->raw('corporation_starbases.locationID'));
-
-            }, 'inSovSystem')
-            ->selectSub(function ($query) {
-
-                return $query->from('dgmTypeAttributes')
-                    ->select('valueFloat')
-                    // From dgmAttributeTypes,
-                    // 757 = controlTowerSiloCapacityBonus
-                    ->where('attributeID', 757)
-                    ->where('typeID',
-                        $query->raw('corporation_starbases.typeID'));
-
-            }, 'siloCapacityBonus')
-            ->join(
-                'corporation_starbase_details',
-                'corporation_starbases.itemID', '=',
-                'corporation_starbase_details.itemID')
-            ->join(
-                'mapDenormalize',
-                'corporation_starbases.locationID', '=',
-                'mapDenormalize.itemID')
-            ->join(
-                'invNames',
-                'corporation_starbases.moonID', '=',
-                'invNames.itemID')
-            ->join(
-                'invTypes',
-                'corporation_starbases.typeID', '=',
-                'invTypes.typeID')
-            ->leftJoin(
-                'map_sovereignties',
-                'corporation_starbases.locationID', '=',
-                'map_sovereignties.solarSystemID')
-            ->where('corporation_starbases.corporationID', $corporation_id)
-            ->orderBy('invNames.itemName', 'asc');
-
-        // If we did get a specific starbase_id to query then
-        // just return what we have now for all of the starbases.
-        if (is_null($starbase_id))
-            return $starbase->get();
-
-        // ... otherwise, filter down to the specific requested starbase
-        // and grab some extra information about the silos etc at this tower.
-        $starbase = $starbase->where('corporation_starbases.itemID', $starbase_id)
+        // retrieving starbase location
+        $starbase = CorporationStarbase::where('starbase_id', $starbase_id)
+            ->where('corporation_id', $corporation_id)
             ->first();
 
-        // When calculating *actual* silo capacity, we need
-        // to keep in mind that certain towers have bonuses
-        // to silo cargo capacity, like amarr & gallente
-        // towers do now. To calculate this, we will get the
-        // siloCapacityBonus value from the starbase and add the
-        // % capacity to actual modules that benefit from
-        // the bonuses.
-        $cargo_types_with_bonus = [14343, 17982]; // Silo, Coupling Array
-        $assetlist_locations = $this->getCorporationAssetByLocation($corporation_id);
-        $module_contents = $this->getCorporationAssetContents($corporation_id);
+        // retrieving all modules candidate filtering on item located on same place than starbase
+        // and starbase modules category (23)
+        $candidates = CorporationAsset::join('invTypes', 'type_id', '=', 'typeID')
+            ->join('invGroups', 'invGroups.groupID', '=', 'invTypes.groupID')
+            ->where('corporation_id', $corporation_id)
+            ->where('location_id', $starbase->system_id)
+            ->where('categoryID', 23)
+            ->where('item_id', '<>', $starbase_id)
+            ->select('item_id', 'quantity', 'location_id', 'x', 'y', 'z', 'name', 'type_id', 'typeName', 'capacity', 'volume')
+            ->get();
 
-        // Check if we know of *any* assets at the moon where this tower is.
-        if ($assetlist_locations != null && $assetlist_locations->has($starbase->moonID)) {
+        // get maximum distance between starbase and module
+        $max_structure_distance = 0.0;
+        $attribute = $starbase->type->dogmaAttributes->where('attributeID', 650)->first();
 
-            // Set the 'modules' key for the starbase
-            $starbase->modules = $assetlist_locations->get($starbase->moonID)
-                ->map(function ($asset) use (
-                    $starbase,
-                    $cargo_types_with_bonus,
-                    $module_contents
-                ) {
+        if (! is_null($attribute))
+            $max_structure_distance = (is_null($attribute->valueFloat)) ? $attribute->valueInt : $attribute->valueFloat;
 
-                    // Return a collection with module related info.
-                    return [
-                        'detail'           => $asset,
-                        'used_volume'      => $module_contents->where(
-                            'parentAssetItemID', $asset->itemID)->sum(function ($_) {
+        // computing allowed starbase area
+        $starbaseArea = [
+            'x' => [$starbase->item->x - $max_structure_distance, $starbase->item->x + $max_structure_distance],
+            'y' => [$starbase->item->y - $max_structure_distance, $starbase->item->y + $max_structure_distance],
+            'z' => [$starbase->item->z - $max_structure_distance, $starbase->item->z + $max_structure_distance],
+        ];
 
-                            return $_->quantity * $_->volume;
-                        }),
-                        'available_volume' => in_array($asset->typeID, $cargo_types_with_bonus) ?
-                            $asset->capacity * (1 + $starbase->siloCapacityBonus / 100) :
-                            $asset->capacity,
-                        'total_items'      => $module_contents->where(
-                            'parentAssetItemID', $asset->itemID)->sum('quantity'),
-                    ];
-                });
-        }
+        // filtering candidates and keep only those which are inside the starbase area
+        return $candidates->filter(function ($candidate) use ($starbase, $starbaseArea) {
 
-        return $starbase;
+            if (is_null($candidate->x) || is_null($candidate->y) || is_null($candidate->z))
+                return false;
+
+            return $candidate->x >= $starbaseArea['x'][0] && $candidate->x <= $starbaseArea['x'][1] &&
+                $candidate->y >= $starbaseArea['y'][0] && $candidate->y <= $starbaseArea['y'][1] &&
+                $candidate->z >= $starbaseArea['z'][0] && $candidate->z <= $starbaseArea['z'][1];
+        });
     }
 }

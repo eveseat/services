@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\Bookmark;
+use Seat\Eveapi\Models\Bookmarks\CorporationBookmark;
 
 /**
  * Class Bookmarks.
@@ -41,7 +41,7 @@ trait Bookmarks
     public function getCorporationBookmarks(int $corporation_id): Collection
     {
 
-        return Bookmark::where('corporationID', $corporation_id)
+        return CorporationBookmark::with('folder')->where('corporation_id', $corporation_id)
             ->get();
     }
 }

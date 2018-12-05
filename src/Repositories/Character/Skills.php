@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,8 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Character\CharacterSheetSkills;
-use Seat\Eveapi\Models\Character\SkillInTraining;
-use Seat\Eveapi\Models\Character\SkillQueue;
+use Seat\Eveapi\Models\Character\CharacterSkill;
+use Seat\Eveapi\Models\Skills\CharacterSkillQueue;
 
 trait Skills
 {
@@ -40,11 +39,11 @@ trait Skills
     public function getCharacterSkillsInformation(int $character_id): Collection
     {
 
-        return CharacterSheetSkills::join('invTypes',
-            'character_character_sheet_skills.typeID', '=',
+        return CharacterSkill::join('invTypes',
+            'character_skills.skill_id', '=',
             'invTypes.typeID')
             ->join('invGroups', 'invTypes.groupID', '=', 'invGroups.groupID')
-            ->where('character_character_sheet_skills.characterID', $character_id)
+            ->where('character_skills.character_id', $character_id)
             ->orderBy('invTypes.typeName')
             ->get();
 
@@ -55,15 +54,13 @@ trait Skills
      *
      * @param int $character_id
      *
-     * @return \Seat\Eveapi\Models\Character\SkillInTraining
+     * @return \Seat\Eveapi\Models\Skills\CharacterSkillQueue
      */
-    public function getCharacterSkillInTraining(int $character_id)
+    public function getCharacterSkillInTraining(int $character_id): CharacterSkillQueue
     {
 
-        return SkillInTraining::join('invTypes',
-            'character_skill_in_trainings.trainingTypeID', '=',
-            'invTypes.typeID')
-            ->where('characterID', $character_id)
+        return CharacterSkillQueue::where('character_id', $character_id)
+            ->where('queue_position', 0)
             ->first();
     }
 
@@ -74,14 +71,12 @@ trait Skills
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterSkilQueue(int $character_id): Collection
+    public function getCharacterSkillQueue(int $character_id): Collection
     {
 
-        return SkillQueue::join('invTypes',
-            'character_skill_queues.typeID', '=',
-            'invTypes.typeID')
-            ->where('characterID', $character_id)
-            ->orderBy('queuePosition')
+        return CharacterSkillQueue::where('characterID', $character_id)
+            ->where('queue_position', '>', 0)
+            ->orderBy('queue_position')
             ->get();
 
     }
@@ -96,16 +91,16 @@ trait Skills
     public function getCharacterSkillsAmountPerLevel(int $character_id): array
     {
 
-        $skills = CharacterSheetSkills::where('characterID', $character_id)
+        $skills = CharacterSkill::where('character_id', $character_id)
             ->get();
 
         return [
-            $skills->where('level', 0)->count(),
-            $skills->where('level', 1)->count(),
-            $skills->where('level', 2)->count(),
-            $skills->where('level', 3)->count(),
-            $skills->where('level', 4)->count(),
-            $skills->where('level', 5)->count(),
+            $skills->where('trained_skill_level', 0)->count(),
+            $skills->where('trained_skill_level', 1)->count(),
+            $skills->where('trained_skill_level', 2)->count(),
+            $skills->where('trained_skill_level', 3)->count(),
+            $skills->where('trained_skill_level', 4)->count(),
+            $skills->where('trained_skill_level', 5)->count(),
         ];
     }
 
@@ -115,14 +110,14 @@ trait Skills
      *
      * TODO: This is definitely a candidate for a better refactor!
      *
-     * @param $character_id
+     * @param int $character_id
      *
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getCharacterSkillCoverage($character_id): Collection
+    public function getCharacterSkillCoverage(int $character_id): Collection
     {
 
-        $inGameSkills = DB::table('invTypes')
+        $in_game_skills = DB::table('invTypes')
             ->join(
                 'invMarketGroups',
                 'invMarketGroups.marketGroupID', '=', 'invTypes.marketGroupID'
@@ -135,30 +130,29 @@ trait Skills
             ->groupBy('marketGroupName')
             ->toSql();
 
-        $characterSkills = DB::table('character_character_sheet_skills')
-            ->join(
-                'invTypes',
-                'invTypes.typeID', '=',
-                'character_character_sheet_skills.typeID'
-            )
+        $character_skills = CharacterSkill::join(
+            'invTypes',
+            'invTypes.typeID', '=',
+            'character_skills.skill_id'
+        )
             ->join(
                 'invMarketGroups',
                 'invMarketGroups.marketGroupID', '=',
                 'invTypes.marketGroupID'
             )
-            ->where('characterID', '?')// binding at [2]
+            ->where('character_id', '?')// binding at [2]
             ->select(
                 'marketGroupName',
-                DB::raw('COUNT(invTypes.marketGroupID) * character_character_sheet_skills.level as amount')
+                DB::raw('COUNT(invTypes.marketGroupID) * character_skills.trained_skill_level  as amount')
             )
-            ->groupBy(['marketGroupName', 'level'])
+            ->groupBy(['marketGroupName', 'trained_skill_level'])
             ->toSql();
 
         $skills = DB::table(
-            DB::raw('(' . $inGameSkills . ') a')
+            DB::raw('(' . $in_game_skills . ') a')
         )
             ->leftJoin(
-                DB::raw('(' . $characterSkills . ') b'),
+                DB::raw('(' . $character_skills . ') b'),
                 'a.marketGroupName',
                 'b.marketGroupName'
             )

@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,33 +20,37 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Data;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Seat\Eveapi\Models\JobTracking;
-
-/**
- * Class Queue.
- * @package Seat\Services
- */
-trait Queue
+class MoveSettingsToGroups extends Migration
 {
     /**
-     * Return a count summary of the jobs in
-     * the queue.
+     * Run the migrations.
      *
-     * @return array
+     * @return void
      */
-    public function count_summary()
+    public function up()
     {
 
-        $response = [
-            'total_jobs'   => JobTracking::count('job_id'),
-            'working_jobs' => JobTracking::where('status', 'Working')->count('job_id'),
-            'queued_jobs'  => JobTracking::where('status', 'Queued')->count('job_id'),
-            'done_jobs'    => JobTracking::where('status', 'Done')->count('job_id'),
-            'error_jobs'   => JobTracking::where('status', 'Error')->count('job_id'),
-        ];
+        Schema::table('user_settings', function (Blueprint $table) {
 
-        return $response;
+            $table->renameColumn('user_id', 'group_id');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+
+        Schema::table('user_settings', function (Blueprint $table) {
+
+            $table->renameColumn('group_id', 'user_id');
+        });
     }
 }

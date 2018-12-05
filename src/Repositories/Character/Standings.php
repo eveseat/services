@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\Standing;
+use Seat\Eveapi\Models\Character\CharacterStanding;
 
 /**
  * Class Standings.
@@ -41,7 +41,9 @@ trait Standings
     public function getCharacterStandings(int $character_id): Collection
     {
 
-        return Standing::where('characterID', $character_id)
+        return CharacterStanding::where('character_id', $character_id)
+            ->leftJoin('chrFactions', 'from_id', '=', 'factionID')
+            ->orderBy('from_type')
             ->get();
     }
 }

@@ -23,16 +23,20 @@
 namespace Seat\Services\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Seat\Eveapi\Traits\HasCompositePrimaryKey;
 
-/**
- * Class Note.
- * @package Seat\Services\Models
- */
-class Note extends Model
+class HistoricalPrices extends Model
 {
-    /**
-     * @var array
-     */
-    protected $fillable = ['object_type', 'object_id', 'title', 'note'];
+    use HasCompositePrimaryKey;
+
+    protected static $unguarded = true;
+
+    protected $table = 'historical_prices';
+
+    protected $primaryKey = ['type_id', 'date'];
+
+    public $incrementing = false;
+
+    protected $dates = ['created_at', 'updated_at'];
 
 }

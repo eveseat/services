@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\ContactList;
-use Seat\Eveapi\Models\Corporation\ContactListLabel;
+use Seat\Eveapi\Models\Contacts\CorporationContact;
+use Seat\Eveapi\Models\Contacts\CorporationContactLabel;
 
 /**
  * Class Contacts.
@@ -42,27 +42,23 @@ trait Contacts
     public function getCorporationContacts(int $corporation_id): Collection
     {
 
-        return ContactList::where('corporationID', $corporation_id)
-            ->join('invTypes', function ($join) {
-
-                $join->on('invTypes.typeID', '=', 'corporation_contact_lists.contactTypeID');
-            })
+        return CorporationContact::where('corporation_id', $corporation_id)
             ->orderBy('standing', 'desc')
             ->get();
 
     }
 
     /**
-     * Return the contact labels for a Corporation.
+     * Get a corporation contact list labels.
      *
-     * @param $corporation_id
+     * @param int $corporation_id
      *
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getCorporationContactsLabels(int $corporation_id): Collection
+    public function getCorporationContactLabels(int $corporation_id): Collection
     {
 
-        return ContactListLabel::where('corporationID', $corporation_id)
+        return CorporationContactLabel::where('corporation_id', $corporation_id)
             ->get();
     }
 }

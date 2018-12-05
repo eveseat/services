@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Character\Notifications as NotificationsModel;
+use Seat\Eveapi\Models\Character\CharacterNotification;
 
 /**
  * Class Notifications.
@@ -42,15 +42,9 @@ trait Notifications
     public function getCharacterNotifications(int $character_id, int $chunk = 50): Collection
     {
 
-        return NotificationsModel::join('character_notifications_texts',
-            'character_notifications.notificationID', '=',
-            'character_notifications_texts.notificationID')
-            ->join('eve_notification_types',
-                'character_notifications.typeID', '=',
-                'eve_notification_types.id')
-            ->where('characterID', $character_id)
+        return CharacterNotification::where('character_id', $character_id)
             ->take($chunk)
-            ->orderBy('sentDate', 'desc')
+            ->orderBy('timestamp', 'desc')
             ->get();
     }
 }

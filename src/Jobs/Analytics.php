@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,13 @@ use Seat\Services\Settings\Seat;
 class Analytics implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
 
     /**
      * @var \Seat\Services\Helpers\AnalyticsContainer
@@ -73,6 +80,7 @@ class Analytics implements ShouldQueue
      * job should just return.
      *
      * @return void
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function handle()
     {
@@ -102,6 +110,7 @@ class Analytics implements ShouldQueue
      * Check if tracking is allowed.
      *
      * @return bool
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     public function allowTracking()
     {
@@ -132,6 +141,8 @@ class Analytics implements ShouldQueue
      *
      * @param       $type
      * @param array $query
+     *
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     private function send($type, array $query)
     {
@@ -188,8 +199,11 @@ class Analytics implements ShouldQueue
     }
 
     /**
-     * Retreive a client-id from the cache. If none
-     * exists, generate one.
+     * Query the eveseat/resources repository for SDE
+     * related information.
+     *
+     * @return mixed|string
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     private function getClientID()
     {

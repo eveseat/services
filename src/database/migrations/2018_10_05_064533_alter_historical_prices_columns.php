@@ -20,19 +20,39 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Model;
-
-/**
- * Class Note.
- * @package Seat\Services\Models
- */
-class Note extends Model
+class AlterHistoricalPricesColumns extends Migration
 {
     /**
-     * @var array
+     * Run the migrations.
+     *
+     * @return void
      */
-    protected $fillable = ['object_type', 'object_id', 'title', 'note'];
+    public function up()
+    {
 
+        Schema::table('historical_prices', function (Blueprint $table) {
+
+            $table->decimal('average_price', 30, 2)->default(0.0)->change();
+            $table->decimal('adjusted_price', 30, 2)->default(0.0)->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+
+        Schema::table('historical_prices', function (Blueprint $table) {
+
+            $table->decimal('average_price')->change();
+            $table->decimal('adjusted_price')->change();
+        });
+    }
 }

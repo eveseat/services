@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ if (! function_exists('img')) {
      * @param bool|true $lazy
      *
      * @return string
+     * @throws \Seat\Services\Exceptions\EveImageException
      */
     function img($type, $id, $size, array $attr, $lazy = true)
     {
@@ -89,6 +90,7 @@ if (! function_exists('number')) {
      * @param $dec
      *
      * @return string
+     * @throws \Seat\Services\Exceptions\SettingException
      */
     function number($number, $dec = 2)
     {
@@ -156,12 +158,12 @@ if (! function_exists('clean_ccp_html')) {
 if (! function_exists('evemail_threads')) {
 
     /**
-     * Attempt to 'thread' evemails based on the seperator
+     * Attempt to 'thread' evemails based on the separator
      * that is automatically added using the eve client.
      *
      * @param $message
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     function evemail_threads($message)
     {
@@ -227,7 +229,7 @@ if (! function_exists('evemail_threads')) {
             } catch (InvalidArgumentException $e) {
             }
 
-            // Lasty the To characterName. We need to trim a trailing
+            // Lastly the To characterName. We need to trim a trailing
             // comma (,) here too.
             $to = ltrim($thread[3], 'To: ');
             $to = rtrim($to, ',  ');
@@ -253,8 +255,8 @@ if (! function_exists('setting')) {
     /**
      * Work with settings.
      *
-     * Providing a string argument will retreive a setting.
-     * Providing an array arguement will set a setting.
+     * Providing a string argument will retrieve a setting.
+     * Providing an array argument will set a setting.
      *
      * @param      $name
      * @param bool $global
@@ -288,5 +290,38 @@ if (! function_exists('setting')) {
 
         return \Seat\Services\Settings\Profile::get($name);
 
+    }
+}
+if (! function_exists('number_roman')) {
+    /**
+     * Converts an integer to a roman numberal representation.
+     *
+     * @param int $number
+     *
+     * @return string
+     */
+    function number_roman($number)
+    {
+
+        $map = [
+            'M'  => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50,
+            'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1,
+        ];
+
+        $returnValue = '';
+
+        while ($number > 0) {
+
+            foreach ($map as $roman => $int) {
+
+                if ($number >= $int) {
+                    $number -= $int;
+                    $returnValue .= $roman;
+                    break;
+                }
+            }
+        }
+
+        return $returnValue;
     }
 }

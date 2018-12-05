@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
-use Seat\Eveapi\Models\Corporation\CorporationSheet;
+use Seat\Eveapi\Models\Corporation\CorporationInfo;
 
 /**
  * Class Corporation.
@@ -36,15 +36,17 @@ trait Corporation
     public function getAllCorporations()
     {
 
-        return CorporationSheet::all();
+        return CorporationInfo::all();
     }
 
     /**
      * Return the corporations for which a user has access.
      *
+     * @param bool $get
+     *
      * @return mixed
      */
-    public function getAllCorporationsWithAffiliationsAndFilters()
+    public function getAllCorporationsWithAffiliationsAndFilters(bool $get = true)
     {
 
         // Get the User for permissions and affiliation
@@ -52,48 +54,20 @@ trait Corporation
         $user = auth()->user();
 
         // Start a fresh query
-        $corporations = new CorporationSheet;
+        $corporations = new CorporationInfo();
 
         // Check if this user us a superuser. If not,
         // limit to stuff only they can see.
-        if (! $user->hasSuperUser()) {
+        if (! $user->hasSuperUser())
 
-            // Add affiliated corporations based on the
-            // corporation.list_all permission
-            if ($user->has('corporation.list_all', false))
-                $corporations = $corporations->orWhereIn(
-                    'corporationID', array_keys($user->getAffiliationMap()['corp']));
+            $corporations = $corporations->whereIn('corporation_id',
+                array_keys($user->getAffiliationMap()['corp']));
 
-            // Add any keys the user may own. This is a slightly
-            // complex case as we need to sub select a few things
-            $corporations = $corporations->orWhereIn('corporationID',
+        if ($get)
+            return $corporations->orderBy('name', 'desc')
+                ->get();
 
-                // The return array of all of the below is a
-                // nested mess. We can just flatten it.
-                $user->keys()
-                    // Include info.characters so that we can
-                    // filter it down in the map() function
-                    // below.
-                    ->with('info.characters')
-                    // Info itself has a constraint applied, checking
-                    // if the api key type is that of a corp.
-                    ->whereHas('info', function ($query) {
-
-                        $query->where('type', 'Corporation');
-
-                    })->get()->map(function ($item) {
-
-                        // We finally map the resultant Collection
-                        // object and list the corporationID out of
-                        // the $key->info->characters relation.
-                        return $item->info->characters
-                            ->pluck('corporationID')->toArray();
-                    }));
-        }
-
-        return $corporations->orderBy('corporationName', 'desc')
-            ->get();
-
+        return $corporations->getQuery();
     }
 
     /**
@@ -106,7 +80,7 @@ trait Corporation
     public function getCorporationSheet($corporation_id)
     {
 
-        return CorporationSheet::where('corporationID', $corporation_id)
+        return CorporationInfo::where('corporation_id', $corporation_id)
             ->first();
     }
 }

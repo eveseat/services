@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017  Leon Jacobs
+ * Copyright (C) 2015, 2016, 2017, 2018  Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,15 +23,18 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Account\ApiKeyInfoCharacters;
-use Seat\Eveapi\Models\Character\CharacterSheet;
-use Seat\Eveapi\Models\Character\CharacterSheetCorporationTitles;
-use Seat\Eveapi\Models\Eve\CharacterInfoEmploymentHistory;
+use Seat\Eveapi\Models\Character\CharacterCorporationHistory;
+use Seat\Eveapi\Models\Character\CharacterInfo;
+use Seat\Eveapi\Models\Character\CharacterTitle;
 
+/**
+ * Trait Info.
+ * @package Seat\Services\Repositories\Character
+ */
 trait Info
 {
     /**
-     * Retreive a character name by character id.
+     * Retrieve a character name by character id.
      *
      * @param int $character_id
      *
@@ -40,8 +43,8 @@ trait Info
     public function getCharacterNameById(int $character_id): string
     {
 
-        return ApiKeyInfoCharacters::where('characterID', $character_id)
-            ->value('characterName');
+        return CharacterInfo::where('character_id', $character_id)
+            ->value('name');
     }
 
     /**
@@ -49,30 +52,13 @@ trait Info
      *
      * @param int $character_id
      *
-     * @return \Seat\Eveapi\Models\Account\ApiKeyInfoCharacters
+     * @return \Seat\Eveapi\Models\Character\CharacterInfo
      */
-    public function getCharacterInformation(int $character_id): ApiKeyInfoCharacters
+    public function getCharacterInformation(int $character_id): CharacterInfo
     {
 
-        return ApiKeyInfoCharacters::join('eve_character_infos',
-            'eve_character_infos.characterID', '=',
-            'account_api_key_info_characters.characterID')
-            ->where('eve_character_infos.characterID', $character_id)
-            ->first();
+        return CharacterInfo::find($character_id);
 
-    }
-
-    /**
-     * Return the character sheet for a character.
-     *
-     * @param int $character_id
-     *
-     * @return \Seat\Eveapi\Models\Character\CharacterSheet|null
-     */
-    public function getCharacterSheet(int $character_id)
-    {
-
-        return CharacterSheet::find($character_id);
     }
 
     /**
@@ -80,13 +66,13 @@ trait Info
      *
      * @param int $character_id
      *
-     * @return \Illuminate\Support\Collection|mixed
+     * @return \Illuminate\Support\Collection
      */
     public function getCharacterEmploymentHistory(int $character_id): Collection
     {
 
-        return CharacterInfoEmploymentHistory::where('characterID', $character_id)
-            ->orderBy('startDate', 'desc')
+        return CharacterCorporationHistory::where('character_id', $character_id)
+            ->orderBy('record_id', 'desc')
             ->get();
 
     }
@@ -101,7 +87,7 @@ trait Info
     public function getCharacterCorporationTitles(int $character_id): Collection
     {
 
-        return CharacterSheetCorporationTitles::where('characterID', $character_id)
+        return CharacterTitle::where('character_id', $character_id)
             ->get();
     }
 }
