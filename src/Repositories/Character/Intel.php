@@ -51,6 +51,7 @@ trait Intel
             // Limit to the character in question...
             ->where('character_wallet_journals.character_id', $character_id)
             ->groupBy('first_party_id', 'second_party_id')
+            ->orderBy('total','desc')
             ->get();
 
     }
