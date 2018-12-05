@@ -77,10 +77,9 @@ trait Ledger
     public function getCorporationLedgerOfficeRentalFeeDates(int $corporation_id): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+      return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '13')
+            ->where('ref_type', 'office_rental_fee')
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -95,10 +94,9 @@ trait Ledger
     public function getCorporationLedgerIndustryFacilityTaxDates(int $corporation_id): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+      return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '120')
+            ->where('ref_type', 'industry_job_tax')
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -113,10 +111,9 @@ trait Ledger
     public function getCorporationLedgerReprocessingFeeDates(int $corporation_id): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+      return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
-            ->where('refTypeID', '127')
+            ->where('refType', 'reprocessing_tax')
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -131,14 +128,26 @@ trait Ledger
     public function getCorporationLedgerJumpCloneDates(int $corporation_id): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+      return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporationID', $corporation_id)
-            ->where(function ($query) {
+            ->whereIn('ref_type', ['jump_clone_installation_fee', 'jump_clone_activation_fee'])
+            ->orderBy('date', 'desc')
+            ->get();
+    }
 
-                $query->where('refTypeID', 55)
-                    ->orWhere('refTypeID', 128);
-            })
+    /**
+     * Return the Jump Bridge fee dates for a Corporation.
+     *
+     * @param int $corporation_id
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerJumpBridgeDates(int $corporation_id): Collection
+    {
+
+      return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
+            ->where('corporationID', $corporation_id)
+            ->where('refType', 'structure_gate_jump')
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -215,17 +224,16 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
-                ))
+        return CorporationWalletJournal::select(
+            DB::raw(
+                'MONTH(date) as month, YEAR(date) as year, ' .
+                'ROUND(SUM(amount)) as total, first_party_id'
+            ))
             ->where('corporationID', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where('refTypeID', '13')
-            ->groupBy('ownerName1')
+            ->where('ref_type', 'office_rental_fee')
+            ->groupBy('first_party_id')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
 
@@ -244,17 +252,16 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
-                ))
+        return CorporationWalletJournal::select(
+            DB::raw(
+                'MONTH(date) as month, YEAR(date) as year, ' .
+                'ROUND(SUM(amount)) as total, first_party_id'
+            ))
             ->where('corporationID', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where('refTypeID', '120')
-            ->groupBy('ownerName1')
+            ->where('ref_type', 'industry_job_tax')
+            ->groupBy('first_party_id')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
 
@@ -273,17 +280,16 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
-                ))
+        return CorporationWalletJournal::select(
+            DB::raw(
+                'MONTH(date) as month, YEAR(date) as year, ' .
+                'ROUND(SUM(amount)) as total, first_party_id'
+            ))
             ->where('corporationID', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where('refTypeID', '127')
-            ->groupBy('ownerName1')
+            ->where('ref_type', 'reprocessing_tax')
+            ->groupBy('first_party_id')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
 
@@ -302,21 +308,45 @@ trait Ledger
                                                         int $month = null): Collection
     {
 
-        return DB::table('corporation_wallet_journals')
-            ->select(
-                DB::raw(
-                    'MONTH(date) as month, YEAR(date) as year, ' .
-                    'ROUND(SUM(amount)) as total, ownerName1, ownerID1'
-                ))
+        return CorporationWalletJournal::select(
+            DB::raw(
+                'MONTH(date) as month, YEAR(date) as year, ' .
+                'ROUND(SUM(amount)) as total, first_party_id'
+            ))
             ->where('corporationID', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where(function ($query) {
+            ->whereIn('ref_type', ['jump_clone_activation_fee', 'jump_clone_installation_fee'])
+            ->groupBy('first_party_id')
+            ->orderBy(DB::raw('SUM(amount)'), 'desc')
+            ->get();
 
-                $query->where('refTypeID', 55)
-                    ->orWhere('refTypeID', 128);
-            })
-            ->groupBy('ownerName1')
+    }
+
+    /**
+     * Get a Corporations Jump Bridge usage fees for a specific year / month.
+     *
+     * @param int $corporation_id
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCorporationLedgerJumpBridgeTotalsByMonth(int $corporation_id,
+                                                        int $year = null,
+                                                        int $month = null): Collection
+    {
+
+        return CorporationWalletJournal::select(
+            DB::raw(
+                'MONTH(date) as month, YEAR(date) as year, ' .
+                'ROUND(SUM(amount)) as total, first_party_id'
+            ))
+            ->where('corporationID', $corporation_id)
+            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->where('refType', 'structure_gate_jump')
+            ->groupBy('first_party_id')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
 
