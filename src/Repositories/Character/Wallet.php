@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
@@ -64,7 +65,7 @@ trait Wallet
      *
      * @return mixed
      */
-    public function getCharacterWalletTransactions(int $character_id)
+    public function getCharacterWalletTransactions(Collection $character_ids)
     {
 
         return CharacterWalletTransaction::with('client','type')
@@ -98,7 +99,7 @@ trait Wallet
                     WHERE m.itemID=character_wallet_transactions.location_id) end
                 AS locationName'
             ))
-            ->where('character_id', $character_id);
+            ->whereIn('character_id', $character_ids->toArray());
 
     }
 }
