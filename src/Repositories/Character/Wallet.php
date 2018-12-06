@@ -66,7 +66,7 @@ trait Wallet
     public function getCharacterWalletTransactions(Collection $character_ids)
     {
 
-        return CharacterWalletTransaction::with('client','type')
+        return CharacterWalletTransaction::with('client', 'type')
             ->select(DB::raw('
             *, CASE
                 when character_wallet_transactions.location_id BETWEEN 66015148 AND 66015151 then
