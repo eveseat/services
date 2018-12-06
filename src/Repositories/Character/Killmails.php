@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Killmails\CharacterKillmail;
 
 /**
@@ -33,43 +34,22 @@ trait Killmails
     /**
      * Return the killmails for a character.
      *
-     * @param int  $character_id
-     * @param bool $get
-     * @param int  $chunk
+     * @param \Illuminate\Support\Collection $character_id
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder|\Seat\Eveapi\Models\Killmails\CharacterKillmail
      */
-    public function getCharacterKillmails(
-        int $character_id, bool $get = true, int $chunk = 200)
+    public function getCharacterKillmails(Collection $character_id)
     {
 
-        $killmails = CharacterKillmail::select(
-            '*',
-            'character_killmails.character_id as ownerID',
-            'killmail_victims.character_id as victimID')
-            ->leftJoin(
-                'killmail_details',
-                'character_killmails.killmail_id', '=',
-                'killmail_details.killmail_id')
-            ->leftJoin(
-                'killmail_victims',
-                'killmail_victims.killmail_id', '=',
-                'character_killmails.killmail_id'
-            )
-            ->leftJoin(
-                'invTypes',
-                'killmail_victims.ship_type_id', '=',
-                'invTypes.typeID')
-            ->leftJoin('mapDenormalize',
-                'killmail_details.solar_system_id', '=',
-                'mapDenormalize.itemID')
-            ->where('character_killmails.character_id', $character_id);
-
-        if ($get)
-            return $killmails->orderBy('character_killmails.killmail_id', 'desc')
-                ->paginate($chunk);
-
-        return $killmails;
+        return CharacterKillmail::with(
+            'killmail_detail',
+            'killmail_detail.solar_system',
+            'killmail_victim',
+            'killmail_victim.ship_type',
+            'killmail_victim.victim_character',
+            'killmail_victim.victim_corporation',
+            'killmail_victim.victim_alliance')
+            ->whereIn('character_killmails.character_id', $character_id->toArray());
 
     }
 }
