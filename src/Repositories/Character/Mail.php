@@ -89,7 +89,6 @@ trait Mail
             ->whereIn('character_id', $character_ids->toArray())
             ->groupBy('mail_id');
 
-
     }
 
     /**
