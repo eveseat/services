@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Mail\MailHeader;
@@ -39,20 +40,17 @@ trait Intel
     /**
      * @param int $character_id
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopWalletJournalInteractions(int $character_id): Collection
+    public function characterTopWalletJournalInteractions(int $character_id): Builder
     {
-
-        // TODO: Optimize this piece of crap!
 
         return CharacterWalletJournal::with('first_party','second_party')
             ->select('*', DB::raw('count(*) as total'))
             // Limit to the character in question...
             ->where('character_wallet_journals.character_id', $character_id)
             ->groupBy('first_party_id', 'second_party_id')
-            ->orderBy('total','desc')
-            ->get();
+            ->orderBy('total','desc');
 
     }
 
