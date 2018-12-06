@@ -76,27 +76,20 @@ trait Mail
     }
 
     /**
-     * Return mail for a character.
+     * Return mail for characters.
      *
-     * @param int  $character_id
-     * @param bool $get
-     * @param int  $chunk
+     * @param \Illuminate\Support\Collection $character_ids
      *
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection
      */
-    public function getCharacterMail(
-        int $character_id, bool $get = true, int $chunk = 50)
+    public function getCharacterMail(Collection $character_ids)
     {
 
-        $mail = MailHeader::with('body', 'recipients')
-            ->where('character_id', $character_id);
+        return MailHeader::with('body', 'recipients', 'sender')
+            ->whereIn('character_id', $character_ids->toArray())
+            ->groupBy('mail_id');
 
-        if ($get)
-            return $mail->take($chunk)
-                ->orderBy('timestamp', 'desc')
-                ->get();
 
-        return $mail->groupBy('mail_id');
     }
 
     /**
