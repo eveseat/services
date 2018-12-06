@@ -59,9 +59,7 @@ trait Wallet
     /**
      * Retrieve Wallet Transaction Entries for a Character.
      *
-     * @param int  $character_id
-     * @param bool $get
-     * @param int  $chunk
+     * @param \Illuminate\Support\Collection $character_ids
      *
      * @return mixed
      */
