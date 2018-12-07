@@ -69,9 +69,8 @@ class ServicesServiceProvider extends ServiceProvider
             });
         }
 
-        $this->publishes([
-            __DIR__ . '/database/migrations/' => database_path('migrations'),
-        ]);
+        // Inform Laravel how to load migrations
+        $this->add_migrations();
     }
 
     /**
@@ -84,5 +83,15 @@ class ServicesServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(
             __DIR__ . '/Config/services.config.php', 'services.config');
+    }
+
+    /**
+     * Set the path for migrations which should
+     * be migrated by laravel. More informations:
+     * https://laravel.com/docs/5.5/packages#migrations.
+     */
+    private function add_migrations()
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations/');
     }
 }
