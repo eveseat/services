@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
@@ -53,9 +54,9 @@ trait Wallet
      *
      * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterWalletTransactions(Collection $character_ids)
+    public function getCharacterWalletTransactions(Collection $character_ids) : Builder
     {
 
         return CharacterWalletTransaction::with('client', 'type')
