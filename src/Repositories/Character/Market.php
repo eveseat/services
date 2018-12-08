@@ -82,7 +82,7 @@ trait Market
                 'invTypes',
                 'a.type_id', '=',
                 'invTypes.typeID')
-            ->whereIN('a.character_id', $character_ids);
+            ->whereIn('a.character_id', $character_ids);
 
     }
 }
