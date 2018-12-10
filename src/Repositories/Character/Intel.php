@@ -37,25 +37,34 @@ use Seat\Web\Models\StandingsProfile;
 trait Intel
 {
     /**
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopWalletJournalInteractions(Collection $character_id): Builder
+    public function characterTopWalletJournalInteractions(Collection $character_ids): Builder
     {
 
         return CharacterWalletJournal::with('first_party','second_party')
             ->select('*', DB::raw('count(*) as total'))
-            ->whereIn('character_wallet_journals.character_id', $character_id->toArray())
+            ->whereIn('character_wallet_journals.character_id', $character_ids->toArray())
             ->groupBy('first_party_id', 'second_party_id')
             ->orderBy('total','desc');
 
     }
 
+    public function characterWalletJournalInteractions($first_party_id, $second_party_id)
+    {
+
+        return CharacterWalletJournal::with('first_party', 'second_party')
+            ->where('first_party_id', '=', $first_party_id)
+            ->where('second_party_id', '=', $second_party_id);
+
+    }
+
     /**
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function characterTopWalletTransactionInteractions(Collection $character_ids) : Builder
     {
@@ -67,6 +76,44 @@ trait Intel
             ->groupBy('client_id')
             ->orderBy('total','desc');
 
+    }
+
+    public function characterWalletTransactionInteraction(int $character_id, int $client_id) : Builder
+    {
+
+        return CharacterWalletTransaction::with('client', 'type')
+            ->select(DB::raw('
+            *, CASE
+                when character_wallet_transactions.location_id BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id-6000000)
+                when character_wallet_transactions.location_id BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id-6000001)
+                when character_wallet_transactions.location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id-6000000)
+                when character_wallet_transactions.location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id BETWEEN 61000000 AND 61001146 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id > 61001146 then
+                    (SELECT name FROM `universe_structures` AS c
+                     WHERE c.structure_id = character_wallet_transactions.location_id)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID=character_wallet_transactions.location_id) end
+                AS locationName'
+            ))
+            ->where('character_id', $character_id)
+            ->where('client_id', $client_id);
     }
 
     /**
