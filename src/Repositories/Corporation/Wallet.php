@@ -78,7 +78,8 @@ trait Wallet
         int $corporation_id, bool $get = true, int $chunk = 50)
     {
 
-        $journal = CorporationWalletJournal::where('corporation_id', $corporation_id);
+        $journal = CorporationWalletJournal::with('first_party', 'second_party')
+            ->where('corporation_id', $corporation_id);
 
         if ($get)
             return $journal->orderBy('date', 'desc')
