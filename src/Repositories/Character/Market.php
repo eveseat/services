@@ -22,6 +22,8 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -33,17 +35,14 @@ trait Market
     /**
      * Return a characters market orders.
      *
-     * @param int  $character_id
-     * @param bool $get
-     * @param int  $chunk
+     * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Query\Builder
      */
-    public function getCharacterMarketOrders(
-        int $character_id, bool $get = true, int $chunk = 200)
+    public function getCharacterMarketOrders(Collection $character_ids) : Builder
     {
 
-        $market = DB::table(DB::raw('character_orders as a'))
+        return DB::table(DB::raw('character_orders as a'))
             ->select(DB::raw(
                 '
                 --
@@ -83,17 +82,7 @@ trait Market
                 'invTypes',
                 'a.type_id', '=',
                 'invTypes.typeID')
-            ->join(
-                'invGroups',
-                'invTypes.groupID', '=',
-                'invGroups.groupID')
-            ->where('a.character_id', $character_id);
-
-        if ($get)
-            return $market->orderBy('a.issued', 'desc')
-                ->paginate($chunk);
-
-        return $market;
+            ->whereIn('a.character_id', $character_ids);
 
     }
 }

@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Contacts\CharacterContact;
 use Seat\Eveapi\Models\Contacts\CharacterContactLabel;
@@ -31,16 +32,17 @@ trait Contacts
     /**
      * Get a characters contact list.
      *
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return \Illuminate\Support\Collection
+     * @param array                          $standings
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterContacts(int $character_id): Collection
+    public function getCharacterContacts(Collection $character_ids, array $standings): Builder
     {
 
-        return CharacterContact::where('character_id', $character_id)
-            ->orderBy('standing', 'desc')
-            ->get();
+        return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray())
+            ->whereIn('standing', $standings);
     }
 
     /**

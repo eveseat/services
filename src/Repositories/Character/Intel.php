@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Mail\MailHeader;
-use Seat\Eveapi\Models\Mail\MailMailingList;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
 use Seat\Web\Models\StandingsProfile;
@@ -38,49 +37,83 @@ use Seat\Web\Models\StandingsProfile;
 trait Intel
 {
     /**
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopWalletJournalInteractions(int $character_id): Builder
+    public function characterTopWalletJournalInteractions(Collection $character_ids): Builder
     {
 
         return CharacterWalletJournal::with('first_party','second_party')
             ->select('*', DB::raw('count(*) as total'))
-            // Limit to the character in question...
-            ->where('character_wallet_journals.character_id', $character_id)
+            ->whereIn('character_wallet_journals.character_id', $character_ids->toArray())
             ->groupBy('first_party_id', 'second_party_id')
             ->orderBy('total','desc');
 
     }
 
-    /**
-     * @param int $character_id
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function characterTopWalletTransactionInteractions(int $character_id)
+    public function characterWalletJournalInteractions($first_party_id, $second_party_id)
     {
 
-        return CharacterWalletTransaction::leftJoin('character_affiliations', function ($join) {
+        return CharacterWalletJournal::with('first_party', 'second_party')
+            ->where('first_party_id', '=', $first_party_id)
+            ->where('second_party_id', '=', $second_party_id);
 
-            $join->on(
-                'character_affiliations.character_id', '=',
-                'character_wallet_transactions.client_id'
-            );
+    }
 
-        })
-            ->where('character_wallet_transactions.character_id', $character_id)
-            ->where('character_wallet_transactions.client_id', '<>', $character_id)
-            ->select(
-                'character_affiliations.character_id',
-                'character_affiliations.corporation_id',
-                'character_affiliations.alliance_id',
-                'character_affiliations.faction_id'
-            )
+    /**
+     * @param \Illuminate\Support\Collection $character_ids
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function characterTopWalletTransactionInteractions(Collection $character_ids) : Builder
+    {
+
+        return CharacterWalletTransaction::with('client')
+            ->select()
             ->selectRaw('count(client_id) as total')
-            ->groupBy('client_id');
+            ->whereIn('character_id', $character_ids->toArray())
+            ->groupBy('client_id')
+            ->orderBy('total','desc');
 
+    }
+
+    public function characterWalletTransactionInteraction(int $character_id, int $client_id) : Builder
+    {
+
+        return CharacterWalletTransaction::with('client', 'type')
+            ->select(DB::raw('
+            *, CASE
+                when character_wallet_transactions.location_id BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id-6000000)
+                when character_wallet_transactions.location_id BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id-6000001)
+                when character_wallet_transactions.location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id-6000000)
+                when character_wallet_transactions.location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id BETWEEN 61000000 AND 61001146 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id > 61001146 then
+                    (SELECT name FROM `universe_structures` AS c
+                     WHERE c.structure_id = character_wallet_transactions.location_id)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID=character_wallet_transactions.location_id) end
+                AS locationName'
+            ))
+            ->where('character_id', $character_id)
+            ->where('client_id', $client_id);
     }
 
     /**
@@ -88,29 +121,25 @@ trait Intel
      *
      * @return mixed
      */
-    public function characterTopMailInteractions(int $character_id)
+    public function characterTopMailInteractions(Collection $character_ids)
     {
 
-        return MailHeader::leftJoin('character_affiliations', function ($join) {
-
-            $join->on(
-                'character_affiliations.character_id', '=',
-                'mail_headers.from'
-            );
-
-        })
-            ->where('mail_headers.character_id', $character_id)
-            ->where('mail_headers.from', '<>', $character_id)
-            ->whereNotIn('mail_headers.from', MailMailingList::select('mailing_list_id')->distinct()->get())
-            ->select(
-                'character_affiliations.character_id',
-                'character_affiliations.corporation_id',
-                'character_affiliations.alliance_id',
-                'character_affiliations.faction_id',
-                'mail_headers.from'
-            )
+        return MailHeader::select()
             ->selectRaw('count(`from`) as total')
-            ->groupBy('from');
+            ->whereIn('character_id', $character_ids->toArray())
+            ->whereColumn('character_id', '<>', 'from')
+            ->groupBy('from')
+            ->orderBy('total','desc');
+
+    }
+
+    public function getMailContent($character_id, $from) : Builder
+    {
+
+        return MailHeader::with('body', 'recipients', 'sender')
+            ->where('character_id', $character_id)
+            ->where('from', $from)
+            ->groupBy('mail_id');
 
     }
 

@@ -22,6 +22,9 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
 
@@ -35,44 +38,59 @@ trait Wallet
      * Query the eveseat/resources repository for SDE
      * related information.
      *
-     * @param int  $character_id
-     * @param bool $get
-     * @param int  $chunk
+     * @param \Illuminate\Support\Collection $character_ids
      *
      * @return mixed
      */
-    public function getCharacterWalletJournal(
-        int $character_id, bool $get = true, int $chunk = 50)
+    public function getCharacterWalletJournal(Collection $character_ids)
     {
 
-        $journal = CharacterWalletJournal::where('character_id', $character_id);
-
-        if ($get)
-            return $journal->orderBy('date', 'desc')
-                ->paginate($chunk);
-
-        return $journal;
+        return $journal = CharacterWalletJournal::with('first_party', 'second_party')
+            ->whereIn('character_id', $character_ids->toArray());
     }
 
     /**
      * Retrieve Wallet Transaction Entries for a Character.
      *
-     * @param int  $character_id
-     * @param bool $get
-     * @param int  $chunk
+     * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterWalletTransactions(
-        int $character_id, bool $get = true, int $chunk = 50)
+    public function getCharacterWalletTransactions(Collection $character_ids) : Builder
     {
 
-        $transactions = CharacterWalletTransaction::where('character_id', $character_id);
+        return CharacterWalletTransaction::with('client', 'type')
+            ->select(DB::raw('
+            *, CASE
+                when character_wallet_transactions.location_id BETWEEN 66015148 AND 66015151 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id-6000000)
+                when character_wallet_transactions.location_id BETWEEN 66000000 AND 66014933 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id-6000001)
+                when character_wallet_transactions.location_id BETWEEN 66014934 AND 67999999 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id-6000000)
+                when character_wallet_transactions.location_id BETWEEN 60014861 AND 60014928 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id BETWEEN 60000000 AND 61000000 then
+                    (SELECT s.stationName FROM staStations AS s
+                      WHERE s.stationID=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id BETWEEN 61000000 AND 61001146 then
+                    (SELECT d.name FROM `sovereignty_structures` AS c
+                      JOIN universe_stations d ON c.structure_id = d.station_id
+                      WHERE c.structure_id=character_wallet_transactions.location_id)
+                when character_wallet_transactions.location_id > 61001146 then
+                    (SELECT name FROM `universe_structures` AS c
+                     WHERE c.structure_id = character_wallet_transactions.location_id)
+                else (SELECT m.itemName FROM mapDenormalize AS m
+                    WHERE m.itemID=character_wallet_transactions.location_id) end
+                AS locationName'
+            ))
+            ->whereIn('character_id', $character_ids->toArray());
 
-        if ($get)
-            return $transactions->orderBy('date', 'desc')
-                ->paginate($chunk);
-
-        return $transactions;
     }
 }
