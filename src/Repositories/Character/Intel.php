@@ -132,6 +132,17 @@ trait Intel
             ->orderBy('total','desc');
 
     }
+
+    public function getMailContent($character_id, $from) : Builder
+    {
+
+        return MailHeader::with('body', 'recipients', 'sender')
+            ->where('character_id', $character_id)
+            ->where('from', $from)
+            ->groupBy('mail_id');
+
+    }
+
     /**
      * @return \Illuminate\Support\Collection
      */
