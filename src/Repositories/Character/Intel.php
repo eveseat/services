@@ -52,7 +52,13 @@ trait Intel
 
     }
 
-    public function characterWalletJournalInteractions($first_party_id, $second_party_id)
+    /**
+     * @param int $first_party_id
+     * @param int $second_party_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function characterWalletJournalInteractions(int $first_party_id, int $second_party_id) : Builder
     {
 
         return CharacterWalletJournal::with('first_party', 'second_party')
@@ -78,6 +84,12 @@ trait Intel
 
     }
 
+    /**
+     * @param int $character_id
+     * @param int $client_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function characterWalletTransactionInteraction(int $character_id, int $client_id) : Builder
     {
 
@@ -117,11 +129,11 @@ trait Intel
     }
 
     /**
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopMailInteractions(Collection $character_ids)
+    public function characterTopMailInteractions(Collection $character_ids) : Builder
     {
 
         return MailHeader::select()
@@ -133,7 +145,13 @@ trait Intel
 
     }
 
-    public function getMailContent($character_id, $from) : Builder
+    /**
+     * @param int $character_id
+     * @param int $from
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getMailContent(int $character_id, int $from) : Builder
     {
 
         return MailHeader::with('body', 'recipients', 'sender')
