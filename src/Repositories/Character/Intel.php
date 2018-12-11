@@ -44,11 +44,11 @@ trait Intel
     public function characterTopWalletJournalInteractions(Collection $character_ids): Builder
     {
 
-        return CharacterWalletJournal::with('first_party','second_party')
+        return CharacterWalletJournal::with('first_party', 'second_party')
             ->select('*', DB::raw('count(*) as total'))
             ->whereIn('character_wallet_journals.character_id', $character_ids->toArray())
             ->groupBy('first_party_id', 'second_party_id')
-            ->orderBy('total','desc');
+            ->orderBy('total', 'desc');
 
     }
 
@@ -80,7 +80,7 @@ trait Intel
             ->selectRaw('count(client_id) as total')
             ->whereIn('character_id', $character_ids->toArray())
             ->groupBy('client_id')
-            ->orderBy('total','desc');
+            ->orderBy('total', 'desc');
 
     }
 
@@ -141,7 +141,7 @@ trait Intel
             ->whereIn('character_id', $character_ids->toArray())
             ->whereColumn('character_id', '<>', 'from')
             ->groupBy('from')
-            ->orderBy('total','desc');
+            ->orderBy('total', 'desc');
 
     }
 
