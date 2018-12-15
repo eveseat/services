@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Corporation\CorporationMemberTracking;
 
@@ -36,17 +37,17 @@ trait Members
      *
      * @param int $corporation_id
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCorporationMemberTracking(int $corporation_id): Collection
+    public function getCorporationMemberTracking(int $corporation_id): Builder
     {
 
-        return CorporationMemberTracking::where('corporation_id', $corporation_id)
-            ->leftJoin('refresh_tokens', 'refresh_tokens.character_id', '=', 'corporation_member_trackings.character_id')
-            ->select('corporation_id', 'corporation_member_trackings.character_id', 'start_date', 'base_id',
-                'logon_date', 'logoff_date', 'location_id', 'ship_type_id')
-            ->selectRaw('case when isnull(token) then 0 else 1 end as key_ok')
-            ->get();
+        return CorporationMemberTracking::with(
+            'user',
+            'user.refresh_token',
+            'type'
+            )
+            ->where('corporation_id', $corporation_id);
 
     }
 }
