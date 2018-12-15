@@ -23,7 +23,6 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 /**
