@@ -35,7 +35,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return int|null
      */
-    public static function getAuthorEveCharacterID(): ?int
+    public function getAuthorEveCharacterID(): ?int
     {
         return null;
     }
@@ -45,14 +45,14 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return string
      */
-    abstract public static function getAuthorName(): string;
+    abstract public function getAuthorName(): string;
 
     /**
      * Return the plugin author e-mail address.
      *
      * @return string|null
      */
-    public static function getAuthorMailAddress(): ?string
+    public function getAuthorMailAddress(): ?string
     {
         return null;
     }
@@ -62,7 +62,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return string|null
      */
-    public static function getAuthorSlackNickname(): ?string
+    public function getAuthorSlackNickname(): ?string
     {
         return null;
     }
@@ -72,7 +72,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return string|null
      */
-    public static function getDescription(): ?string
+    public function getDescription(): ?string
     {
         return null;
     }
@@ -82,25 +82,25 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return string
      */
-    abstract public static function getName(): string;
+    abstract public function getName(): string;
 
     /**
      * Return the plugin repository address.
      *
      * @return string
      */
-    abstract public static function getPackageRepositoryUrl(): string;
+    abstract public function getPackageRepositoryUrl(): string;
 
     /**
      * Return the packagist alias.
      *
      * @return string
      */
-    public static function getPackagistAlias(): string
+    public function getPackagistAlias(): string
     {
         return sprintf('%s/%s',
-            call_user_func([get_called_class(), 'getPackagistVendorName']),
-            call_user_func([get_called_class(), 'getPackagistPackageName']));
+            $this->getPackagistVendorName(),
+            $this->getPackagistPackageName());
     }
 
     /**
@@ -108,31 +108,31 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return string
      */
-    abstract public static function getPackagistPackageName(): string;
+    abstract public function getPackagistPackageName(): string;
 
     /**
      * Return the plugin vendor tag as published on package manager.
      *
      * @return string
      */
-    abstract public static function getPackagistVendorName(): string;
+    abstract public function getPackagistVendorName(): string;
 
     /**
      * Return the plugin installed version.
      *
      * @return string
      */
-    abstract public static function getVersion(): string;
+    abstract public function getVersion(): string;
 
     /**
      * Return the package version badge for UI display.
      *
      * @return string
      */
-    public static function getVersionBadge(): string
+    public function getVersionBadge(): string
     {
         return sprintf('//img.shields.io/packagist/v/%s/%s.svg?style=flat-square',
-            call_user_func([get_called_class(), 'getPackagistVendorName']),
-            call_user_func([get_called_class(), 'getPackagistPackageName']));
+            $this->getPackagistVendorName(),
+            $this->getPackagistPackageName());
     }
 }
