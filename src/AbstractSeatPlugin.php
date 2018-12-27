@@ -68,6 +68,55 @@ abstract class AbstractSeatPlugin extends ServiceProvider
     }
 
     /**
+     * Return an URI to a CHANGELOG.md file or an API path which will be providing changelog history.
+     *
+     * @example https://raw.githubusercontent.com/eveseat/seat/master/LICENSE
+     * @exemple https://api.github.com/repos/eveseat/web/releases
+     *
+     * @return string|null
+     */
+    public function getChangelogUri(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * In case the changelog is provided from an API, this will help to determine which attribute is containing the
+     * changelog body.
+     *
+     * @exemple body
+     *
+     * @return string|null
+     */
+    public function getChangelogBodyAttribute(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * In case the changelog is provided from an API, this will help to determine which attribute is containing the
+     * version name.
+     *
+     * @example tag_name
+     *
+     * @return string|null
+     */
+    public function getChangelogTagAttribute(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Determine if the changelog is provided by an API.
+     *
+     * @return bool
+     */
+    public function isChangelogApi(): bool
+    {
+        return ! is_null($this->getChangelogBodyAttribute()) && ! is_null($this->getChangelogTagAttribute());
+    }
+
+    /**
      * Return the plugin description.
      *
      * @return string|null
