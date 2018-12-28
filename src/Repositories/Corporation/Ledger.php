@@ -113,7 +113,7 @@ trait Ledger
 
       return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporation_id', $corporation_id)
-            ->where('refType', 'reprocessing_tax')
+            ->where('ref_type', 'reprocessing_tax')
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -147,7 +147,7 @@ trait Ledger
 
       return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporation_id', $corporation_id)
-            ->where('refType', 'structure_gate_jump')
+            ->where('ref_type', 'structure_gate_jump')
             ->orderBy('date', 'desc')
             ->get();
     }
@@ -345,7 +345,7 @@ trait Ledger
             ->where('corporation_id', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
-            ->where('refType', 'structure_gate_jump')
+            ->where('ref_type', 'structure_gate_jump')
             ->groupBy('first_party_id')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
