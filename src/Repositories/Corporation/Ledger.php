@@ -189,7 +189,7 @@ trait Ledger
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationLedgerPIByMonth(int $corporation_id,
+    public function getCorporationLedgerPITotalsByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null): Collection
     {
