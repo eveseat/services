@@ -189,7 +189,7 @@ trait Ledger
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationLedgerPITotalsByMonth(int $corporation_id,
+    public function getCorporationLedgerPIByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null): Collection
     {
@@ -219,7 +219,7 @@ trait Ledger
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationLedgerOfficeRentalFeeTotalsByMonth(int $corporation_id,
+    public function getCorporationLedgerOfficeRentalFeeByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null): Collection
     {
@@ -247,7 +247,7 @@ trait Ledger
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationLedgerIndustryFacilityTaxTotalsByMonth(int $corporation_id,
+    public function getCorporationLedgerIndustryFacilityTaxByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null): Collection
     {
@@ -275,7 +275,7 @@ trait Ledger
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationLedgerReprocessingFeeTotalsByMonth(int $corporation_id,
+    public function getCorporationLedgerReprocessingFeeByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null): Collection
     {
@@ -303,7 +303,7 @@ trait Ledger
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationLedgerJumpCloneTotalsByMonth(int $corporation_id,
+    public function getCorporationLedgerJumpCloneByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null): Collection
     {
@@ -332,7 +332,7 @@ trait Ledger
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationLedgerJumpBridgeTotalsByMonth(int $corporation_id,
+    public function getCorporationLedgerJumpBridgeByMonth(int $corporation_id,
                                                         int $year = null,
                                                         int $month = null): Collection
     {
