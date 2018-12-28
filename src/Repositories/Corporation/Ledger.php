@@ -78,7 +78,7 @@ trait Ledger
     {
 
       return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where('ref_type', 'office_rental_fee')
             ->orderBy('date', 'desc')
             ->get();
@@ -95,7 +95,7 @@ trait Ledger
     {
 
       return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where('ref_type', 'industry_job_tax')
             ->orderBy('date', 'desc')
             ->get();
@@ -112,7 +112,7 @@ trait Ledger
     {
 
       return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where('refType', 'reprocessing_tax')
             ->orderBy('date', 'desc')
             ->get();
@@ -129,7 +129,7 @@ trait Ledger
     {
 
       return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->whereIn('ref_type', ['jump_clone_installation_fee', 'jump_clone_activation_fee'])
             ->orderBy('date', 'desc')
             ->get();
@@ -146,7 +146,7 @@ trait Ledger
     {
 
       return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where('refType', 'structure_gate_jump')
             ->orderBy('date', 'desc')
             ->get();
@@ -229,7 +229,7 @@ trait Ledger
                 'MONTH(date) as month, YEAR(date) as year, ' .
                 'ROUND(SUM(amount)) as total, first_party_id'
             ))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->where('ref_type', 'office_rental_fee')
@@ -257,7 +257,7 @@ trait Ledger
                 'MONTH(date) as month, YEAR(date) as year, ' .
                 'ROUND(SUM(amount)) as total, first_party_id'
             ))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->where('ref_type', 'industry_job_tax')
@@ -285,7 +285,7 @@ trait Ledger
                 'MONTH(date) as month, YEAR(date) as year, ' .
                 'ROUND(SUM(amount)) as total, first_party_id'
             ))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->where('ref_type', 'reprocessing_tax')
@@ -313,7 +313,7 @@ trait Ledger
                 'MONTH(date) as month, YEAR(date) as year, ' .
                 'ROUND(SUM(amount)) as total, first_party_id'
             ))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->whereIn('ref_type', ['jump_clone_activation_fee', 'jump_clone_installation_fee'])
@@ -342,7 +342,7 @@ trait Ledger
                 'MONTH(date) as month, YEAR(date) as year, ' .
                 'ROUND(SUM(amount)) as total, first_party_id'
             ))
-            ->where('corporationID', $corporation_id)
+            ->where('corporation_id', $corporation_id)
             ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
             ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
             ->where('refType', 'structure_gate_jump')
