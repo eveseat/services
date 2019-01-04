@@ -65,7 +65,7 @@ trait Search
         // checks
         $user = auth()->user();
 
-        $messages = MailHeader::with('body', 'recipients');
+        $messages = MailHeader::with('body', 'recipients', 'sender');
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
