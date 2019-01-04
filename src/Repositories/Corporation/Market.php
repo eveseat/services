@@ -38,10 +38,10 @@ trait Market
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCorporationMarketOrders(int $corporation_id, bool $get = true)
+    public function getCorporationMarketOrders(int $corporation_id)
     {
 
-        $orders = DB::table(DB::raw('corporation_orders as a'))
+        return DB::table(DB::raw('corporation_orders as a'))
             ->select(DB::raw(
                 '
                 --
@@ -76,7 +76,11 @@ trait Market
                       WHERE c.structure_id = a.location_id)
                 else (SELECT m.itemName FROM mapDenormalize AS m
                     WHERE m.itemID = a.location_id) end
-                    AS stationName'))
+                    AS stationName,
+                --
+                -- add total
+                --
+                a.price * a.volume_total AS price_total'))
             ->join(
                 'invTypes',
                 'a.type_id', '=',
@@ -86,12 +90,6 @@ trait Market
                 'invTypes.groupID', '=',
                 'invGroups.groupID')
             ->where('a.corporation_id', $corporation_id);
-
-        if ($get)
-            return $orders->orderBy('a.issued', 'desc')
-                ->get();
-
-        return $orders;
 
     }
 }
