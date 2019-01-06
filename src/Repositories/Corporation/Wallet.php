@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Corporation\CorporationDivision;
 use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
@@ -68,24 +69,16 @@ trait Wallet
     /**
      * Return a Wallet Journal for a Corporation.
      *
-     * @param int  $corporation_id
-     * @param bool $get
-     * @param int  $chunk
+     * @param int $corporation_id
      *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCorporationWalletJournal(
-        int $corporation_id, bool $get = true, int $chunk = 50)
+    public function getCorporationWalletJournal(int $corporation_id, int $division_id) : Builder
     {
 
-        $journal = CorporationWalletJournal::with('first_party', 'second_party')
-            ->where('corporation_id', $corporation_id);
-
-        if ($get)
-            return $journal->orderBy('date', 'desc')
-                ->paginate($chunk);
-
-        return $journal;
+        return CorporationWalletJournal::with('first_party', 'second_party')
+            ->where('corporation_id', $corporation_id)
+            ->where('division', $division_id);
 
     }
 
