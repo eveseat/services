@@ -35,11 +35,10 @@ trait Killmails
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Eloquent\Builder|CorporationKillmail
      */
-    public function getCorporationKillmails(
-        int $corporation_id, bool $get = true, int $chunk = 200)
+    public function getCorporationKillmails(int $corporation_id)
     {
 
-        $killmails = CorporationKillmail::with(
+        return CorporationKillmail::with(
             'killmail_detail',
             'killmail_detail.solar_system',
             'killmail_victim',
@@ -48,12 +47,6 @@ trait Killmails
             'killmail_victim.victim_corporation',
             'killmail_victim.victim_alliance')
             ->where('corporation_killmails.corporation_id', $corporation_id);
-
-        if ($get)
-            return $killmails->orderBy('corporation_killmails.killmail_id', 'desc')
-                ->paginate($chunk);
-
-        return $killmails;
 
     }
 }
