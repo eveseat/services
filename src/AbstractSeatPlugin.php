@@ -31,43 +31,6 @@ use Illuminate\Support\ServiceProvider;
 abstract class AbstractSeatPlugin extends ServiceProvider
 {
     /**
-     * Return the plugin author EVE Character ID.
-     *
-     * @return int|null
-     */
-    public function getAuthorEveCharacterID(): ?int
-    {
-        return null;
-    }
-
-    /**
-     * Return the plugin author name (or any public nickname).
-     *
-     * @return string
-     */
-    abstract public function getAuthorName(): string;
-
-    /**
-     * Return the plugin author e-mail address.
-     *
-     * @return string|null
-     */
-    public function getAuthorMailAddress(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * Return the plugin author slack nickname.
-     *
-     * @return string|null
-     */
-    public function getAuthorSlackNickname(): ?string
-    {
-        return null;
-    }
-
-    /**
      * Return an URI to a CHANGELOG.md file or an API path which will be providing changelog history.
      *
      * @example https://raw.githubusercontent.com/eveseat/seat/master/LICENSE
@@ -119,6 +82,8 @@ abstract class AbstractSeatPlugin extends ServiceProvider
     /**
      * Return the plugin description.
      *
+     * @example The SeAT Web Interface
+     *
      * @return string|null
      */
     public function getDescription(): ?string
@@ -129,12 +94,16 @@ abstract class AbstractSeatPlugin extends ServiceProvider
     /**
      * Return the plugin public name as it should be displayed into settings.
      *
+     * @example SeAT Web
+     *
      * @return string
      */
     abstract public function getName(): string;
 
     /**
      * Return the plugin repository address.
+     *
+     * @example https://github.com/eveseat/web
      *
      * @return string
      */
@@ -155,12 +124,16 @@ abstract class AbstractSeatPlugin extends ServiceProvider
     /**
      * Return the plugin technical name as published on package manager.
      *
+     * @example web
+     *
      * @return string
      */
     abstract public function getPackagistPackageName(): string;
 
     /**
      * Return the plugin vendor tag as published on package manager.
+     *
+     * @example eveseat
      *
      * @return string
      */
