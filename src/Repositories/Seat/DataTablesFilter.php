@@ -22,7 +22,6 @@
 
 namespace Seat\Services\Repositories\Seat;
 
-
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Character\CharacterInfo;
 use Seat\Eveapi\Models\Universe\UniverseName;
@@ -52,5 +51,4 @@ trait DataTablesFilter
                 })
             );
     }
-
 }
