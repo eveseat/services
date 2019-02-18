@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Repositories\Seat;
+namespace Seat\Services\Repositories\Seat\Filters;
 
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Character\CharacterInfo;
@@ -28,7 +28,7 @@ use Seat\Eveapi\Models\Universe\UniverseName;
 
 /**
  * Class DataTablesFilter.
- * @package Seat\Services\Repositories\Seat
+ * @package Seat\Services\Repositories\Seat\Filters
  */
 trait NamedIdFilter
 {
