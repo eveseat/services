@@ -48,7 +48,6 @@ trait MiningLedger
                 'character_minings.character_id',
                 'solar_system_id',
                 'character_minings.type_id',
-                'character_minings.quantity',
                 'historical_prices.adjusted_price')
             ->leftJoin('historical_prices', function ($join) {
                 $join->on('historical_prices.type_id', '=', 'character_minings.type_id')
