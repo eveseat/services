@@ -33,16 +33,19 @@ trait Contacts
      * Get a characters contact list.
      *
      * @param \Illuminate\Support\Collection $character_ids
-     *
-     * @param array                          $standings
+     * @param array|null $standings
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getCharacterContacts(Collection $character_ids, array $standings): Builder
+    public function getCharacterContacts(Collection $character_ids, ?array $standings = null): Builder
     {
 
-        return CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray())
-            ->whereIn('standing', $standings);
+        $contacts = CharacterContact::whereIn('character_contacts.character_id', $character_ids->toArray());
+
+        if (! is_null($standings))
+            $contacts->whereIn('standing', $standings);
+
+        return $contacts;
     }
 
     /**
