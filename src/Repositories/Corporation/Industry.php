@@ -81,12 +81,12 @@ trait Industry
                 'ramActivities',
                 'ramActivities.activityID', '=',
                 'a.activity_id')// corporation_industry_jobs aliased to a
-            ->join(
+            ->leftJoin(
                 'invTypes as blueprintType',
                 'blueprintType.typeID', '=',
                 'a.blueprint_type_id'
             )
-            ->join(
+            ->leftJoin(
                 'invTypes as productType',
                 'productType.typeID', '=',
                 'a.product_type_id'
