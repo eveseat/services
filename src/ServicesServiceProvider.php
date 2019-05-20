@@ -111,7 +111,7 @@ class ServicesServiceProvider extends AbstractSeatPlugin
      */
     public function getPackageRepositoryUrl(): string
     {
-        return 'https://github.com/eveseat/eveapi';
+        return 'https://github.com/eveseat/services';
     }
 
     /**
