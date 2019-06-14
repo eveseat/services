@@ -74,7 +74,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return bool
      */
-    public function isChangelogApi(): bool
+    final public function isChangelogApi(): bool
     {
         return ! is_null($this->getChangelogBodyAttribute()) && ! is_null($this->getChangelogTagAttribute());
     }
@@ -114,7 +114,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return string
      */
-    public function getPackagistAlias(): string
+    final public function getPackagistAlias(): string
     {
         return sprintf('%s/%s',
             $this->getPackagistVendorName(),
@@ -151,7 +151,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *
      * @return string
      */
-    public function getVersionBadge(): string
+    final public function getVersionBadge(): string
     {
         return sprintf('//img.shields.io/packagist/v/%s/%s.svg?style=flat-square',
             $this->getPackagistVendorName(),
