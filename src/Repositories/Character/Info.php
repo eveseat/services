@@ -25,7 +25,6 @@ namespace Seat\Services\Repositories\Character;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Character\CharacterCorporationHistory;
 use Seat\Eveapi\Models\Character\CharacterInfo;
-use Seat\Eveapi\Models\Character\CharacterTitle;
 
 /**
  * Trait Info.
@@ -87,7 +86,6 @@ trait Info
     public function getCharacterCorporationTitles(int $character_id): Collection
     {
 
-        return CharacterTitle::where('character_id', $character_id)
-            ->get();
+        return CharacterInfo::with('titles')->find($character_id)->titles;
     }
 }
