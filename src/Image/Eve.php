@@ -109,7 +109,7 @@ class Eve
         // Item Type images can be max 64? Reduce it.
         // http://image.eveonline.com/Type/670_128.png goes 404
         // Will * 2 for retina so set to 32
-        if ($this->type == 'Type' && $this->size > 32)
+        if ($this->type == 'Type' && $this->size > 64)
             $this->size = 32;
 
         // Character images are jpg, everything else is
