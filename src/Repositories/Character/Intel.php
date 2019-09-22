@@ -75,7 +75,7 @@ trait Intel
     public function characterTopWalletTransactionInteractions(Collection $character_ids) : Builder
     {
 
-        return CharacterWalletTransaction::with('client')
+        return CharacterWalletTransaction::with('party')
             ->select()
             ->selectRaw('count(client_id) as total')
             ->whereIn('character_id', $character_ids->toArray())
@@ -93,7 +93,7 @@ trait Intel
     public function characterWalletTransactionInteraction(int $character_id, int $client_id) : Builder
     {
 
-        return CharacterWalletTransaction::with('client', 'type')
+        return CharacterWalletTransaction::with('party', 'type')
             ->select(DB::raw('
             *, CASE
                 when character_wallet_transactions.location_id BETWEEN 66015148 AND 66015151 then
