@@ -23,9 +23,9 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\CorporationMemberTitle;
 use Seat\Eveapi\Models\Corporation\CorporationRole;
 use Seat\Eveapi\Models\Corporation\CorporationRoleHistory;
+use Seat\Eveapi\Models\Corporation\CorporationTitle;
 
 /**
  * Class Security.
@@ -72,9 +72,8 @@ trait Security
     public function getCorporationMemberSecurityTitles(int $corporation_id): Collection
     {
 
-        return CorporationMemberTitle::join('corporation_titles', 'corporation_member_titles.title_id', '=',
-            'corporation_titles.title_id')
-            ->where('corporation_member_titles.corporation_id', $corporation_id)
-            ->get();
+        return CorporationTitle::with('characters')
+                               ->where('corporation_id', $corporation_id)
+                               ->get();
     }
 }
