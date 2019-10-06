@@ -23,8 +23,8 @@
 namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Contacts\CharacterFitting;
-use Seat\Eveapi\Models\Contacts\CharacterFittingItem;
+use Seat\Eveapi\Models\Fittings\CharacterFitting;
+use Seat\Eveapi\Models\Fittings\CharacterFittingItem;
 
 /**
  * Trait Fitting.
@@ -48,7 +48,7 @@ trait Fittings
      * @param int $character_id
      * @param int $fitting_id
      *
-     * @return \Seat\Eveapi\Models\Contacts\CharacterFitting
+     * @return \Seat\Eveapi\Models\Fittings\CharacterFitting
      */
     public function getCharacterFitting(int $character_id, int $fitting_id): CharacterFitting
     {
