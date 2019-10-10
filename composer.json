@@ -23,7 +23,7 @@
     "laravel/framework": "^6.2",
     "coduo/php-humanizer": "^3.0",
     "doctrine/dbal": "^2.9",
-    "eveseat/eveapi": "dev-4.0.x"
+    "eveseat/eveapi": "4.0.x-dev"
   },
   "extra": {
     "laravel": {
