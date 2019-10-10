@@ -150,8 +150,9 @@ trait Mail
             return $messages->where('mail_id', $message_id)
                 ->first();
 
-        return $messages->orderBy('timestamp', 'desc')
-            ->groupBy('mail_id')
+        return $messages->select('mail_id', 'subject', 'from', 'timestamp', 'labels', 'is_read')
+            ->orderBy('timestamp', 'desc')
+            ->distinct()
             ->paginate(25);
     }
 }
