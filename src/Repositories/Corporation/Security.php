@@ -23,7 +23,7 @@
 namespace Seat\Services\Repositories\Corporation;
 
 use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Corporation\CorporationRole;
+use Seat\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seat\Eveapi\Models\Corporation\CorporationRoleHistory;
 use Seat\Eveapi\Models\Corporation\CorporationTitle;
 
@@ -43,7 +43,8 @@ trait Security
     public function getCorporationMemberRoles(int $corporation_id): Collection
     {
 
-        return CorporationRole::where('corporation_id', $corporation_id)
+        return CorporationMemberTracking::with('roles', 'character')
+            ->where('corporation_id', $corporation_id)
             ->get();
     }
 
