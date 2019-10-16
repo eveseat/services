@@ -81,15 +81,11 @@ trait Ledger
                                                            int $month = null): Collection
     {
 
-        return CorporationWalletJournal::select(
-            DB::raw(
-                'MONTH(date) as month, YEAR(date) as year, ' .
-                'ROUND(SUM(amount)) as total, second_party_id'
-            ))
+        return CorporationWalletJournal::select(DB::raw('ROUND(SUM(amount)) as total'), 'second_party_id')
             ->where('corporation_id', $corporation_id)
             ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize'])
-            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->whereYear('date', ! is_null($year) ? $year : date('Y'))
+            ->whereMonth('date', ! is_null($month) ? $month : date('m'))
             ->groupBy('second_party_id')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
