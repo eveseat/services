@@ -106,14 +106,10 @@ trait Ledger
     {
 
         // TODO : spawn native indexes on month and year inside corporation_wallet_journal table
-        return CorporationWalletJournal::select(
-            DB::raw(
-                'MONTH(date) as month, YEAR(date) as year, ' .
-                'ROUND(SUM(amount)) as total, first_party_id'
-            ))
+        return CorporationWalletJournal::select(DB::raw('ROUND(SUM(amount)) as total'), 'first_party_id')
             ->where('corporation_id', $corporation_id)
-            ->where(DB::raw('YEAR(date)'), ! is_null($year) ? $year : date('Y'))
-            ->where(DB::raw('MONTH(date)'), ! is_null($month) ? $month : date('m'))
+            ->whereYear('date', ! is_null($year) ? $year : date('Y'))
+            ->whereMonth('date', ! is_null($month) ? $month : date('m'))
             ->whereIn('ref_type', ['planetary_import_tax', 'planetary_export_tax'])
             ->groupBy('first_party_id')
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
