@@ -173,7 +173,7 @@ trait Ledger
                                              ?int $year = null,
                                              ?int $month = null): Collection
     {
-        $group_column = 'second_party_id';
+        $group_column = 'first_party_id';
         $ref_types = ['office_rental_fee'];
 
         return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
@@ -190,7 +190,7 @@ trait Ledger
                                                   ?int $year = null,
                                                   ?int $month = null): Collection
     {
-        $group_column = 'second_party_id';
+        $group_column = 'first_party_id';
         $ref_types = ['industry_job_tax'];
 
         return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
