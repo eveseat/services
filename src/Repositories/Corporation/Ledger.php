@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Corporation;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
@@ -42,10 +43,8 @@ trait Ledger
     public function getCorporationLedgerBountyPrizeDates(int $corporation_id): Collection
     {
 
-        return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporation_id', $corporation_id)
+        return $this->getCorporationLedgerPeriods($corporation_id)
             ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize'])
-            ->orderBy('date', 'desc')
             ->get();
     }
 
@@ -59,11 +58,68 @@ trait Ledger
     public function getCorporationLedgerPIDates(int $corporation_id): Collection
     {
 
-        // TODO : spawn native indexes on month and year inside corporation_wallet_journal table
-        return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
-            ->where('corporation_id', $corporation_id)
+        return $this->getCorporationLedgerPeriods($corporation_id)
             ->whereIn('ref_type', ['planetary_import_tax', 'planetary_export_tax'])
-            ->orderBy('date', 'desc')
+            ->get();
+    }
+
+    /**
+     * @param int $corporation_id
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerOfficesRentalsPeriods(int $corporation_id): Collection
+    {
+        return $this->getCorporationLedgerPeriods($corporation_id)
+            ->whereIn('ref_type', ['office_rental_fee'])
+            ->get();
+    }
+
+    /**
+     * @param int $corporation_id
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerIndustryFacilityPeriods(int $corporation_id): Collection
+    {
+        return $this->getCorporationLedgerPeriods($corporation_id)
+            ->whereIn('ref_type', ['industry_job_tax'])
+            ->get();
+    }
+
+    /**
+     * @param int $corporation_id
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerReprocessingPeriods(int $corporation_id): Collection
+    {
+        return $this->getCorporationLedgerPeriods($corporation_id)
+            ->whereIn('ref_type', ['reprocessing_tax'])
+            ->get();
+    }
+
+    /**
+     * @param int $corporation_id
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerJumpClonesPeriods(int $corporation_id): Collection
+    {
+        return $this->getCorporationLedgerPeriods($corporation_id)
+            ->whereIn('ref_type', ['jump_clone_activation_fee', 'jump_clone_installation_fee'])
+            ->get();
+    }
+
+    /**
+     * @param int $corporation_id
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerJumpBridgesPeriods(int $corporation_id): Collection
+    {
+        return $this->getCorporationLedgerPeriods($corporation_id)
+            ->whereIn('ref_type', ['structure_gate_jump'])
             ->get();
     }
 
@@ -81,14 +137,10 @@ trait Ledger
                                                            int $month = null): Collection
     {
 
-        return CorporationWalletJournal::select(DB::raw('ROUND(SUM(amount)) as total'), 'second_party_id')
-            ->where('corporation_id', $corporation_id)
-            ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize'])
-            ->whereYear('date', ! is_null($year) ? $year : date('Y'))
-            ->whereMonth('date', ! is_null($month) ? $month : date('m'))
-            ->groupBy('second_party_id')
-            ->orderBy(DB::raw('SUM(amount)'), 'desc')
-            ->get();
+        $group_column = 'second_party_id';
+        $ref_types = ['bounty_prizes', 'bounty_prize'];
+
+        return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
     }
 
     /**
@@ -104,16 +156,129 @@ trait Ledger
                                                         int $year = null,
                                                         int $month = null): Collection
     {
+        $group_column = 'first_party_id';
+        $ref_types = ['planetary_import_tax', 'planetary_export_tax'];
 
-        // TODO : spawn native indexes on month and year inside corporation_wallet_journal table
-        return CorporationWalletJournal::select(DB::raw('ROUND(SUM(amount)) as total'), 'first_party_id')
+        return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
+    }
+
+    /**
+     * @param int $corporation_id
+     * @param int|null $year
+     * @param int|null $month
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerOfficesRentalsByMonth(int $corporation_id,
+                                             ?int $year = null,
+                                             ?int $month = null): Collection
+    {
+        $group_column = 'second_party_id';
+        $ref_types = ['office_rental_fee'];
+
+        return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
+    }
+
+    /**
+     * @param int $corporation_id
+     * @param int|null $year
+     * @param int|null $month
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerIndustryFacilityByMonth(int $corporation_id,
+                                                  ?int $year = null,
+                                                  ?int $month = null): Collection
+    {
+        $group_column = 'second_party_id';
+        $ref_types = ['industry_job_tax'];
+
+        return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
+    }
+
+    /**
+     * @param int $corporation_id
+     * @param int|null $year
+     * @param int|null $month
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerReprocessingByMonth(int $corporation_id,
+                                                            ?int $year = null,
+                                                            ?int $month = null): Collection
+    {
+        $group_column = 'first_party_id';
+        $ref_types = ['reprocessing_tax'];
+
+        return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
+    }
+
+    /**
+     * @param int $corporation_id
+     * @param int|null $year
+     * @param int|null $month
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerJumpClonesByMonth(int $corporation_id,
+                                                          ?int $year = null,
+                                                          ?int $month = null): Collection
+    {
+        $group_column = 'first_party_id';
+        $ref_types = ['jump_clone_activation_fee', 'jump_clone_installation_fee'];
+
+        return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
+    }
+
+    /**
+     * @param int $corporation_id
+     * @param int|null $year
+     * @param int|null $month
+     * @return \Illuminate\Support\Collection
+     * @author soratidus999
+     */
+    public function getCorporationLedgerJumpBridgesByMonth(int $corporation_id,
+                                                        ?int $year = null,
+                                                        ?int $month = null): Collection
+    {
+        $group_column = 'first_party_id';
+        $ref_types = ['structure_gate_jump'];
+
+        return $this->getCorporationLedgerByMonth($corporation_id, $group_column, $ref_types, $year, $month);
+    }
+
+    /**
+     * @param int $corporation_id
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function getCorporationLedgerPeriods(int $corporation_id): Builder
+    {
+        return CorporationWalletJournal::select(DB::raw('DISTINCT MONTH(date) as month, YEAR(date) as year'))
             ->where('corporation_id', $corporation_id)
+            ->orderBy('date', 'desc');
+    }
+
+    /**
+     * @param int $corporation_id
+     * @param string $group_field
+     * @param array $ref_types
+     * @param int|null $year
+     * @param int|null $month
+     * @return \Illuminate\Support\Collection
+     */
+    private function getCorporationLedgerByMonth(int $corporation_id,
+                                                 string $group_field,
+                                                 array $ref_types,
+                                                 ?int $year = null,
+                                                 ?int $month = null): Collection
+    {
+        return CorporationWalletJournal::select(DB::raw('ROUND(SUM(amount)) as total'), $group_field)
+            ->where('corporation_id', $corporation_id)
+            ->whereIn('ref_type', $ref_types)
             ->whereYear('date', ! is_null($year) ? $year : date('Y'))
             ->whereMonth('date', ! is_null($month) ? $month : date('m'))
-            ->whereIn('ref_type', ['planetary_import_tax', 'planetary_export_tax'])
-            ->groupBy('first_party_id')
+            ->groupBy($group_field)
             ->orderBy(DB::raw('SUM(amount)'), 'desc')
             ->get();
-
     }
 }
