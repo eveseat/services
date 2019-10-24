@@ -24,6 +24,7 @@ namespace Seat\Services\Repositories\Character;
 
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Character\CharacterInfo;
+use Seat\Eveapi\Models\Corporation\CorporationInfo;
 
 /**
  * Class Character.
@@ -57,9 +58,6 @@ trait Character
         // checks
         $user = auth()->user();
 
-        // Which characters does the currently logged in user have?
-        $user_character_ids = auth()->user()->associatedCharacterIds();
-
         // Start the character information query
         $characters = new CharacterInfo;
 
@@ -67,17 +65,11 @@ trait Character
         // user has access to.
         if (! $user->hasSuperUser()) {
 
-            $characters = $characters->where(function ($query) use ($user, $user_character_ids) {
+            $affiliations_map = $user->getAffiliationMap();
 
-                // If the user has any affiliations and can
-                // list those characters, add them
-                if ($user->has('character.list', false))
-                    $query->orWhereIn('character_id',
-                        array_keys($user->getAffiliationMap()['char']));
+            $granted_characters = array_keys($affiliations_map['char']);
 
-                $query->orWhereIn('character_id', $user_character_ids);
-            });
-
+            $characters = $characters->whereIn('character_id', $granted_characters);
         }
 
         if ($get)
@@ -150,29 +142,19 @@ trait Character
 
         $user = auth()->user();
 
-        $corporations = ApiKeyInfoCharacters::join(
-            'eve_api_keys',
-            'eve_api_keys.key_id', '=',
-            'account_api_key_info_characters.keyID')
-            ->distinct();
+        $corporations = new CorporationInfo;
 
         // If the user us a super user, return all
         if (! $user->hasSuperUser()) {
 
-            $corporations = $corporations->orWhere(function ($query) use ($user) {
+            $affiliation_map = $user->getAffiliationMap();
 
-                // If the user has any affiliations and can
-                // list those characters, add them
-                if ($user->has('character.list', false))
-                    $query = $query->whereIn('characterID',
-                        array_keys($user->getAffiliationMap()['char']));
+            $granted_corporations = array_keys($affiliation_map['corp']);
 
-                // Add any characters from owner API keys
-                $query->orWhere('eve_api_keys.user_id', $user->id);
-            });
+            $corporations = $corporations->whereIn('corporation_id', $granted_corporations);
         }
 
-        return $corporations->orderBy('corporationName')
-            ->pluck('corporationName');
+        return $corporations->orderBy('name')
+            ->pluck('name');
     }
 }
