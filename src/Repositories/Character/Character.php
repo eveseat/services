@@ -51,33 +51,16 @@ trait Character
      */
     public function getAllCharactersWithAffiliations(bool $get = true)
     {
-
-        // TODO : rewrite the method according to the new ACL mechanic
-
-        // Get the User for permissions and affiliation
-        // checks
-        $user = auth()->user();
-
         // Start the character information query
-        $characters = new CharacterInfo;
-
-        // If the user is not a super user, return only the characters the
-        // user has access to.
-        if (! $user->hasSuperUser()) {
-
-            $affiliations_map = $user->getAffiliationMap();
-
-            $granted_characters = array_keys($affiliations_map['char']);
-
-            $characters = $characters->whereIn('character_id', $granted_characters);
-        }
+        $characters = CharacterInfo::authorized('character.sheet')
+            ->with('corporation', 'alliance');
 
         if ($get)
             return $characters
                 ->orderBy('name')
                 ->get();
 
-        return $characters->getQuery();
+        return $characters;
     }
 
     /**
