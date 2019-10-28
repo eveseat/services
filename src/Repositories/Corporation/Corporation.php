@@ -48,26 +48,15 @@ trait Corporation
      */
     public function getAllCorporationsWithAffiliationsAndFilters(bool $get = true)
     {
-
-        // Get the User for permissions and affiliation
-        // checks
-        $user = auth()->user();
-
         // Start a fresh query
-        $corporations = new CorporationInfo();
-
-        // Check if this user us a superuser. If not,
-        // limit to stuff only they can see.
-        if (! $user->hasSuperUser())
-
-            $corporations = $corporations->whereIn('corporation_id',
-                array_keys($user->getAffiliationMap()['corp']));
+        $corporations = CorporationInfo::authorized('corporation.sheet')
+            ->with('ceo', 'alliance');
 
         if ($get)
             return $corporations->orderBy('name', 'desc')
                 ->get();
 
-        return $corporations->getQuery();
+        return $corporations;
     }
 
     /**
