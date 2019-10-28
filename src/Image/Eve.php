@@ -158,7 +158,11 @@ class Eve
             // location for the image.
             $html .= 'src="' . asset('web/img/bg.png') . '" ';
             $html .= 'data-src="' . $this->url($this->size) . '" ';
-            $html .= 'data-src-retina="' . $this->url($this->size * 2) . '" ';
+
+            // Item Type images can be max 64?
+            // http://image.eveonline.com/Type/670_128.png goes 404
+            // In case requested size is greater than 32, lock size to 64
+            $html .= 'data-src-retina="' . $this->url(($this->type == 'Type' && $this->size > 32) ? 64 : $this->size * 2) . '" ';
 
             // put class on images to lazy load them
             if (! isset($this->attributes['class']))
