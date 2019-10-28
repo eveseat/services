@@ -22,7 +22,6 @@
 
 namespace Seat\Services\Search;
 
-use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Assets\CharacterAsset;
 use Seat\Eveapi\Models\Character\CharacterSkill;
 use Seat\Eveapi\Models\Mail\MailHeader;
