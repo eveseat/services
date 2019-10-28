@@ -65,7 +65,8 @@ trait Search
         // checks
         $user = auth()->user();
 
-        $messages = MailHeader::with('body', 'recipients', 'sender');
+        $messages = MailHeader::with('body', 'recipients', 'sender', 'character')
+            ->select('timestamp', 'from', 'subject', 'mail_headers.mail_id', 'character_id');
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
@@ -95,8 +96,7 @@ trait Search
             });
         }
 
-        return $messages->orderBy('timestamp', 'desc')
-            ->take(150);
+        return $messages;
 
     }
 
@@ -105,74 +105,10 @@ trait Search
      */
     public function doSearchCharacterAssets()
     {
-
-        // Get the user.
-        $user = auth()->user();
-
-        // Start the query with all the joins needed.
-        $assets = CharacterAsset::select(DB::raw('
-                character_infos.name AS character_name,
-                invTypes.typeName,
-                invGroups.groupName,
-                character_assets.*, CASE
-                when character_assets.location_id BETWEEN 66015148 AND 66015151 then
-                    (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID=character_assets.location_id-6000000)
-                when character_assets.location_id BETWEEN 66000000 AND 66014933 then
-                    (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID=character_assets.location_id-6000001)
-                when character_assets.location_id BETWEEN 66014934 AND 67999999 then
-                    (SELECT d.name FROM `sovereignty_structures` AS c
-                      JOIN universe_stations d ON c.structure_id = d.station_id
-                      WHERE c.structure_id=character_assets.location_id-6000000)
-                when character_assets.location_id BETWEEN 60014861 AND 60014928 then
-                    (SELECT d.name FROM `sovereignty_structures` AS c
-                      JOIN universe_stations d ON c.structure_id = d.station_id
-                      WHERE c.structure_id=character_assets.location_id)
-                when character_assets.location_id BETWEEN 60000000 AND 61000000 then
-                    (SELECT s.stationName FROM staStations AS s
-                      WHERE s.stationID=character_assets.location_id)
-                when character_assets.location_id BETWEEN 61000000 AND 61001146 then
-                    (SELECT d.name FROM `sovereignty_structures` AS c
-                      JOIN universe_stations d ON c.structure_id = d.station_id
-                      WHERE c.structure_id=character_assets.location_id)
-                when character_assets.location_id > 61001146 then
-                    (SELECT name FROM `universe_structures` AS c
-                     WHERE c.structure_id = character_assets.location_id)
-                else (SELECT m.itemName FROM mapDenormalize AS m
-                    WHERE m.itemID=character_assets.location_id) end
-                AS location,
-                character_assets.location_id AS locID'))
-            ->join('character_infos',
-                'character_assets.character_id', '=',
-                'character_infos.character_id')
-            ->join('invTypes',
-                'character_assets.type_id', '=',
-                'invTypes.typeID')
-            ->join('invGroups',
-                'invTypes.groupID', '=',
-                'invGroups.groupID');
-
-        // If the user is not a superuser, filter the results.
-        if (! $user->hasSuperUser()) {
-
-            $assets = $assets->where(function ($query) use ($user) {
-
-                // If the user has any affiliations and can
-                // list those characters, add them
-                if ($user->has('character.assets', false))
-                    $query = $query->whereIn('character_assets.character_id',
-                        array_keys($user->getAffiliationMap()['char']));
-
-                // Add any characters from owner API keys
-                $user_character_ids = auth()->user()->group->users->pluck('id')->toArray();
-
-                $query->orWhereIn('character_assets.character_id', $user_character_ids);
-            });
-        }
-
-        return $assets;
-
+        return CharacterAsset::authorized('character.asset')
+            ->with('character', 'character.corporation', 'character.alliance', 'type', 'type.group')
+            ->select()
+            ->addSelect('character_assets.name as asset_name');
     }
 
     /**
@@ -180,43 +116,7 @@ trait Search
      */
     public function doSearchCharacterSkills()
     {
-
-        // Get the user
-        $user = auth()->user();
-
-        // Start the skills query
-        $skills = CharacterSkill::join(
-            'invTypes',
-            'character_skills.skill_id', '=',
-            'invTypes.typeID')
-            ->join(
-                'invGroups',
-                'invTypes.groupID', '=',
-                'invGroups.groupID')
-            ->join(
-                'character_infos',
-                'character_infos.character_id', '=',
-                'character_skills.character_id'
-            );
-
-        // If the user is not a superuser, filter the results.
-        if (! $user->hasSuperUser()) {
-
-            $skills = $skills->where(function ($query) use ($user) {
-
-                // If the user has any affiliations and can
-                // list those characters, add them
-                if ($user->has('character.skills', false))
-                    $query = $query->whereIn('character_skills.character_id',
-                        array_keys($user->getAffiliationMap()['char']));
-
-                // Add any characters from owner API keys
-                $user_character_ids = auth()->user()->group->users->pluck('id')->toArray();
-
-                $query->orWhereIn('character_skills.character_id', $user_character_ids);
-            });
-        }
-
-        return $skills;
+        return CharacterSkill::authorized('character.skill')
+            ->with('character', 'character.corporation', 'character.alliance', 'type', 'type.group');
     }
 }
