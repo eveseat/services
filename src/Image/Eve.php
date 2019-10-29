@@ -69,7 +69,7 @@ class Eve
     /**
      * @var string
      */
-    protected $img_server = '//image.eveonline.com';
+    protected $img_server = '//imageserver.eveonline.com';
 
     /**
      * @param           $type
@@ -107,7 +107,7 @@ class Eve
         $this->size = ($size < 32 ? 32 : $size);
 
         // Item Type images can be max 64? Reduce it.
-        // http://image.eveonline.com/Type/670_128.png goes 404
+        // http://imageserver.eveonline.com/Type/670_128.png goes 404
         // Will * 2 for retina so set to 32
         if ($this->type == 'Type' && $this->size > 64)
             $this->size = 32;
@@ -160,7 +160,7 @@ class Eve
             $html .= 'data-src="' . $this->url($this->size) . '" ';
 
             // Item Type images can be max 64?
-            // http://image.eveonline.com/Type/670_128.png goes 404
+            // http://imageserver.eveonline.com/Type/670_128.png goes 404
             // In case requested size is greater than 32, lock size to 64
             $html .= 'data-src-retina="' . $this->url(($this->type == 'Type' && $this->size > 32) ? 64 : $this->size * 2) . '" ';
 
