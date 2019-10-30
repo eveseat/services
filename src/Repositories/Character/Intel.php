@@ -25,6 +25,7 @@ namespace Seat\Services\Repositories\Character;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Character\CharacterAffiliation;
 use Seat\Eveapi\Models\Mail\MailHeader;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
@@ -44,12 +45,31 @@ trait Intel
     public function characterTopWalletJournalInteractions(Collection $character_ids): Builder
     {
 
-        return CharacterWalletJournal::with('first_party', 'second_party')
-            ->select('*', DB::raw('count(*) as total'))
+        return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
+            ->select('first_party_id', 'second_party_id', 'ref_type', 'character_affiliations.character_id',
+                     'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
+            ->leftJoin('character_wallet_journals', function ($join) {
+                $join->on('character_affiliations.character_id', '=', 'character_wallet_journals.first_party_id');
+                $join->orOn('character_affiliations.corporation_id', '=', 'character_wallet_journals.first_party_id');
+            })
             ->whereIn('character_wallet_journals.character_id', $character_ids->toArray())
-            ->groupBy('first_party_id', 'second_party_id')
+            ->whereNotIn('character_wallet_journals.first_party_id', $character_ids->toArray())
+            ->groupBy('first_party_id', 'second_party_id', 'ref_type',
+                      'character_id', 'corporation_id', 'alliance_id', 'faction_id')
+            ->union(
+                CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
+                ->select('first_party_id', 'second_party_id', 'ref_type', 'character_affiliations.character_id',
+                         'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
+                ->leftJoin('character_wallet_journals', function ($join) {
+                    $join->on('character_affiliations.character_id', '=', 'character_wallet_journals.second_party_id');
+                    $join->orOn('character_affiliations.corporation_id', '=', 'character_wallet_journals.second_party_id');
+                })
+                ->whereIn('character_wallet_journals.character_id', $character_ids->toArray())
+                ->whereNotIn('character_wallet_journals.second_party_id', $character_ids->toArray())
+                ->groupBy('first_party_id', 'second_party_id', 'ref_type',
+                          'character_id', 'corporation_id', 'alliance_id', 'faction_id')
+            )
             ->orderBy('total', 'desc');
-
     }
 
     /**
@@ -75,11 +95,15 @@ trait Intel
     public function characterTopWalletTransactionInteractions(Collection $character_ids) : Builder
     {
 
-        return CharacterWalletTransaction::with('party')
-            ->select()
-            ->selectRaw('count(client_id) as total')
-            ->whereIn('character_id', $character_ids->toArray())
-            ->groupBy('client_id')
+        return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
+            ->select('client_id', 'character_affiliations.character_id', 'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
+            ->leftJoin('character_wallet_transactions', function ($join) {
+                $join->on('character_affiliations.character_id', '=', 'character_wallet_transactions.client_id');
+                $join->orOn('character_affiliations.corporation_id', '=', 'character_wallet_transactions.client_id');
+            })
+            ->whereIn('character_wallet_transactions.character_id', $character_ids->toArray())
+            ->whereNotIn('character_wallet_transactions.client_id', $character_ids->toArray())
+            ->groupBy('client_id', 'character_id', 'corporation_id', 'alliance_id', 'faction_id')
             ->orderBy('total', 'desc');
 
     }
@@ -93,7 +117,7 @@ trait Intel
     public function characterWalletTransactionInteraction(int $character_id, int $client_id) : Builder
     {
 
-        return CharacterWalletTransaction::with('party', 'type')
+        return CharacterWalletTransaction::with('party', 'type', 'location')
             ->select(DB::raw('
             *, CASE
                 when character_wallet_transactions.location_id BETWEEN 66015148 AND 66015151 then
@@ -135,14 +159,16 @@ trait Intel
      */
     public function characterTopMailInteractions(Collection $character_ids) : Builder
     {
-
-        return MailHeader::select()
-            ->selectRaw('count(`from`) as total')
-            ->whereIn('character_id', $character_ids->toArray())
-            ->whereColumn('character_id', '<>', 'from')
-            ->groupBy('from')
+        return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
+            ->select('from', 'character_affiliations.character_id', 'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
+            ->leftJoin('mail_headers', function ($join) {
+                $join->on('character_affiliations.character_id', '=', 'mail_headers.from');
+                $join->orOn('character_affiliations.corporation_id', '=', 'mail_headers.from');
+            })
+            ->whereIn('mail_headers.character_id', $character_ids->toArray())
+            ->whereNotIn('mail_headers.from', $character_ids->toArray())
+            ->groupBy('from', 'character_id', 'corporation_id', 'alliance_id', 'faction_id')
             ->orderBy('total', 'desc');
-
     }
 
     /**
@@ -155,9 +181,10 @@ trait Intel
     {
 
         return MailHeader::with('body', 'recipients', 'sender')
+            ->select('mail_id', 'subject', 'from', 'timestamp')
             ->where('character_id', $character_id)
             ->where('from', $from)
-            ->groupBy('mail_id');
+            ->distinct();
 
     }
 
@@ -194,47 +221,49 @@ trait Intel
     public function getCharacterJournalStandingsWithProfile(int $character_id, int $profile_id)
     {
 
-        return CharacterWalletJournal::select(
-            DB::raw('count(*) as total'),
-            'character_affiliations.character_id',
-            'character_affiliations.corporation_id',
-            'character_affiliations.alliance_id',
-            'character_affiliations.faction_id',
-            'standings_profile_standings.elementID as standing_match_on',
-            'standings_profile_standings.type as standing_type',
-            'standings_profile_standings.standing as standing'
-        )->leftJoin('character_affiliations', function ($join) {
+        return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
+            ->select(
+                DB::raw('count(*) as total'),
+                'character_affiliations.character_id',
+                'character_affiliations.corporation_id',
+                'character_affiliations.alliance_id',
+                'character_affiliations.faction_id',
+                'standings_profile_standings.elementID as standing_match_on',
+                'standings_profile_standings.type as standing_type',
+                'standings_profile_standings.standing as standing'
+            )->leftJoin('character_wallet_journals', function ($join) {
 
-            $join->on(
-                'character_affiliations.character_id', '=',
-                'character_wallet_journals.first_party_id'
-            );
+                $join->on(
+                    'character_affiliations.character_id', '=',
+                    'character_wallet_journals.first_party_id'
+                );
 
-            $join->orOn(
-                'character_affiliations.character_id', '=',
-                'character_wallet_journals.second_party_id'
-            );
+                $join->orOn(
+                    'character_affiliations.character_id', '=',
+                    'character_wallet_journals.second_party_id'
+                );
 
-        })->join('standings_profile_standings', function ($join) {
+            })->join('standings_profile_standings', function ($join) {
 
-            $join->on(
-                'standings_profile_standings.elementID', '=',
-                'character_affiliations.character_id'
-            );
+                $join->on(
+                    'standings_profile_standings.elementID', '=',
+                    'character_affiliations.character_id'
+                );
 
-            $join->orOn(
-                'standings_profile_standings.elementID', '=',
-                'character_affiliations.corporation_id'
-            );
+                $join->orOn(
+                    'standings_profile_standings.elementID', '=',
+                    'character_affiliations.corporation_id'
+                );
 
-            $join->orOn(
-                'standings_profile_standings.elementID', '=',
-                'character_affiliations.alliance_id'
-            );
+                $join->orOn(
+                    'standings_profile_standings.elementID', '=',
+                    'character_affiliations.alliance_id'
+                );
 
-        })->where('character_wallet_journals.character_id', $character_id)
+            })
+            ->where('character_wallet_journals.character_id', $character_id)
             ->where('standings_profile_standings.standings_profile_id', $profile_id)
-            ->groupBy('standings_profile_standings.elementID');
+            ->groupBy('elementID', 'character_id', 'corporation_id', 'alliance_id', 'faction_id', 'standing', 'type');
 
     }
 }
