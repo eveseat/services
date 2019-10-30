@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -35,4 +36,13 @@ class Note extends Model
      */
     protected $fillable = ['object_type', 'object_id', 'title', 'note'];
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeType(Builder $query, string $type)
+    {
+        return $query->where('object_type', $type);
+    }
 }
