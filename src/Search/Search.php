@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Search;
 
+use Illuminate\Support\Arr;
 use Seat\Eveapi\Models\Assets\CharacterAsset;
 use Seat\Eveapi\Models\Character\CharacterSkill;
 use Seat\Eveapi\Models\Mail\MailHeader;
@@ -64,34 +65,22 @@ trait Search
         // checks
         $user = auth()->user();
 
-        $messages = MailHeader::with('body', 'recipients', 'sender', 'character')
-            ->select('timestamp', 'from', 'subject', 'mail_headers.mail_id', 'character_id');
+        $messages = MailHeader::with('body', 'recipients', 'recipients.entity', 'sender')
+            ->select('timestamp', 'from', 'subject', 'mail_headers.mail_id');
 
         // If the user is a super user, return all
         if (! $user->hasSuperUser()) {
 
-            $messages = $messages->where(function ($query) use ($user) {
+            $messages = $messages->whereHas('recipients', function ($sub_query) {
+                // retrieve authenticated user permissions map
+                $character_map = collect(Arr::get(auth()->user()->getAffiliationMap(), 'char'));
 
-                // If the user has any affiliations and can
-                // list those characters, add them
-                // also include all attached characters
+                // collect only character which has either the requested permission or wildcard
+                $characters_ids = $character_map->filter(function ($permissions, $key) {
+                    return in_array('character.*', $permissions) || in_array('character.mail', $permissions);
+                })->keys();
 
-                $map = $user->getAffiliationMap();
-                $character_maps = [];
-
-                foreach ($map['char'] as $character_id => $permissions) {
-                    if (in_array('character.*', $permissions))
-                        $character_maps[] = $character_id;
-                    if (in_array('character.mail', $permissions))
-                        $character_maps[] = $character_id;
-                }
-
-                $query = $query->orWhereIn('character_id', $character_maps)
-                    ->orWhereIn('from', $character_maps);
-
-                $query = $query->orWhereHas('recipients', function ($sub_query) use ($character_maps) {
-                    $sub_query->whereIn('recipient_id', $character_maps);
-                });
+                $sub_query->whereIn('recipient_id', $characters_ids);
             });
         }
 
