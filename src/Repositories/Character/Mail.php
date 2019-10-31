@@ -22,6 +22,7 @@
 
 namespace Seat\Services\Repositories\Character;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Seat\Eveapi\Models\Mail\MailHeader;
 
@@ -127,21 +128,22 @@ trait Mail
         // Get the User for permissions and affiliation
         // checks
         $user = auth()->user();
-        $messages = MailHeader::with('recipients', 'body');
+        $messages = MailHeader::with('body', 'recipients', 'recipients.entity', 'sender');
 
         // If a user is not a super user, only return their own mail and those
         // which they are affiliated to to receive.
         if (! $user->hasSuperUser()) {
 
-            $messages = $messages->where(function ($query) use ($user) {
+            $messages = $messages->whereHas('recipients', function ($sub_query) {
+                // retrieve authenticated user permissions map
+                $character_map = collect(Arr::get(auth()->user()->getAffiliationMap(), 'char'));
 
-                // If the user has any affiliations and can
-                // list those characters, add them
-                if ($user->has('character.mail', false))
-                    $query = $query->whereIn('character_id', array_keys($user->getAffiliationMap()['char']));
+                // collect only character which has either the requested permission or wildcard
+                $characters_ids = $character_map->filter(function ($permissions, $key) {
+                    return in_array('character.*', $permissions) || in_array('character.mail', $permissions);
+                })->keys();
 
-                // Add mail owned by *this* character
-                $query->orWhere('character_id', $user->id);
+                $sub_query->whereIn('recipient_id', $characters_ids);
             });
         }
 
@@ -150,7 +152,7 @@ trait Mail
             return $messages->where('mail_id', $message_id)
                 ->first();
 
-        return $messages->select('mail_id', 'subject', 'from', 'timestamp', 'labels', 'is_read')
+        return $messages->select('mail_id', 'subject', 'from', 'timestamp')
             ->orderBy('timestamp', 'desc')
             ->distinct()
             ->paginate(25);
