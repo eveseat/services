@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -129,7 +130,7 @@ abstract class ReportParser
     /**
      * @throws \Seat\Services\ReportParser\Exceptions\InvalidReportException
      */
-    public abstract function validate();
+    abstract public function validate();
 
     /**
      * @return bool
