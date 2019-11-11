@@ -36,6 +36,11 @@ class Eve
     protected $type;
 
     /**
+     * @var string
+     */
+    protected $variation;
+
+    /**
      * @var int
      */
     protected $id;
@@ -59,65 +64,68 @@ class Eve
      * @var array
      */
     protected $known_types = [
-        'character', 'corporation', 'alliance', 'faction', 'type', 'render', 'auto', ];
+        'characters', 'corporations', 'alliances', 'factions', 'types', 'render', 'auto', ];
 
     /**
      * @var string
      */
-    protected $extension = 'png';
+    protected $img_server = '//images.evetech.net';
 
     /**
-     * @var string
-     */
-    protected $img_server = '//imageserver.eveonline.com';
-
-    /**
-     * @param           $type
-     * @param           $id
-     * @param           $size
-     * @param array     $attr
-     * @param bool|true $lazy
+     * Eve constructor.
      *
+     * @param string $type
+     * @param string $variation
+     * @param int $id
+     * @param int $size
+     * @param array $attr
+     * @param bool $lazy
      * @throws \Seat\Services\Exceptions\EveImageException
      */
-    public function __construct($type, $id, $size, array $attr, $lazy = true)
+    public function __construct(string $type, string $variation, int $id, int $size, array $attr, bool $lazy = true)
     {
 
         // Validate the arguments
         if (! in_array($type, $this->known_types))
             throw new EveImageException($type . ' is not a valid image type.');
+
         if (! is_int($id))
             throw new EveImageException('id must be an integer.');
+
         if (! is_int($size))
             throw new EveImageException('size must be an integer');
+
+        if (! in_array($size, [32, 64, 128, 256, 512, 1024]))
+            throw new EveImageException('unsupported size');
+
         // Check if we should detect the type based on id
-        if ($type == 'auto')
+        if ($type == 'auto') {
             $type = $this->detect_type($id);
 
+            switch ($type) {
+                case 'characters':
+                    $this->variation = 'portrait';
+                    break;
+                case 'corporations':
+                case 'alliances':
+                case 'factions':
+                    $this->variation = 'logo';
+                    break;
+                default:
+                    $this->variation = 'icon';
+            }
+        }
+
         // ccp trick - http://eveonline-third-party-documentation.readthedocs.io/en/latest/imageserver/intro.html#faction-images
-        if ($type == 'faction')
-            $type = 'alliance';
+        if ($type == 'factions')
+            $type = 'alliances';
 
-        $this->type = ucfirst($type);
-        $this->id = $id;
+        $this->type       = $type;
+        $this->variation  = $variation;
+        $this->id         = $id;
         $this->attributes = $attr;
-        $this->lazy = $lazy;
-
-        // Fix images to _at least_ x32
-        $this->size = ($size < 32 ? 32 : $size);
-
-        // Item Type images can be max 64? Reduce it.
-        // http://imageserver.eveonline.com/Type/670_128.png goes 404
-        // Will * 2 for retina so set to 32
-        if ($this->type == 'Type' && $this->size > 64)
-            $this->size = 32;
-
-        // Character images are jpg, everything else is
-        // png. So, set the extension to jpg if this
-        // is for a character image
-        if ($this->type == 'Character')
-            $this->extension = 'jpg';
-
+        $this->lazy       = $lazy;
+        $this->size       = $size;
     }
 
     /**
@@ -132,15 +140,15 @@ class Eve
     {
 
         if ($id > 90000000 && $id < 98000000)
-            return 'character';
+            return 'characters';
 
         elseif (($id > 98000000 && $id < 99000000) || ($id > 1000000 && $id < 2000000))
-            return 'corporation';
+            return 'corporations';
 
         elseif (($id > 99000000 && $id < 100000000) || ($id > 0 && $id < 1000000))
-            return 'alliance';
+            return 'alliances';
 
-        return 'character';
+        return 'characters';
     }
 
     /**
@@ -162,7 +170,7 @@ class Eve
             // Item Type images can be max 64?
             // http://imageserver.eveonline.com/Type/670_128.png goes 404
             // In case requested size is greater than 32, lock size to 64
-            $html .= 'data-src-retina="' . $this->url(($this->type == 'Type' && $this->size > 32) ? 64 : $this->size * 2) . '" ';
+            $html .= 'data-src-retina="' . $this->url($this->size == 1024 ? 1024 : $this->size * 2) . '" ';
 
             // put class on images to lazy load them
             if (! isset($this->attributes['class']))
@@ -202,8 +210,7 @@ class Eve
     public function url($size)
     {
 
-        return $this->img_server . '/' . $this->type . '/' . $this->id .
-            '_' . $size . '.' . $this->extension;
+        return sprintf('%s/%s/%d/%s?size=%d', $this->img_server, $this->type, $this->id, $this->variation, $size);
 
     }
 }

@@ -63,6 +63,7 @@ if (! function_exists('img')) {
      * loading plugin.
      *
      * @param           $type
+     * @param           $variation
      * @param           $id
      * @param           $size
      * @param array     $attr
@@ -71,10 +72,10 @@ if (! function_exists('img')) {
      * @return string
      * @throws \Seat\Services\Exceptions\EveImageException
      */
-    function img($type, $id, $size, array $attr, $lazy = true)
+    function img(string $type, string $variation, $id, int $size, array $attr, $lazy = true)
     {
 
-        $image = (new \Seat\Services\Image\Eve($type, (int) $id, $size, $attr, $lazy))
+        $image = (new \Seat\Services\Image\Eve($type, $variation, (int) $id, $size, $attr, $lazy))
             ->html();
 
         return $image;
