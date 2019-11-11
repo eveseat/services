@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -24,7 +25,7 @@ namespace Seat\Services\ReportParser\Elements;
 use ErrorException;
 
 /**
- * Class Element
+ * Class Element.
  *
  * @package Seat\Services\ReportParser\Elements
  */

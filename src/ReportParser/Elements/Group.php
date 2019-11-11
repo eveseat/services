@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -22,7 +23,7 @@
 namespace Seat\Services\ReportParser\Elements;
 
 /**
- * Class Group
+ * Class Group.
  *
  * @package Seat\Services\ReportParser\Elements
  */
