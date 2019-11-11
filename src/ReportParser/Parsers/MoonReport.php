@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,8 +22,8 @@
 
 namespace Seat\Services\ReportParser\Parsers;
 
-use Seat\Services\ReportParser\Exceptions\InvalidReportElementException;
 use Seat\Services\ReportParser\Exceptions\EmptyReportException;
+use Seat\Services\ReportParser\Exceptions\InvalidReportElementException;
 use Seat\Services\ReportParser\Exceptions\InvalidReportException;
 use Seat\Services\ReportParser\Exceptions\InvalidReportGroupException;
 use Seat\Services\ReportParser\Exceptions\MissingReportGroupException;
@@ -30,7 +31,7 @@ use Seat\Services\ReportParser\Exceptions\MissingReportHeaderException;
 use Seat\Services\ReportParser\ReportParser;
 
 /**
- * Class MoonReportParser
+ * Class MoonReportParser.
  *
  * @package Seat\Services\ReportParser\Parsers
  * @example
@@ -45,7 +46,6 @@ use Seat\Services\ReportParser\ReportParser;
  * 	Dazzling Spodumain	0.397311687469	46688	30004975	40315073	40315074
  * 	Immaculate Jaspet	0.412641495466	46682	30004975	40315073	40315074
  * 	Sylvite	0.190046817064	45491	30004975	40315073	40315074
- *
  */
 class MoonReport extends ReportParser
 {
@@ -67,7 +67,7 @@ class MoonReport extends ReportParser
     /**
      * @var string
      */
-    protected $group_regex = "/^([a-zA-Z0-9]+ [IVX]{1,4} - Moon [1-9]{1,2}+)$/";
+    protected $group_regex = '/^([a-zA-Z0-9]+ [IVX]{1,4} - Moon [1-9]{1,2}+)$/';
 
     /**
      * @var string

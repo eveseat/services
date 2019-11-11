@@ -120,12 +120,12 @@ class Eve
         if ($type == 'factions')
             $type = 'alliances';
 
-        $this->type       = $type;
-        $this->variation  = $variation;
-        $this->id         = $id;
+        $this->type = $type;
+        $this->variation = $variation;
+        $this->id = $id;
         $this->attributes = $attr;
-        $this->lazy       = $lazy;
-        $this->size       = $size;
+        $this->lazy = $lazy;
+        $this->size = $size;
     }
 
     /**
