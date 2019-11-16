@@ -19,7 +19,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^7.2",
+    "php": "^7.3",
     "laravel/framework": "^6.2",
     "coduo/php-humanizer": "^3.0",
     "doctrine/dbal": "^2.9",
