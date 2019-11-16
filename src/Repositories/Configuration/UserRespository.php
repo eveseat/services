@@ -61,7 +61,7 @@ trait UserRespository
     public function getFullUser($user_id)
     {
 
-        return UserModel::with('group', 'group.users', 'group.roles.permissions')
+        return UserModel::with('refresh_tokens', 'characters', 'roles.permissions')
             ->where('id', $user_id)
             ->first();
     }

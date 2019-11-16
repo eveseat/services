@@ -82,9 +82,9 @@ abstract class Settings
             $value = (new static::$model);
 
             // If we are not in the global scope, add a constraint
-            // to be user group specific.
+            // to be user user specific.
             if (static::$scope != 'global')
-                $value = $value->where('group_id', self::get_affected_id($for_id));
+                $value = $value->where('user_id', self::get_affected_id($for_id));
 
             // Retrieve the value
             $value = $value->where('name', $name)
@@ -118,7 +118,7 @@ abstract class Settings
         if (is_null(static::$prefix))
             throw new SettingException('No prefix defined. Have you extended and declared $prefix?');
 
-        // Prefix user keys with group_id
+        // Prefix user keys with user_id
         if (static::$scope != 'global')
             return implode('.', [$for_id, static::$prefix, $name]);
 
@@ -127,7 +127,7 @@ abstract class Settings
     }
 
     /**
-     * Determine the effected group id.
+     * Determine the effected user id.
      *
      * If this is for a specific id use that, otherwise
      * assume the currently logged in user's id. If we
@@ -146,7 +146,7 @@ abstract class Settings
             return $for_id;
 
         if (is_null($for_id))
-            return auth()->user()->group->id;
+            return auth()->user()->id;
 
         return $for_id;
     }
@@ -165,9 +165,9 @@ abstract class Settings
         $db = (new static::$model);
 
         // If we are not in the global scope, add a constraint
-        // to be user group specific.
+        // to be user specific.
         if (static::$scope != 'global')
-            $db = $db->where('group_id', self::get_affected_id($for_id));
+            $db = $db->where('user_id', self::get_affected_id($for_id));
 
         // Retrieve the value
         $db = $db->where('name', $name)
@@ -189,7 +189,7 @@ abstract class Settings
         // Again, if we are not in the global context, then
         // we need to constrain this setting to a user.
         if (static::$scope != 'global')
-            $db->group_id = self::get_affected_id($for_id);
+            $db->user_id = self::get_affected_id($for_id);
 
         $db->save();
 
