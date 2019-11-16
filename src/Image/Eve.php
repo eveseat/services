@@ -82,7 +82,7 @@ class Eve
      * @param bool $lazy
      * @throws \Seat\Services\Exceptions\EveImageException
      */
-    public function __construct(string $type, string $variation, int $id, int $size, array $attr, bool $lazy = true)
+    public function __construct(string $type, string $variation, int $id, int $size, array $attr = [], bool $lazy = true)
     {
 
         // Validate the arguments
@@ -209,8 +209,6 @@ class Eve
      */
     public function url($size)
     {
-
         return sprintf('%s/%s/%d/%s?size=%d', $this->img_server, $this->type, $this->id, $this->variation, $size);
-
     }
 }
