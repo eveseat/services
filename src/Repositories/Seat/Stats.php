@@ -25,7 +25,7 @@ namespace Seat\Services\Repositories\Seat;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Character\CharacterInfoSkill;
 use Seat\Eveapi\Models\Industry\CharacterMining;
-use Seat\Eveapi\Models\Killmails\CharacterKillmail;
+use Seat\Eveapi\Models\Killmails\Killmail;
 use Seat\Eveapi\Models\Wallet\CharacterWalletBalance;
 
 /**
@@ -76,8 +76,11 @@ trait Stats
     public function getTotalCharacterKillmails(): int
     {
 
-        return CharacterKillmail::whereIn('character_id', auth()->user()->associatedCharacterIds())
-            ->count();
+        return Killmail::whereHas('attackers', function ($query) {
+            $query->whereIn('character_id', auth()->user()->associatedCharacterIds());
+        })->orWhereHas('victim', function ($query) {
+            $query->whereIn('character_id', auth()->user()->associatedCharacterIds());
+        })->count();
     }
 
     /**
