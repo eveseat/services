@@ -160,14 +160,17 @@ trait Intel
     public function characterTopMailInteractions(Collection $character_ids) : Builder
     {
         return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
-            ->select('from', 'character_affiliations.character_id', 'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
+            ->select('character_id', 'corporation_id', 'alliance_id', 'faction_id', DB::raw('COUNT(*) as total'))
             ->leftJoin('mail_headers', function ($join) {
-                $join->on('character_affiliations.character_id', '=', 'mail_headers.from');
-                $join->orOn('character_affiliations.corporation_id', '=', 'mail_headers.from');
+                $join->on('mail_headers.from', '=', 'character_affiliations.character_id');
+                $join->orOn('mail_headers.from', '=', 'character_affiliations.corporation_id');
+                $join->orOn('mail_headers.from', '=', 'character_affiliations.alliance_id');
+                $join->orOn('mail_headers.from', '=', 'character_affiliations.faction_id');
             })
-            ->whereIn('mail_headers.character_id', $character_ids->toArray())
-            ->whereNotIn('mail_headers.from', $character_ids->toArray())
-            ->groupBy('from', 'character_id', 'corporation_id', 'alliance_id', 'faction_id')
+            ->leftJoin('mail_recipients', 'mail_headers.mail_id', '=', 'mail_recipients.mail_id')
+            ->whereIn('recipient_id', $character_ids->toArray())
+            ->whereNotIn('from', $character_ids->toArray())
+            ->groupBy('character_id', 'corporation_id', 'alliance_id', 'faction_id')
             ->orderBy('total', 'desc');
     }
 
