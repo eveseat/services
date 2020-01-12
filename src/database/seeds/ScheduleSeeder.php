@@ -37,7 +37,7 @@ class ScheduleSeeder extends Seeder
     protected $schedule = [
 
         [   // ESI Status | Every Minute
-            'command'           => 'esi:update:esistatus',
+            'command'           => 'esi:update:status',
             'expression'        => '* * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
@@ -52,32 +52,8 @@ class ScheduleSeeder extends Seeder
             'ping_before'       => null,
             'ping_after'        => null,
         ],
-        [   // SeAT Maintenance | Daily at 12am
-            'command'           => 'seat:admin:maintenance',
-            'expression'        => '0 0 * * *',
-            'allow_overlap'     => false,
-            'allow_maintenance' => false,
-            'ping_before'       => null,
-            'ping_after'        => null,
-        ],
-        [   // Worker Maintenance | Daily at 1am
-            'command'           => 'queue:restart',
-            'expression'        => '0 1 * * *',
-            'allow_overlap'     => false,
-            'allow_maintenance' => false,
-            'ping_before'       => null,
-            'ping_after'        => null,
-        ],
         [   // EVE Server Status | Every Five Minutes
-            'command'           => 'esi:update:serverstatus',
-            'expression'        => '*/5 * * * *',
-            'allow_overlap'     => false,
-            'allow_maintenance' => false,
-            'ping_before'       => null,
-            'ping_after'        => null,
-        ],
-        [   // SeAT Alerts | Every Five Minutes
-            'command'           => 'alerts:run',
+            'command'           => 'eve:update:status',
             'expression'        => '*/5 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
@@ -111,6 +87,22 @@ class ScheduleSeeder extends Seeder
         [   // Corporations | Every two hours
             'command'           => 'esi:update:corporations',
             'expression'        => '0 */2 * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
+        [   // Killmails | Every fifteen minutes
+            'command'           => 'esi:update:killmails',
+            'expression'        => '*/15 * * * *',
+            'allow_overlap'     => false,
+            'allow_maintenance' => false,
+            'ping_before'       => null,
+            'ping_after'        => null,
+        ],
+        [   // Contracts | Every fifteen minutes
+            'command'           => 'esi:update:contracts',
+            'expression'        => '*/15 * * * *',
             'allow_overlap'     => false,
             'allow_maintenance' => false,
             'ping_before'       => null,
