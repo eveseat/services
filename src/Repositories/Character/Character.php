@@ -53,7 +53,7 @@ trait Character
     {
         // Start the character information query
         $characters = CharacterInfo::authorized('character.sheet')
-            ->with('corporation', 'alliance');
+            ->with('affiliation.corporation', 'affiliation.alliance');
 
         if ($get)
             return $characters
