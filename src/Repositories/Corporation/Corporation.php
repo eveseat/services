@@ -50,7 +50,8 @@ trait Corporation
     {
         // Start a fresh query
         $corporations = CorporationInfo::authorized('corporation.sheet')
-            ->with('ceo', 'alliance');
+            ->with('ceo', 'alliance')
+            ->select('corporation_infos.*');
 
         if ($get)
             return $corporations->orderBy('name', 'desc')
