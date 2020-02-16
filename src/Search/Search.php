@@ -94,7 +94,7 @@ trait Search
     public function doSearchCharacterAssets()
     {
         return CharacterAsset::authorized('character.asset')
-            ->with('character', 'character.corporation', 'character.alliance', 'type', 'type.group')
+            ->with('character', 'character.affiliation.corporation', 'character.affiliation.alliance', 'type', 'type.group')
             ->select()
             ->addSelect('character_assets.name as asset_name');
     }
@@ -105,6 +105,6 @@ trait Search
     public function doSearchCharacterSkills()
     {
         return CharacterSkill::authorized('character.skill')
-            ->with('character', 'character.corporation', 'character.alliance', 'type', 'type.group');
+            ->with('character', 'character.affiliation.corporation', 'character.affiliation.alliance', 'type', 'type.group');
     }
 }
