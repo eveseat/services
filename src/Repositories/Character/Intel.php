@@ -29,6 +29,7 @@ use Seat\Eveapi\Models\Character\CharacterAffiliation;
 use Seat\Eveapi\Models\Mail\MailHeader;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
+use Seat\Eveapi\Models\Universe\UniverseName;
 use Seat\Web\Models\StandingsProfile;
 
 /**
@@ -45,45 +46,58 @@ trait Intel
     public function characterTopWalletJournalInteractions(Collection $character_ids): Builder
     {
 
-        return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
-            ->select('first_party_id', 'second_party_id', 'ref_type', 'character_affiliations.character_id',
-                     'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
-            ->leftJoin('character_wallet_journals', function ($join) {
-                $join->on('character_affiliations.character_id', '=', 'character_wallet_journals.first_party_id');
-                $join->orOn('character_affiliations.corporation_id', '=', 'character_wallet_journals.first_party_id');
-            })
+        return CharacterWalletJournal::select('first_party_id', 'second_party_id', 'ref_type', 'category', 'entity_id as party_id', 'name as party_name', DB::raw('count(*) as total'),
+                DB::raw("
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT corporation_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT corporation_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1)
+                end AS corporation_id,
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT alliance_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT alliance_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1) 
+                end AS alliance_id, 
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT faction_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT faction_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1)
+                end AS faction_id
+                ")
+            )
+            ->leftJoin('universe_names', 'universe_names.entity_id', '=', 'character_wallet_journals.first_party_id')
             ->whereIn('character_wallet_journals.character_id', $character_ids->toArray())
             ->whereNotIn('character_wallet_journals.first_party_id', $character_ids->toArray())
-            ->groupBy('first_party_id', 'second_party_id', 'ref_type',
-                      'character_id', 'corporation_id', 'alliance_id', 'faction_id')
+            ->groupBy('first_party_id', 'second_party_id', 'ref_type', 'category', 'party_id', 'party_name')
             ->union(
-                CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
-                ->select('first_party_id', 'second_party_id', 'ref_type', 'character_affiliations.character_id',
-                         'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
-                ->leftJoin('character_wallet_journals', function ($join) {
-                    $join->on('character_affiliations.character_id', '=', 'character_wallet_journals.second_party_id');
-                    $join->orOn('character_affiliations.corporation_id', '=', 'character_wallet_journals.second_party_id');
-                })
+                CharacterWalletJournal::select('first_party_id', 'second_party_id', 'ref_type', 'category', 'entity_id as party_id', 'name as party_name', DB::raw('count(*) as total'), DB::raw("CASE when universe_names.category = 'character' then (SELECT corporation_id FROM character_affiliations WHERE character_id = universe_names.entity_id) when universe_names.category = 'corporation' then (SELECT corporation_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1) end AS corporation_id, CASE when universe_names.category = 'character' then (SELECT alliance_id FROM character_affiliations WHERE character_id = universe_names.entity_id) when universe_names.category = 'corporation' then (SELECT alliance_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1) end AS alliance_id, CASE when universe_names.category = 'character' then (SELECT faction_id FROM character_affiliations WHERE character_id = universe_names.entity_id) when universe_names.category = 'corporation' then (SELECT faction_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1) end AS faction_id"))
+                ->leftJoin('universe_names', 'universe_names.entity_id', '=', 'character_wallet_journals.second_party_id')
                 ->whereIn('character_wallet_journals.character_id', $character_ids->toArray())
                 ->whereNotIn('character_wallet_journals.second_party_id', $character_ids->toArray())
-                ->groupBy('first_party_id', 'second_party_id', 'ref_type',
-                          'character_id', 'corporation_id', 'alliance_id', 'faction_id')
+                ->groupBy('first_party_id', 'second_party_id', 'ref_type', 'category', 'party_id', 'party_name')
             )
             ->orderBy('total', 'desc');
     }
 
     /**
+     * @param \Illuminate\Support\Collection $character_ids
      * @param int $first_party_id
      * @param int $second_party_id
+     * @param string $ref_type
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterWalletJournalInteractions(int $first_party_id, int $second_party_id) : Builder
+    public function characterWalletJournalInteractions(Collection $character_ids, int $first_party_id, int $second_party_id, string $ref_type) : Builder
     {
 
         return CharacterWalletJournal::with('first_party', 'second_party')
+            ->whereIn('character_id', $character_ids->toArray())
             ->where('first_party_id', '=', $first_party_id)
-            ->where('second_party_id', '=', $second_party_id);
+            ->where('second_party_id', '=', $second_party_id)
+            ->where('ref_type', '=', $ref_type);
 
     }
 
@@ -95,26 +109,43 @@ trait Intel
     public function characterTopWalletTransactionInteractions(Collection $character_ids) : Builder
     {
 
-        return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
-            ->select('client_id', 'character_affiliations.character_id', 'corporation_id', 'alliance_id', 'faction_id', DB::raw('count(*) as total'))
-            ->leftJoin('character_wallet_transactions', function ($join) {
-                $join->on('character_affiliations.character_id', '=', 'character_wallet_transactions.client_id');
-                $join->orOn('character_affiliations.corporation_id', '=', 'character_wallet_transactions.client_id');
-            })
+        return CharacterWalletTransaction::select('client_id', 'category', 'entity_id as party_id', 'name as party_name', DB::raw('count(*) as total'),
+                DB::raw("
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT corporation_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT corporation_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1)
+                end AS corporation_id,
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT alliance_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT alliance_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1) 
+                end AS alliance_id, 
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT faction_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT faction_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1)
+                end AS faction_id
+                ")
+            )
+            ->leftJoin('universe_names', 'universe_names.entity_id', '=', 'character_wallet_transactions.client_id')
             ->whereIn('character_wallet_transactions.character_id', $character_ids->toArray())
             ->whereNotIn('character_wallet_transactions.client_id', $character_ids->toArray())
-            ->groupBy('client_id', 'character_id', 'corporation_id', 'alliance_id', 'faction_id')
+            ->groupBy('client_id', 'category', 'party_id', 'party_name')
             ->orderBy('total', 'desc');
 
     }
 
     /**
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      * @param int $client_id
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterWalletTransactionInteraction(int $character_id, int $client_id) : Builder
+    public function characterWalletTransactionInteraction(Collection $character_ids, int $client_id) : Builder
     {
 
         return CharacterWalletTransaction::with('party', 'type', 'location')
@@ -148,7 +179,7 @@ trait Intel
                     WHERE m.itemID=character_wallet_transactions.location_id) end
                 AS locationName'
             ))
-            ->where('character_id', $character_id)
+            ->whereIn('character_id', $character_ids)
             ->where('client_id', $client_id);
     }
 
@@ -159,36 +190,50 @@ trait Intel
      */
     public function characterTopMailInteractions(Collection $character_ids) : Builder
     {
-        return CharacterAffiliation::with('character', 'corporation', 'alliance', 'faction')
-            ->select('character_id', 'corporation_id', 'alliance_id', 'faction_id', DB::raw('COUNT(*) as total'))
-            ->leftJoin('mail_headers', function ($join) {
-                $join->on('mail_headers.from', '=', 'character_affiliations.character_id');
-                $join->orOn('mail_headers.from', '=', 'character_affiliations.corporation_id');
-                $join->orOn('mail_headers.from', '=', 'character_affiliations.alliance_id');
-                $join->orOn('mail_headers.from', '=', 'character_affiliations.faction_id');
-            })
+        return MailHeader::select('from', 'entity_id as character_id', 'name as character_name', DB::raw('COUNT(*) as total'),
+                DB::raw("
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT corporation_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT corporation_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1)
+                end AS corporation_id,
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT alliance_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT alliance_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1) 
+                end AS alliance_id, 
+                CASE 
+                    when universe_names.category = 'character' then 
+                        (SELECT faction_id FROM character_affiliations WHERE character_id = universe_names.entity_id) 
+                    when universe_names.category = 'corporation' then 
+                        (SELECT faction_id FROM character_affiliations WHERE corporation_id = universe_names.entity_id LIMIT 1)
+                end AS faction_id
+                ")
+            )
+            ->leftJoin('universe_names', 'mail_headers.from', '=', 'universe_names.entity_id')
             ->leftJoin('mail_recipients', 'mail_headers.mail_id', '=', 'mail_recipients.mail_id')
             ->whereIn('recipient_id', $character_ids->toArray())
             ->whereNotIn('from', $character_ids->toArray())
-            ->groupBy('character_id', 'corporation_id', 'alliance_id', 'faction_id')
+            ->groupBy('from', 'entity_id', 'category', 'name')
             ->orderBy('total', 'desc');
     }
 
     /**
-     * @param int $character_id
+     * @param \Illuminate\Support\Collection $character_ids
      * @param int $from
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getMailContent(int $character_id, int $from) : Builder
+    public function getMailContent(Collection $character_ids, int $from) : Builder
     {
 
-        return MailHeader::with('body', 'recipients', 'sender')
-            ->select('mail_id', 'subject', 'from', 'timestamp')
-            ->where('character_id', $character_id)
+        return MailHeader::with('body', 'sender', 'recipients')
+            ->select('mail_headers.mail_id', 'subject', 'from', 'timestamp')
+            ->leftJoin('mail_recipients', 'mail_headers.mail_id', '=', 'mail_recipients.mail_id')
             ->where('from', $from)
-            ->distinct();
-
+            ->whereIn('recipient_id', $character_ids->toArray());
     }
 
     /**
