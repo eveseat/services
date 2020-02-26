@@ -42,10 +42,13 @@ trait Members
     {
 
         return CorporationMemberTracking::with(
-            'user',
-            'user.refresh_token',
-            'type'
+            'refresh_token',
+            'refresh_token.user',
+            'refresh_token.user.main_character',
+            'ship',
+            'character'
             )
+            ->select('corporation_member_trackings.*')
             ->where('corporation_id', $corporation_id);
 
     }
