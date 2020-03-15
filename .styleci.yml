@@ -5,6 +5,7 @@ risky: false
 enabled:
   - concat_with_spaces
   - no_empty_comment
+  - no_unneeded_curly_braces
 
 disabled:
   - phpdoc_no_package
