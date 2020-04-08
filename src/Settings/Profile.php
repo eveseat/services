@@ -39,10 +39,7 @@ class Profile extends Settings
 
         'sidebar'            => ['sidebar-full', 'sidebar-collapse'],
         'skins'              => [
-            'skin-blue', 'skin-black', 'skin-purple', 'skin-green',
-            'skin-red', 'skin-yellow', 'skin-blue-light', 'skin-black-light',
-            'skin-purple-light', 'skin-green-light', 'skin-red-light',
-            'skin-yellow-light',
+            'default', 'jet',
         ],
         'thousand_seperator' => [' ', ',', '.'],
         'decimal_seperator'  => [',', '.'],
