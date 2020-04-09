@@ -45,10 +45,9 @@ trait Assets
     public function getCharacterAssetsBuilder(Collection $character_ids): Builder
     {
 
-        return CharacterAsset::with('content', 'type')
+        $base_assets = CharacterAsset::with('content', 'type')
             ->leftJoin('invTypes', 'character_assets.type_id', '=', 'invTypes.typeID')
-            ->select(DB::raw('
-                *, CASE
+            ->select('item_id', 'character_id', 'type_id', 'quantity', 'location_id', 'location_type', 'location_flag', 'is_singleton', 'name', 'typeName', 'volume', 'groupID', DB::raw('CASE
                 when character_assets.location_id BETWEEN 66015148 AND 66015151 then
                     (SELECT s.stationName FROM staStations AS s
                       WHERE s.stationID=character_assets.location_id-6000000)
@@ -86,5 +85,19 @@ trait Assets
                 $query->select('item_id')->where('type_id', '=', 60)->from('character_assets');
             })
             ->orderBy('locationName');
+
+        $in_space_assets = DB::table('character_ships AS cs')
+            ->join('character_locations AS cl', 'cs.character_id', '=', 'cl.character_id')
+            ->join('invTypes AS it', 'cs.ship_type_id', '=', 'it.typeID')
+            ->join('mapDenormalize AS md', 'cl.solar_system_id', '=', 'md.itemID')
+            ->whereNull('station_id')
+            ->whereNull('structure_id')
+            ->whereIn('cs.character_id', $character_ids->toArray())
+            ->select('ship_item_id', 'cs.character_id', 'ship_type_id', DB::raw('1'), 'solar_system_id', DB::raw('"solar_system"'), DB::raw('"Hangar"'), DB::raw(0), 'ship_name', 'typeName', 'volume', 'it.groupID', 'itemName', 'solar_system_id')
+            ->orderBy('itemName');
+
+        $assets = $base_assets->union($in_space_assets);
+
+        return $assets;
     }
 }
