@@ -59,7 +59,9 @@ class Element
      */
     public function remove($field)
     {
-        array_pull($this->fields, $field);
+        $this->fields = array_filter($this->fields, function ($value, $key) use ($field) {
+            return ! ($value === $field || $key === $field);
+        }, ARRAY_FILTER_USE_BOTH);
     }
 
     /**
