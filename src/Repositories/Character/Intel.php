@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017, 2018, 2019  Leon Jacobs
+ * Copyright (C) 2015 to 2020 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ use Seat\Eveapi\Models\Character\CharacterAffiliation;
 use Seat\Eveapi\Models\Mail\MailHeader;
 use Seat\Eveapi\Models\Wallet\CharacterWalletJournal;
 use Seat\Eveapi\Models\Wallet\CharacterWalletTransaction;
-use Seat\Eveapi\Models\Universe\UniverseName;
 use Seat\Web\Models\StandingsProfile;
 
 /**
@@ -90,7 +89,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterWalletJournalInteractions(Collection $character_ids, int $first_party_id, int $second_party_id, string $ref_type) : Builder
+    public function characterWalletJournalInteractions(Collection $character_ids, int $first_party_id, int $second_party_id, string $ref_type): Builder
     {
 
         return CharacterWalletJournal::with('first_party', 'second_party')
@@ -106,7 +105,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopWalletTransactionInteractions(Collection $character_ids) : Builder
+    public function characterTopWalletTransactionInteractions(Collection $character_ids): Builder
     {
 
         return CharacterWalletTransaction::select('client_id', 'category', 'entity_id as party_id', 'name as party_name', DB::raw('count(*) as total'),
@@ -145,7 +144,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterWalletTransactionInteraction(Collection $character_ids, int $client_id) : Builder
+    public function characterWalletTransactionInteraction(Collection $character_ids, int $client_id): Builder
     {
 
         return CharacterWalletTransaction::with('party', 'type', 'location')
@@ -188,7 +187,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopMailInteractions(Collection $character_ids) : Builder
+    public function characterTopMailInteractions(Collection $character_ids): Builder
     {
         return MailHeader::select('from', 'entity_id as character_id', 'name as character_name', DB::raw('COUNT(*) as total'),
                 DB::raw("
@@ -226,7 +225,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getMailContent(Collection $character_ids, int $from) : Builder
+    public function getMailContent(Collection $character_ids, int $from): Builder
     {
 
         return MailHeader::with('body', 'sender', 'recipients')
