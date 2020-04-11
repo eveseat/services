@@ -62,7 +62,9 @@ class Group
      */
     public function remove(Element $element)
     {
-        array_pull($this->elements, $element);
+        $this->elements = array_filter($this->elements, function ($value) use ($element) {
+            return $value !== $element;
+        });
     }
 
     /**
