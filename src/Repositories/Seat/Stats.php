@@ -22,10 +22,9 @@
 
 namespace Seat\Services\Repositories\Seat;
 
-use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Character\CharacterInfoSkill;
 use Seat\Eveapi\Models\Industry\CharacterMining;
-use Seat\Eveapi\Models\Killmails\Killmail;
+use Seat\Eveapi\Models\Killmails\KillmailDetail;
 use Seat\Eveapi\Models\Wallet\CharacterWalletBalance;
 
 /**
@@ -49,13 +48,11 @@ trait Stats
      */
     public function getTotalCharacterMiningIsk()
     {
-
-        return CharacterMining::select(DB::raw('SUM(quantity * IFNULL(adjusted_price, 0)) as total_mined_value'))
-            ->leftJoin('historical_prices', function ($join) {
-                $join->on('historical_prices.type_id', '=', 'character_minings.type_id')
-                     ->on('historical_prices.date', '=', 'character_minings.date');
-            })
+        return CharacterMining::selectRaw('SUM(quantity * average) as total_mined_value')
+            ->leftJoin('market_prices', 'character_minings.type_id', '=', 'market_prices.type_id')
             ->whereIn('character_id', auth()->user()->associatedCharacterIds())
+            ->where('year', carbon()->year)
+            ->where('month', carbon()->month)
             ->first()
             ->total_mined_value;
     }
@@ -76,11 +73,15 @@ trait Stats
     public function getTotalCharacterKillmails(): int
     {
 
-        return Killmail::whereHas('attackers', function ($query) {
-            $query->whereIn('character_id', auth()->user()->associatedCharacterIds());
-        })->orWhereHas('victim', function ($query) {
-            $query->whereIn('character_id', auth()->user()->associatedCharacterIds());
-        })->count();
+        return KillmailDetail::whereYear('killmail_time', carbon()->year)
+            ->whereMonth('killmail_time', carbon()->month)
+            ->where(function ($detail) {
+                $detail->whereHas('attackers', function ($attackers) {
+                    $attackers->whereIn('character_id', auth()->user()->associatedCharacterIds());
+                })->orWhereHas('victim', function ($victim) {
+                    $victim->whereIn('character_id', auth()->user()->associatedCharacterIds());
+                });
+            })->count();
     }
 
     /**
