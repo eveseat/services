@@ -155,13 +155,7 @@ class Provider extends AbstractProvider
      */
     private function validateJwtToken(string $access_token): array
     {
-        $scopes = [];
-
-        try {
-            $scopes = setting('sso_scopes', true);
-        } catch (SettingException $e) {
-            logger()->error($e->getMessage(), $e->getTrace());
-        }
+        $scopes = session()->pull('scopes', []);
 
         // pulling JWK sets from CCP
         $sets = $this->getJwkSets();
