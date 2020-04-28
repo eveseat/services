@@ -21,9 +21,7 @@
  */
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class ConvertSsoScopesToList extends Migration
 {
@@ -44,7 +42,7 @@ class ConvertSsoScopesToList extends Migration
                 'name'    => 'default',
                 'scopes'  => json_decode($sso_scopes->value),
                 'default' => true,
-            ]
+            ],
         ];
 
         DB::table('global_settings')

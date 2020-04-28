@@ -25,7 +25,6 @@ namespace Seat\Services\Socialite\EveOnline;
 use Jose\Component\Core\JWKSet;
 use Jose\Easy\Load;
 use Seat\Services\Exceptions\EveImageException;
-use Seat\Services\Exceptions\SettingException;
 use Seat\Services\Image\Eve;
 use Seat\Services\Socialite\EveOnline\Checker\Claim\AzpChecker;
 use Seat\Services\Socialite\EveOnline\Checker\Claim\NameChecker;
