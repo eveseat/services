@@ -39,6 +39,7 @@ class ConvertSsoScopesToList extends Migration
 
         $new_sso_scopes = [
             [
+                'id'      => 0,
                 'name'    => 'default',
                 'scopes'  => json_decode($sso_scopes->value),
                 'default' => true,
