@@ -28,7 +28,7 @@ use Jose\Component\Checker\InvalidClaimException;
 /**
  * Class NameChecker.
  *
- * @package Seat\Web\Extentions\Socialite\EveOnline\Checker\Claim
+ * @package Seat\Services\Socialite\EveOnline\Checker\Claim
  */
 class NameChecker implements ClaimChecker
 {
