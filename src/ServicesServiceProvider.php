@@ -22,7 +22,6 @@
 
 namespace Seat\Services;
 
-use App\Providers\AbstractSeatPlugin;
 use Illuminate\Support\Facades\DB;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
