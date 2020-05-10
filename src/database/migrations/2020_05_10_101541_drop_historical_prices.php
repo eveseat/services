@@ -20,24 +20,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Repositories\Configuration;
-
-use Seat\Web\Models\SecurityLog;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 /**
- * Class SecurityRepository.
- * @package Seat\Services\Repositories\Configuration
+ * Class DropHistoricalPrices.
  */
-trait SecurityRepository
+class DropHistoricalPrices extends Migration
 {
     /**
-     * Return all of the security logs.
+     * Run the migrations.
      *
-     * @return mixed
+     * @return void
      */
-    public function getAllSecurityLogs()
+    public function up()
     {
 
-        return SecurityLog::with('user');
+        Schema::dropIfExists('historical_prices');
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+
     }
 }
