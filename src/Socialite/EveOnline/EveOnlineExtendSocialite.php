@@ -27,7 +27,7 @@ use SocialiteProviders\Manager\SocialiteWasCalled;
 /**
  * Class EveOnlineExtendSocialite.
  *
- * @package Seat\Web\Extentions\Socialite\EveOnline
+ * @package Seat\Services\Socialite\EveOnline
  */
 class EveOnlineExtendSocialite
 {

@@ -39,7 +39,7 @@ use SocialiteProviders\Manager\OAuth2\User;
 /**
  * Class Provider.
  *
- * @package Seat\Web\Extentions\Socialite\EveOnline
+ * @package Seat\Services\Socialite\EveOnline
  */
 class Provider extends AbstractProvider
 {
