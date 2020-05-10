@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017, 2018, 2019  Leon Jacobs
+ * Copyright (C) 2015 to 2020 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +159,6 @@ abstract class AbstractSeatPlugin extends ServiceProvider
             $this->getPackagistPackageName());
     }
 
-
     /**
      * Register new permissions into the core to the specified scope.
      *
@@ -178,7 +177,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
 
         $this->mergeConfigFrom($permissions_path, $key);
     }
-	
+
     /**
      * Register new path to annotations dictionary used by Swagger API Documentation.
      *
@@ -200,8 +199,8 @@ abstract class AbstractSeatPlugin extends ServiceProvider
             'l5-swagger.paths.annotations' => array_unique(array_merge($current_annotations, $paths)),
         ]);
     }
-	
-	/**
+
+    /**
      * Register extra tables to downloaded SDE.
      *
      * @param string|string[] $tables
