@@ -26,7 +26,6 @@
     "ext-openssl": "*",
     "coduo/php-humanizer": "^3.0",
     "doctrine/dbal": "^2.9",
-    "eveseat/eveapi": "4.0.x-dev",
     "laravel/framework": "^6.2",
     "web-token/jwt-easy": "^2.1",
     "web-token/jwt-signature-algorithm-hmac": "^2.1",

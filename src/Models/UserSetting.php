@@ -23,11 +23,11 @@
 namespace Seat\Services\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Seat\Web\Models\User;
 
 /**
  * Class UserSetting.
- * @package Seat\Web\Models
+ *
+ * @package Seat\Services\Models
  */
 class UserSetting extends Model
 {
@@ -35,13 +35,4 @@ class UserSetting extends Model
      * @var array
      */
     protected $fillable = ['name', 'value'];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-
-        return $this->belongsTo(User::class, 'group_id', 'group_id');
-    }
 }
