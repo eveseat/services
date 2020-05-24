@@ -38,7 +38,7 @@ trait Extractions
     {
         // retrieve any valid extraction for the current corporation
         return CorporationIndustryMiningExtraction::with(
-            'moon', 'moon.system', 'moon.constellation', 'moon.region', 'moon.moon_content',
+            'moon', 'moon.solar_system', 'moon.constellation', 'moon.region', 'moon.content',
             'structure', 'structure.info', 'structure.services')
             ->where('corporation_id', $corporation_id)
             ->where('natural_decay_time', '>', carbon()->subSeconds(CorporationIndustryMiningExtraction::THEORETICAL_DEPLETION_COUNTDOWN))
