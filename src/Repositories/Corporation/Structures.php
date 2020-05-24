@@ -38,7 +38,7 @@ trait Structures
     public function getCorporationStructures(int $corporation_id)
     {
 
-        return CorporationStructure::with('services', 'type', 'system')
+        return CorporationStructure::with('services', 'type', 'solar_system')
             ->where('corporation_id', $corporation_id)
             ->get();
     }
