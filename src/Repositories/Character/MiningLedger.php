@@ -42,7 +42,7 @@ trait MiningLedger
     public function getCharacterLedger(Collection $character_ids): Builder
     {
 
-        return CharacterMining::with('type', 'system')
+        return CharacterMining::with('type', 'solar_system')
             ->select(
                 'character_minings.date',
                 'character_minings.character_id',
