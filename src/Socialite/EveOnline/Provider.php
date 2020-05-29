@@ -104,7 +104,7 @@ class Provider extends AbstractProvider
             'name'                 => $user['name'],
             'nickname'             => $user['name'],
             'character_owner_hash' => $user['owner'],
-            'scopes'               => $user['scp'],
+            'scopes'               => is_array($user['scp']) ? $user['scp'] : [$user['scp']],
             'expires_on'           => $user['exp'],
             'avatar'               => $avatar,
         ]);

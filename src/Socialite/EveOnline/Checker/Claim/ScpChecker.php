@@ -54,8 +54,11 @@ class ScpChecker implements ClaimChecker
      */
     public function checkClaim($value): void
     {
-        if (! is_array($value))
+        if (! is_array($value) && ! is_string($value))
             throw new InvalidClaimException('"scp" must be an array of scopes.', self::NAME, $value);
+
+        if (! is_array($value))
+            $value = [$value];
 
         if (! empty(array_diff($this->scopes, $value)))
             throw new InvalidClaimException('"scp" contains scopes which does not match requested ones or miss some requested scopes.', self::NAME, $value);
