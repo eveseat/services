@@ -28,7 +28,7 @@ use Jose\Component\Checker\InvalidHeaderException;
 /**
  * Class TypeChecker.
  *
- * @package Seat\Web\Extentions\Socialite\EveOnline\Checker
+ * @package Seat\Services\Socialite\EveOnline\Checker\Header
  */
 final class TypeChecker implements HeaderChecker
 {
