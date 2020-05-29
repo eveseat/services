@@ -25,7 +25,6 @@ namespace Seat\Services\Socialite\EveOnline;
 use Jose\Component\Core\JWKSet;
 use Jose\Easy\Load;
 use Seat\Services\Exceptions\EveImageException;
-use Seat\Services\Exceptions\SettingException;
 use Seat\Services\Image\Eve;
 use Seat\Services\Socialite\EveOnline\Checker\Claim\AzpChecker;
 use Seat\Services\Socialite\EveOnline\Checker\Claim\NameChecker;
@@ -155,13 +154,7 @@ class Provider extends AbstractProvider
      */
     private function validateJwtToken(string $access_token): array
     {
-        $scopes = [];
-
-        try {
-            $scopes = setting('sso_scopes', true);
-        } catch (SettingException $e) {
-            logger()->error($e->getMessage(), $e->getTrace());
-        }
+        $scopes = session()->pull('scopes', []);
 
         // pulling JWK sets from CCP
         $sets = $this->getJwkSets();
