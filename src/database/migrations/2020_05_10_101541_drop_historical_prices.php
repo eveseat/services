@@ -20,28 +20,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Repositories\Character;
-
-use Illuminate\Support\Collection;
-use Seat\Eveapi\Models\Clones\CharacterImplant;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 /**
- * Class Implants.
- * @package Seat\Services\Repositories\Character
+ * Class DropHistoricalPrices.
  */
-trait Implants
+class DropHistoricalPrices extends Migration
 {
     /**
-     * Return the implants a certain character currently has.
+     * Run the migrations.
      *
-     * @param int $character_id
-     *
-     * @return \Illuminate\Support\Collection
+     * @return void
      */
-    public function getCharacterImplants(int $character_id): Collection
+    public function up()
     {
 
-        return CharacterImplant::where('character_id', $character_id)
-            ->get();
+        Schema::dropIfExists('historical_prices');
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+
     }
 }

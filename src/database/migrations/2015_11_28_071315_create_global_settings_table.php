@@ -23,6 +23,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
+/**
+ * Class CreateGlobalSettingsTable.
+ */
 class CreateGlobalSettingsTable extends Migration
 {
     /**

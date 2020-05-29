@@ -28,7 +28,7 @@ use Jose\Component\Checker\InvalidClaimException;
 /**
  * Class OwnerChecker.
  *
- * @package Seat\Web\Extentions\Socialite\EveOnline\Checker\Claim
+ * @package Seat\Services\Socialite\EveOnline\Checker\Claim
  */
 class OwnerChecker implements ClaimChecker
 {
