@@ -96,7 +96,7 @@ abstract class Settings
             // If we have no value, check if we can return
             // a default setting
             if (array_key_exists($name, static::$defaults))
-                return static::$defaults[$name];
+                return json_decode(json_encode(static::$defaults[$name]));
 
             return null;
         });
