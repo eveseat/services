@@ -37,6 +37,9 @@ class ConvertSsoScopesToList extends Migration
             ->where('name', 'sso_scopes')
             ->first();
 
+        if (is_null($sso_scopes))
+            return;
+
         $new_sso_scopes = [
             [
                 'id'      => 0,
