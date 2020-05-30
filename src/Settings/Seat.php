@@ -93,7 +93,7 @@ class Seat extends Settings
 
         // Default Scopes asked for SSO Authentication
         'sso_scopes'         => [
-
+            'publicData',
             'esi-alliances.read_contacts.v1',
             'esi-assets.read_assets.v1',
             'esi-assets.read_corporation_assets.v1',
