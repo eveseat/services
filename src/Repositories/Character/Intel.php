@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015, 2016, 2017, 2018, 2019  Leon Jacobs
+ * Copyright (C) 2015 to 2020 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterWalletJournalInteractions(int $first_party_id, int $second_party_id) : Builder
+    public function characterWalletJournalInteractions(int $first_party_id, int $second_party_id): Builder
     {
 
         return CharacterWalletJournal::with('first_party', 'second_party')
@@ -72,7 +72,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopWalletTransactionInteractions(Collection $character_ids) : Builder
+    public function characterTopWalletTransactionInteractions(Collection $character_ids): Builder
     {
 
         return CharacterWalletTransaction::with('client')
@@ -90,7 +90,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterWalletTransactionInteraction(int $character_id, int $client_id) : Builder
+    public function characterWalletTransactionInteraction(int $character_id, int $client_id): Builder
     {
 
         return CharacterWalletTransaction::with('client', 'type')
@@ -133,7 +133,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function characterTopMailInteractions(Collection $character_ids) : Builder
+    public function characterTopMailInteractions(Collection $character_ids): Builder
     {
 
         return MailHeader::select()
@@ -151,7 +151,7 @@ trait Intel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getMailContent(int $character_id, int $from) : Builder
+    public function getMailContent(int $character_id, int $from): Builder
     {
 
         return MailHeader::with('body', 'recipients', 'sender')
