@@ -99,7 +99,7 @@ class MoonReportTest extends TestCase
             'MoonID',
         ], $report->getHeader()->fields());
 
-        $this->assertEquals('OP9L-F II - Moon 1', $groups[0]->getName());
+        $this->assertEquals('OP9L-F II - Moon 10', $groups[0]->getName());
 
         $this->assertArrayAreEqual([
             'moon'          => '',
