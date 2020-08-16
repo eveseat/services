@@ -1,6 +1,0 @@
-* text=auto
-
-# enforce Moon Reports artifacts line ending to be CRLF
-tests/artifacts/moon_report_without_elements.txt text eol=crlf
-tests/artifacts/moon_report_without_groups.txt text eol=crlf
-tests/artifacts/moon_report_without_header.txt text eol=crlf
