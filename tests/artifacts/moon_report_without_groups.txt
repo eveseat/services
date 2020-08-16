@@ -1,0 +1,3 @@
+Moon	Moon Product	Quantity	Ore TypeID	SolarSystemID	PlanetID	MoonID
+
+	Glossy Scordite	0.300030559301	46687	30002173	40138526	40138527
