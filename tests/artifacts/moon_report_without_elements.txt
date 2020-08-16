@@ -1,4 +1,0 @@
-Moon	Moon Product	Quantity	Ore TypeID	SolarSystemID	PlanetID	MoonID
-
-OP9L-F II - Moon 1
-
