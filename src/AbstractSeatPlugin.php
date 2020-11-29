@@ -22,7 +22,9 @@
 
 namespace Seat\Services;
 
+use Composer\InstalledVersions;
 use Illuminate\Support\ServiceProvider;
+use OutOfBoundsException;
 
 /**
  * Class AbstractSeatPlugin.
@@ -144,8 +146,20 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      * Return the plugin installed version.
      *
      * @return string
+     * @deprecated This method will be non longer overridable in the future.
      */
-    abstract public function getVersion(): string;
+    public function getVersion(): string
+    {
+        $name = sprintf('%s/%s', $this->getPackagistVendorName(), $this->getPackagistPackageName());
+
+        try {
+            $version = InstalledVersions::getPrettyVersion($name) ?? 'unknown';
+        } catch (OutOfBoundsException $e) {
+            $version = 'missing';
+        }
+
+        return $version;
+    }
 
     /**
      * Return the package version badge for UI display.
