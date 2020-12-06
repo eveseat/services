@@ -24,6 +24,7 @@
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-openssl": "*",
+    "composer-runtime-api": "^2.0",
     "coduo/php-humanizer": "^3.0",
     "composer/semver": "^2.0",
     "doctrine/dbal": "^2.9",
