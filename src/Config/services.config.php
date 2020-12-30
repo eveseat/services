@@ -21,7 +21,12 @@
  */
 
 return [
-
-    'version' => '4.1.0',
-
+    'telemetry' => [
+        'influxdb' => [
+            'url'          => 'https://stats.eveseat.net',
+            'token'        => 'fGAgOsrHKM7LOe0aBPBFyS0tlwZfZp8-jwZo3FFxBZl-Mdfoz3hvabkIdLoBzh4m05UchNVn34tG_s5DqnquEg==',
+            'bucket'       => 'seat',
+            'organization' => 'eveseat.net',
+        ],
+    ],
 ];
