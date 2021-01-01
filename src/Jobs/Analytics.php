@@ -27,8 +27,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Seat\Services\AbstractSeatPlugin;
 use Seat\Services\Helpers\AnalyticsContainer;
 use Seat\Services\Settings\Seat;
+use Seat\Services\Traits\VersionsManagementTrait;
 
 /**
  * Class Analytics.
@@ -36,7 +38,7 @@ use Seat\Services\Settings\Seat;
  */
 class Analytics implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels, VersionsManagementTrait;
 
     /**
      * The number of times the job may be attempted.
@@ -146,6 +148,9 @@ class Analytics implements ShouldQueue
      */
     private function send($type, array $query)
     {
+        $versions = $this->getPluginsMetadataList()->core->map(function (AbstractSeatPlugin $package) {
+            return sprintf('%s/%s', $package->getPackagistPackageName(), $package->getVersion());
+        });
 
         $client = new Client([
             'base_uri' => 'https://www.google-analytics.com/',
@@ -174,12 +179,7 @@ class Analytics implements ShouldQueue
                 'an'  => 'SeAT',                // App Name
 
                 // Versions of the currently installed packages.
-                'av'  => 'api/' . config('api.config.version') . ', ' .
-                    'console/' . config('console.config.version') . ', ' .
-                    'eveapi/' . config('eveapi.config.version') . ', ' .
-                    'notifications/' . config('notifications.config.version') . ', ' .
-                    'web/' . config('web.config.version') . ', ' .
-                    'services/' . config('services.config.version') . ', ',
+                'av'  => $versions->implode(', '),
 
                 // User Agent is comprised of OS Name(s), Release(r)
                 // and Machine Type(m). Examples:
