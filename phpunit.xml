@@ -4,14 +4,14 @@
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true">
+    <coverage>
+        <include>
+            <directory suffix=".php">./src/</directory>
+        </include>
+    </coverage>
     <testsuites>
         <testsuite name="Report Parser Test Suite">
             <directory>./tests/ReportParser</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./src/</directory>
-        </whitelist>
-    </filter>
 </phpunit>
