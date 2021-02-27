@@ -23,6 +23,8 @@
 namespace Seat\Services;
 
 use Illuminate\Support\Facades\DB;
+use Seat\Services\Commands\Seat\Admin\Email;
+use Seat\Services\Commands\Seat\Version;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
 {
@@ -68,6 +70,9 @@ class ServicesServiceProvider extends AbstractSeatPlugin
             });
         }
 
+        // Register commands
+        $this->addCommands();
+
         // Inform Laravel how to load migrations
         $this->add_migrations();
     }
@@ -82,6 +87,14 @@ class ServicesServiceProvider extends AbstractSeatPlugin
 
         $this->mergeConfigFrom(
             __DIR__ . '/Config/services.config.php', 'services.config');
+    }
+
+    private function addCommands()
+    {
+        $this->commands([
+            Email::class,
+            Version::class,
+        ]);
     }
 
     /**
