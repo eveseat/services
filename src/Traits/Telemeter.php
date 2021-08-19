@@ -23,6 +23,7 @@
 namespace Seat\Services\Traits;
 
 use Exception;
+use Illuminate\Support\Str;
 use InfluxDB2\Client;
 use InfluxDB2\Model\WritePrecision;
 
@@ -171,14 +172,7 @@ trait Telemeter
         if (! $id) {
 
             // Generate a V4 random UUID
-            //  https://gist.github.com/dahnielson/508447#file-uuid-php-L74
-            $id = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-            );
+            $id = Str::uuid();
 
             // Set the generated UUID in the applications config
             setting(['analytics_id', $id], true);
