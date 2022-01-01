@@ -22,6 +22,8 @@
 
 namespace Seat\Services\Exceptions;
 
-class SettingException extends \Exception
+use Exception;
+
+class SettingException extends Exception
 {
 }

@@ -22,6 +22,8 @@
 
 namespace Seat\Services\Exceptions;
 
-class EveImageException extends \Exception
+use Exception;
+
+class EveImageException extends Exception
 {
 }
