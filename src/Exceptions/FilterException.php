@@ -22,6 +22,8 @@
 
 namespace Seat\Services\Exceptions;
 
-class FilterException extends \Exception
+use Exception;
+
+class FilterException extends Exception
 {
 }

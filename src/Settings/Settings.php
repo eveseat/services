@@ -61,6 +61,17 @@ abstract class Settings
     protected static $scope = 'global';
 
     /**
+     * Register new setting with its default value.
+     *
+     * @param string $name
+     * @param mixed $value
+     */
+    public static function define(string $name, $value)
+    {
+        static::$defaults[$name] = $value;
+    }
+
+    /**
      * Retrieve a setting by name.
      *
      * @param      $name
