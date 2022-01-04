@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ use Seat\Services\Exceptions\SettingException;
 
 /**
  * Class Settings.
+ *
  * @package Seat\Services\Settings
  */
 abstract class Settings
@@ -63,10 +64,10 @@ abstract class Settings
     /**
      * Retrieve a setting by name.
      *
-     * @param      $name
-     * @param null $for_id
-     *
+     * @param  $name
+     * @param  null  $for_id
      * @return mixed
+     *
      * @throws \Seat\Services\Exceptions\SettingException
      */
     public static function get($name, $for_id = null)
@@ -107,8 +108,8 @@ abstract class Settings
      *
      * @param $name
      * @param $for_id
-     *
      * @return string
+     *
      * @throws \Seat\Services\Exceptions\SettingException
      */
     public static function get_key_prefix($name, $for_id = null)
@@ -135,7 +136,6 @@ abstract class Settings
      * we make the $for_id null.
      *
      * @param $for_id
-     *
      * @return int|null
      */
     public static function get_affected_id($for_id)
@@ -152,9 +152,9 @@ abstract class Settings
     }
 
     /**
-     * @param      $name
-     * @param      $value
-     * @param null $for_id
+     * @param  $name
+     * @param  $value
+     * @param  null  $for_id
      *
      * @throws \Seat\Services\Exceptions\SettingException
      */

@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,8 @@ final class TypeChecker implements HeaderChecker
     /**
      * TypeChecker constructor.
      *
-     * @param string[] $supported_types
-     * @param bool $protected_header
+     * @param  string[]  $supported_types
+     * @param  bool  $protected_header
      */
     public function __construct(array $supported_types, bool $protected_header = true)
     {

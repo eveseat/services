@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,6 +146,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      * Return the plugin installed version.
      *
      * @return string
+     *
      * @deprecated This method will be non longer overridable in the future.
      */
     public function getVersion(): string
@@ -182,8 +183,8 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      *      'description' => $permission_description_translation_key,
      *  ]
      *
-     * @param string $permissions_path A path to permissions elements.
-     * @param string $scope An optional scope into which register permissions (global will be used if not specified).
+     * @param  string  $permissions_path  A path to permissions elements.
+     * @param  string  $scope  An optional scope into which register permissions (global will be used if not specified).
      */
     final public function registerPermissions(string $permissions_path, string $scope = 'global')
     {
@@ -195,7 +196,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
     /**
      * Register new path to annotations dictionary used by Swagger API Documentation.
      *
-     * @param string|string[] $paths
+     * @param  string|string[]  $paths
      */
     final public function registerApiAnnotationsPath($paths)
     {
@@ -217,7 +218,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
     /**
      * Register extra tables to downloaded SDE.
      *
-     * @param string|string[] $tables
+     * @param  string|string[]  $tables
      */
     final public function registerSdeTables($tables)
     {

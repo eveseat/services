@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,7 @@ if (! function_exists('carbon')) {
     /**
      * A helper to get a fresh instance of Carbon.
      *
-     * @param null $data
-     *
+     * @param  null  $data
      * @return \Carbon\Carbon
      */
     function carbon($data = null)
@@ -46,7 +45,6 @@ if (! function_exists('human_diff')) {
      * format that humans can read.
      *
      * @param $time
-     *
      * @return string
      */
     function human_diff($time)
@@ -62,14 +60,14 @@ if (! function_exists('img')) {
      * Return an <img> tag ready for the lazy
      * loading plugin.
      *
-     * @param           $type
-     * @param           $variation
-     * @param           $id
-     * @param           $size
-     * @param array     $attr
-     * @param bool|true $lazy
-     *
+     * @param  $type
+     * @param  $variation
+     * @param  $id
+     * @param  $size
+     * @param  array  $attr
+     * @param  bool|true  $lazy
      * @return string
+     *
      * @throws \Seat\Services\Exceptions\EveImageException
      */
     function img(string $type, string $variation, $id, int $size, array $attr = [], $lazy = true)
@@ -89,8 +87,8 @@ if (! function_exists('number')) {
      *
      * @param $number
      * @param $dec
-     *
      * @return string
+     *
      * @throws \Seat\Services\Exceptions\SettingException
      */
     function number($number, $dec = 2)
@@ -108,7 +106,6 @@ if (! function_exists('number_metric')) {
      * Depends on php5-intl.
      *
      * @param $number
-     *
      * @return bool|string
      */
     function number_metric($number)
@@ -123,9 +120,8 @@ if (! function_exists('clean_ccp_html')) {
     /**
      * Strip any CCP styling and tags from an HTML string.
      *
-     * @param        $html
-     * @param string $acceptable_tags
-     *
+     * @param  $html
+     * @param  string  $acceptable_tags
      * @return string
      */
     function clean_ccp_html($html, $acceptable_tags = '<font><br><i>')
@@ -163,7 +159,6 @@ if (! function_exists('evemail_threads')) {
      * that is automatically added using the eve client.
      *
      * @param $message
-     *
      * @return \Illuminate\Support\Collection
      */
     function evemail_threads($message)
@@ -259,10 +254,10 @@ if (! function_exists('setting')) {
      * Providing a string argument will retrieve a setting.
      * Providing an array argument will set a setting.
      *
-     * @param      $name
-     * @param bool $global
-     *
+     * @param  $name
+     * @param  bool  $global
      * @return mixed
+     *
      * @throws \Seat\Services\Exceptions\SettingException
      */
     function setting($name, bool $global = false)
@@ -297,8 +292,7 @@ if (! function_exists('number_roman')) {
     /**
      * Converts an integer to a roman numberal representation.
      *
-     * @param int $number
-     *
+     * @param  int  $number
      * @return string
      */
     function number_roman($number)

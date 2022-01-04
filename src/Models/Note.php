@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Note.
+ *
  * @package Seat\Services\Models
  */
 class Note extends Model
@@ -37,8 +38,8 @@ class Note extends Model
     protected $fillable = ['object_type', 'object_id', 'title', 'note'];
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $type
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $type
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeType(Builder $query, string $type)
