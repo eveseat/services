@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ use Seat\Services\Exceptions\EveImageException;
 
 /**
  * Class Eve.
+ *
  * @package Seat\Services\Image
  */
 class Eve
@@ -74,12 +75,13 @@ class Eve
     /**
      * Eve constructor.
      *
-     * @param string $type
-     * @param string $variation
-     * @param int $id
-     * @param int $size
-     * @param array $attr
-     * @param bool $lazy
+     * @param  string  $type
+     * @param  string  $variation
+     * @param  int  $id
+     * @param  int  $size
+     * @param  array  $attr
+     * @param  bool  $lazy
+     *
      * @throws \Seat\Services\Exceptions\EveImageException
      */
     public function __construct(string $type, string $variation, int $id, int $size, array $attr = [], bool $lazy = true)
@@ -133,7 +135,6 @@ class Eve
      * range in which an integer falls.
      *
      * @param $id
-     *
      * @return string
      */
     public function detect_type($id)
@@ -204,7 +205,6 @@ class Eve
 
     /**
      * @param $size
-     *
      * @return string
      */
     public function url($size)

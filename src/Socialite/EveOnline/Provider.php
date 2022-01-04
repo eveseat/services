@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ class Provider extends AbstractProvider
     /**
      * Get the authentication URL for the provider.
      *
-     * @param string $state
+     * @param  string  $state
      * @return string
      */
     protected function getAuthUrl($state)
@@ -73,7 +73,7 @@ class Provider extends AbstractProvider
     /**
      * Get the raw user for the given access token.
      *
-     * @param string $token
+     * @param  string  $token
      * @return array
      */
     protected function getUserByToken($token)
@@ -84,7 +84,7 @@ class Provider extends AbstractProvider
     /**
      * Map the raw user array to a Socialite User instance.
      *
-     * @param array $user
+     * @param  array  $user
      * @return \Laravel\Socialite\Two\User
      */
     protected function mapUserToObject(array $user)
@@ -112,8 +112,7 @@ class Provider extends AbstractProvider
     /**
      * Get the POST fields for the token request.
      *
-     * @param  string $code
-     *
+     * @param  string  $code
      * @return array
      */
     protected function getTokenFields($code)
@@ -148,8 +147,9 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * @param string $access_token
+     * @param  string  $access_token
      * @return array
+     *
      * @throws \Exception
      */
     private function validateJwtToken(string $access_token): array

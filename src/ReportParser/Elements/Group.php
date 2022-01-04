@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class Group
     /**
      * Group constructor.
      *
-     * @param string $name
+     * @param  string  $name
      */
     public function __construct(string $name)
     {
@@ -50,7 +50,7 @@ class Group
     }
 
     /**
-     * @param \Seat\Services\ReportParser\Elements\Element $element
+     * @param  \Seat\Services\ReportParser\Elements\Element  $element
      */
     public function add(Element $element)
     {
@@ -58,7 +58,7 @@ class Group
     }
 
     /**
-     * @param \Seat\Services\ReportParser\Elements\Element $element
+     * @param  \Seat\Services\ReportParser\Elements\Element  $element
      */
     public function remove(Element $element)
     {

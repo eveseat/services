@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ use Seat\Services\Models\Note;
 
 /**
  * Class NotableTrait.
+ *
  * @package Seat\Services\Traits
  */
 trait NotableTrait
@@ -34,10 +35,9 @@ trait NotableTrait
     /**
      * Add a note.
      *
-     * @param int    $object_id
-     * @param string $title
-     * @param string $note
-     *
+     * @param  int  $object_id
+     * @param  string  $title
+     * @param  string  $note
      * @return \Seat\Services\Models\Note
      */
     public static function addNote(
@@ -56,8 +56,7 @@ trait NotableTrait
     /**
      * Get all of the applicable notes.
      *
-     * @param int $object_id
-     *
+     * @param  int  $object_id
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public static function getNotes(int $object_id): Builder
@@ -71,9 +70,8 @@ trait NotableTrait
     /**
      * Get a single note.
      *
-     * @param int $object_id
-     * @param int $note_id
-     *
+     * @param  int  $object_id
+     * @param  int  $note_id
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public static function getNote(int $object_id, int $note_id): Builder
@@ -88,9 +86,8 @@ trait NotableTrait
     /**
      * Delete a single note.
      *
-     * @param int $object_id
-     * @param int $note_id
-     *
+     * @param  int  $object_id
+     * @param  int  $note_id
      * @return int
      */
     public static function deleteNote(int $object_id, int $note_id): int
@@ -106,10 +103,10 @@ trait NotableTrait
     /**
      * Update a single note with a new title or note.
      *
-     * @param int         $object_id
-     * @param int         $note_id
-     * @param string|null $title
-     * @param string|null $note
+     * @param  int  $object_id
+     * @param  int  $note_id
+     * @param  string|null  $title
+     * @param  string|null  $note
      */
     public static function updateNote(
         int $object_id, int $note_id, string $title = null, string $note = null)

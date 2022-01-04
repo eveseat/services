@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ use Seat\Services\Traits\VersionsManagementTrait;
 
 /**
  * Class Analytics.
+ *
  * @package Seat\Services\Jobs
  */
 class Analytics implements ShouldQueue
@@ -65,8 +66,8 @@ class Analytics implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \Seat\Services\Helpers\AnalyticsContainer $hit
-     * @param bool                                      $debug
+     * @param  \Seat\Services\Helpers\AnalyticsContainer  $hit
+     * @param  bool  $debug
      */
     public function __construct(AnalyticsContainer $hit, $debug = false)
     {
@@ -82,6 +83,7 @@ class Analytics implements ShouldQueue
      * job should just return.
      *
      * @return void
+     *
      * @throws \Seat\Services\Exceptions\SettingException
      */
     public function handle()
@@ -112,6 +114,7 @@ class Analytics implements ShouldQueue
      * Check if tracking is allowed.
      *
      * @return bool
+     *
      * @throws \Seat\Services\Exceptions\SettingException
      */
     public function allowTracking()
@@ -141,8 +144,8 @@ class Analytics implements ShouldQueue
     /**
      * Send the GA Hit.
      *
-     * @param       $type
-     * @param array $query
+     * @param  $type
+     * @param  array  $query
      *
      * @throws \Seat\Services\Exceptions\SettingException
      */
@@ -203,6 +206,7 @@ class Analytics implements ShouldQueue
      * related information.
      *
      * @return mixed|string
+     *
      * @throws \Seat\Services\Exceptions\SettingException
      */
     private function getClientID()
@@ -215,11 +219,11 @@ class Analytics implements ShouldQueue
             // Generate a V4 random UUID
             //  https://gist.github.com/dahnielson/508447#file-uuid-php-L74
             $id = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+                mt_rand(0, 0xFFFF), mt_rand(0, 0xFFFF),
+                mt_rand(0, 0xFFFF),
+                mt_rand(0, 0x0FFF) | 0x4000,
+                mt_rand(0, 0x3FFF) | 0x8000,
+                mt_rand(0, 0xFFFF), mt_rand(0, 0xFFFF), mt_rand(0, 0xFFFF)
             );
 
             // Set the generated UUID in the applications config
