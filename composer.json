@@ -20,6 +20,7 @@
   "prefer-stable": true,
   "require": {
     "php": "^8.0",
+    "ext-dom": "*",
     "ext-gmp": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
