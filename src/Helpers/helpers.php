@@ -130,6 +130,8 @@ if (! function_exists('clean_ccp_html')) {
      */
     function clean_ccp_html($html, $acceptable_tags = '<font><br><i>')
     {
+        if (empty($html))
+            return '';
 
         // Handle Unicode cases.
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
