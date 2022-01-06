@@ -217,16 +217,28 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      * Register extra tables to downloaded SDE.
      *
      * @param string|string[] $tables
+     * @deprecated replaced by registerSdeSeeders($seeders)
      */
     final public function registerSdeTables($tables)
     {
-        $current_tables = config('seat.sde.tables', []);
+        trigger_error('Use registerSdeSeeders instead.', E_USER_DEPRECATED);
+    }
 
-        if (! is_array($tables))
-            $tables = [$tables];
+    /**
+     * Register extra SDE tables.
+     *
+     * @param $seeders
+     * @return void
+     */
+    final public function registerSdeSeeders($seeders): void
+    {
+        $current_seeders = config('seat.sde.seeders', []);
+
+        if (! is_array($seeders))
+            $seeders = [$seeders];
 
         config([
-            'seat.sde.tables' => array_unique(array_merge($current_tables, $tables)),
+            'seat.sde.seeders' => array_unique(array_merge($current_seeders, $seeders)),
         ]);
     }
 
