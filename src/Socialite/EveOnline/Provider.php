@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,12 +52,12 @@ class Provider extends AbstractProvider
     /**
      * Get the authentication URL for the provider.
      *
-     * @param string $state
+     * @param  string  $state
      * @return string
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://login.eveonline.com/v2/oauth/authorize', $state);
+        return $this->buildAuthUrlFromBase(sprintf('%s/v2/oauth/authorize', $this->getAuthenticationBaseUri()), $state);
     }
 
     /**
@@ -67,13 +67,13 @@ class Provider extends AbstractProvider
      */
     protected function getTokenUrl()
     {
-        return 'https://login.eveonline.com/v2/oauth/token';
+        return sprintf('%s/v2/oauth/token', $this->getAuthenticationBaseUri());
     }
 
     /**
      * Get the raw user for the given access token.
      *
-     * @param string $token
+     * @param  string  $token
      * @return array
      */
     protected function getUserByToken($token)
@@ -84,7 +84,7 @@ class Provider extends AbstractProvider
     /**
      * Map the raw user array to a Socialite User instance.
      *
-     * @param array $user
+     * @param  array  $user
      * @return \Laravel\Socialite\Two\User
      */
     protected function mapUserToObject(array $user)
@@ -112,8 +112,7 @@ class Provider extends AbstractProvider
     /**
      * Get the POST fields for the token request.
      *
-     * @param  string $code
-     *
+     * @param  string  $code
      * @return array
      */
     protected function getTokenFields($code)
@@ -122,12 +121,25 @@ class Provider extends AbstractProvider
     }
 
     /**
+     * Return authentication server base URI.
+     *
+     * @return string
+     */
+    private function getAuthenticationBaseUri()
+    {
+        return sprintf('%s://%s:%d',
+            config('esi.eseye_sso_scheme', 'https'), // authentication server scheme
+            config('esi.eseye_sso_host', 'login.eveonline.com'), // authentication server host
+            config('esi.eseye_sso_port', 443)); // authentication server port
+    }
+
+    /**
      * @return string
      */
     private function getJwkUri(): string
     {
         $response = $this->getHttpClient()
-            ->get('https://login.eveonline.com/.well-known/oauth-authorization-server');
+            ->get(sprintf('%s/.well-known/oauth-authorization-server', $this->getAuthenticationBaseUri()));
 
         $metadata = json_decode($response->getBody());
 
@@ -148,8 +160,9 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * @param string $access_token
+     * @param  string  $access_token
      * @return array
+     *
      * @throws \Exception
      */
     private function validateJwtToken(string $access_token): array
@@ -166,7 +179,7 @@ class Provider extends AbstractProvider
         $jws = Load::jws($access_token)
             ->algs(['RS256', 'ES256', 'HS256'])
             ->exp()
-            ->iss('login.eveonline.com')
+            ->iss(config('esi.eseye_sso_host', 'login.eveonline.com'))
             ->header('typ', new TypeChecker(['JWT'], true))
             ->claim('scp', new ScpChecker($scopes))
             ->claim('sub', new SubEveCharacterChecker())
