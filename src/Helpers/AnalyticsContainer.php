@@ -57,7 +57,7 @@ class AnalyticsContainer implements ArrayAccess
      * @param  mixed  $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
 
         return array_key_exists($offset, $this->data);
@@ -67,7 +67,7 @@ class AnalyticsContainer implements ArrayAccess
      * @param  mixed  $offset
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
 
         return $this->data[$offset];
@@ -77,7 +77,7 @@ class AnalyticsContainer implements ArrayAccess
      * @param  mixed  $offset
      * @param  mixed  $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
 
         $this->data[$offset] = $value;
@@ -86,7 +86,7 @@ class AnalyticsContainer implements ArrayAccess
     /**
      * @param  mixed  $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
 
         unset($this->data[$offset]);
@@ -117,7 +117,7 @@ class AnalyticsContainer implements ArrayAccess
      * @param $val
      * @return $this
      */
-    public function set($key, $val)
+    public function set($key, $val): self
     {
 
         $this->__set($key, $val);
