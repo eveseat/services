@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2021 Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ use ArrayAccess;
  * Acts as a data store for a Google Analytics Hit.
  *
  * Class AnalyticsContainer
+ *
  * @package Seat\Services\Helpers
  */
 class AnalyticsContainer implements ArrayAccess
@@ -53,8 +54,7 @@ class AnalyticsContainer implements ArrayAccess
     ];
 
     /**
-     * @param mixed $offset
-     *
+     * @param  mixed  $offset
      * @return bool
      */
     public function offsetExists(mixed $offset): bool
@@ -64,8 +64,7 @@ class AnalyticsContainer implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
-     *
+     * @param  mixed  $offset
      * @return mixed
      */
     public function offsetGet(mixed $offset): mixed
@@ -75,8 +74,8 @@ class AnalyticsContainer implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
+     * @param  mixed  $offset
+     * @param  mixed  $value
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
@@ -85,7 +84,7 @@ class AnalyticsContainer implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
+     * @param  mixed  $offset
      */
     public function offsetUnset(mixed $offset): void
     {
@@ -95,7 +94,6 @@ class AnalyticsContainer implements ArrayAccess
 
     /**
      * @param $key
-     *
      * @return mixed
      */
     public function __get($key)
@@ -117,7 +115,6 @@ class AnalyticsContainer implements ArrayAccess
     /**
      * @param $key
      * @param $val
-     *
      * @return $this
      */
     public function set($key, $val): self
