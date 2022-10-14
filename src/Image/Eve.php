@@ -139,7 +139,7 @@ class Eve
     public function detect_type($id)
     {
         if ($id === null)
-            return "unknown";
+            return 'unknown';
 
         if ($id > 90000000 && $id < 98000000)
             return 'characters';
@@ -179,7 +179,7 @@ class Eve
                 $html .= 'data-src-retina="' . $this->url($this->size == 1024 ? 1024 : $this->size * 2) . '" ';
 
                 // put class on images to lazy load them
-                if (!isset($this->attributes['class']))
+                if (! isset($this->attributes['class']))
                     $this->attributes['class'] = '';
 
                 $this->attributes['class'] .= ' img-lazy-load';
