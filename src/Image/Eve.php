@@ -86,13 +86,9 @@ class Eve
      */
     public function __construct(string $type, string $variation, int $id, int $size, array $attr = [], bool $lazy = true)
     {
-
         // Validate the arguments
         if (! in_array($type, $this->known_types))
             throw new EveImageException($type . ' is not a valid image type.');
-
-        if (! is_int($id))
-            throw new EveImageException('id must be an integer.');
 
         if (! is_int($size))
             throw new EveImageException('size must be an integer');
@@ -112,6 +108,9 @@ class Eve
                 case 'alliances':
                 case 'factions':
                     $this->variation = 'logo';
+                    break;
+                case 'unknown':
+                    $this->variation = 'unknown';
                     break;
                 default:
                     $this->variation = 'icon';
@@ -139,6 +138,8 @@ class Eve
      */
     public function detect_type($id)
     {
+        if ($id === null)
+            return "unknown";
 
         if ($id > 90000000 && $id < 98000000)
             return 'characters';
@@ -161,28 +162,33 @@ class Eve
         // make new IMG tag
         $html = '<img ';
 
-        if ($this->lazy) {
-
-            // images are lazy loaded. prepare the the data-src attributes with the
-            // location for the image.
+        //if the id is unknown, we don't even need to generate the image server url
+        if ($this->id === null){
+            //there might be a better asset for this, or maybe we should create one
             $html .= 'src="' . asset('web/img/bg.png') . '" ';
-            $html .= 'data-src="' . $this->url($this->size) . '" ';
-
-            // Item Type images can be max 64?
-            // http://imageserver.eveonline.com/Type/670_128.png goes 404
-            // In case requested size is greater than 32, lock size to 64
-            $html .= 'data-src-retina="' . $this->url($this->size == 1024 ? 1024 : $this->size * 2) . '" ';
-
-            // put class on images to lazy load them
-            if (! isset($this->attributes['class']))
-                $this->attributes['class'] = '';
-
-            $this->attributes['class'] .= ' img-lazy-load';
-
         } else {
+            if ($this->lazy) {
+                // images are lazy loaded. prepare the the data-src attributes with the
+                // location for the image.
+                $html .= 'src="' . asset('web/img/bg.png') . '" ';
+                $html .= 'data-src="' . $this->url($this->size) . '" ';
 
-            // no lazy loaded image
-            $html .= 'src="' . $this->url($this->size) . '" ';
+                // Item Type images can be max 64?
+                // http://imageserver.eveonline.com/Type/670_128.png goes 404
+                // In case requested size is greater than 32, lock size to 64
+                $html .= 'data-src-retina="' . $this->url($this->size == 1024 ? 1024 : $this->size * 2) . '" ';
+
+                // put class on images to lazy load them
+                if (!isset($this->attributes['class']))
+                    $this->attributes['class'] = '';
+
+                $this->attributes['class'] .= ' img-lazy-load';
+
+            } else {
+
+                // no lazy loaded image
+                $html .= 'src="' . $this->url($this->size) . '" ';
+            }
         }
 
         // unset already built attributes
