@@ -70,7 +70,7 @@ if (! function_exists('img')) {
      *
      * @throws \Seat\Services\Exceptions\EveImageException
      */
-    function img(string $type, string $variation, $id, int $size, array $attr = [], $lazy = true)
+    function img(string $type, string $variation, ?int $id, int $size, array $attr = [], $lazy = true)
     {
         $image = (new \Seat\Services\Image\Eve($type, $variation, $id, $size, $attr, $lazy))
             ->html();

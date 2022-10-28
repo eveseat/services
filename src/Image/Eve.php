@@ -84,11 +84,14 @@ class Eve
      *
      * @throws \Seat\Services\Exceptions\EveImageException
      */
-    public function __construct(string $type, string $variation, int $id, int $size, array $attr = [], bool $lazy = true)
+    public function __construct(string $type, string $variation, ?int $id, int $size, array $attr = [], bool $lazy = true)
     {
         // Validate the arguments
         if (! in_array($type, $this->known_types))
             throw new EveImageException($type . ' is not a valid image type.');
+
+        if (!(is_int($id) || $id === null))
+            throw new EveImageException('id must be an integer or null.');
 
         if (! is_int($size))
             throw new EveImageException('size must be an integer');
