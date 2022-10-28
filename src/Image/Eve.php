@@ -90,7 +90,7 @@ class Eve
         if (! in_array($type, $this->known_types))
             throw new EveImageException($type . ' is not a valid image type.');
 
-        if (!(is_int($id) || $id === null))
+        if (! (is_int($id) || $id === null))
             throw new EveImageException('id must be an integer or null.');
 
         if (! is_int($size))
