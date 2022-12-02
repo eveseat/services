@@ -68,7 +68,7 @@ class MoonReport extends ReportParser
     /**
      * @var string
      */
-    protected $group_regex = '/^([a-zA-Z0-9-]+ [IVX]{1,4} - Moon [0-9]{1,2}+)$/';
+    protected $group_regex = '/^([a-zA-Z0-9-]+ [IVX]{1,4} - Moon [0-9]{1,2}+)\t*?$/';
 
     /**
      * @var string
