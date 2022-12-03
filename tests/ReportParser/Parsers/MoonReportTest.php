@@ -13,7 +13,7 @@ use Seat\Services\ReportParser\Parsers\MoonReport;
  */
 class MoonReportTest extends TestCase
 {
-    public function correctData(): array
+    public function correctDataProvider(): array
     {
         return [
             'from EVE'     => ['/../../artifacts/moon_report.txt'],
@@ -22,21 +22,21 @@ class MoonReportTest extends TestCase
         ];
     }
 
-    public function malformedElements(): array
+    public function malformedElementsProvider(): array
     {
         return [
             'no elements' => ['/../../artifacts/moon_report_without_elements.txt']
         ];
     }
 
-    public function malformedGroups(): array
+    public function malformedGroupsProvider(): array
     {
         return [
             'no groups' => ['/../../artifacts/moon_report_without_groups.txt']
         ];
     }
 
-    public function malformedHeader(): array
+    public function malformedHeaderProvider(): array
     {
         return [
             'no header' => ['/../../artifacts/moon_report_without_header.txt']
@@ -44,11 +44,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctData
+     * @dataProvider correctDataProvider
      */
-    public function testGetElements(string $path)
+    public function testGetElements(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -80,11 +80,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider malformedHeader
+     * @dataProvider malformedHeaderProvider
      */
-    public function testMissingReportHeaderException(string $path)
+    public function testMissingReportHeaderException(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -94,11 +94,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider malformedGroups
+     * @dataProvider malformedGroupsProvider
      */
-    public function testMissingReportGroupException(string $path)
+    public function testMissingReportGroupException(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -108,11 +108,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider malformedElements
+     * @dataProvider malformedElementsProvider
      */
-    public function testInvalidReportGroupException(string $path)
+    public function testInvalidReportGroupException(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -122,11 +122,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctData
+     * @dataProvider correctDataProvider
      */
-    public function testParse(string $path)
+    public function testParse(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -220,11 +220,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctData
+     * @dataProvider correctDataProvider
      */
-    public function testHasGroups(string $path)
+    public function testHasGroups(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -233,11 +233,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctData
+     * @dataProvider correctDataProvider
      */
-    public function testGetHeader(string $path)
+    public function testGetHeader(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -254,11 +254,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctData
+     * @dataProvider correctDataProvider
      */
-    public function testHasHeader(string $path)
+    public function testHasHeader(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -267,11 +267,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctData
+     * @dataProvider correctDataProvider
      */
-    public function testGetGroups(string $path)
+    public function testGetGroups(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -281,11 +281,11 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctData
+     * @dataProvider correctDataProvider
      */
-    public function testHasElements(string $path)
+    public function testHasElements(string $artifact_path)
     {
-        $content = file_get_contents(__DIR__ . $path);
+        $content = file_get_contents(__DIR__ . $artifact_path);
 
         $report = new MoonReport();
         $report->parse($content);
