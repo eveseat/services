@@ -22,6 +22,27 @@ class MoonReportTest extends TestCase
         ];
     }
 
+    public function malformedElements(): array
+    {
+        return [
+            'no elements' => ['/../../artifacts/moon_report_without_elements.txt']
+        ];
+    }
+
+    public function malformedGroups(): array
+    {
+        return [
+            'no groups' => ['/../../artifacts/moon_report_without_groups.txt']
+        ];
+    }
+
+    public function malformedHeader(): array
+    {
+        return [
+            'no header' => ['/../../artifacts/moon_report_without_header.txt']
+        ];
+    }
+
     /**
      * @dataProvider correctData
      */
@@ -58,9 +79,12 @@ class MoonReportTest extends TestCase
         $report->validate();
     }
 
-    public function testMissingReportHeaderException()
+    /**
+     * @dataProvider malformedHeader
+     */
+    public function testMissingReportHeaderException(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report_without_header.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -69,9 +93,12 @@ class MoonReportTest extends TestCase
         $report->validate();
     }
 
-    public function testMissingReportGroupException()
+    /**
+     * @dataProvider malformedGroups
+     */
+    public function testMissingReportGroupException(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report_without_groups.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -80,9 +107,12 @@ class MoonReportTest extends TestCase
         $report->validate();
     }
 
-    public function testInvalidReportGroupException()
+    /**
+     * @dataProvider malformedElements
+     */
+    public function testInvalidReportGroupException(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report_without_elements.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
