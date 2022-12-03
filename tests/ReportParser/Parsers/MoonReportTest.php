@@ -13,7 +13,7 @@ use Seat\Services\ReportParser\Parsers\MoonReport;
  */
 class MoonReportTest extends TestCase
 {
-    public function correctDataProvider(): array
+    public function correctFormatProvider(): array
     {
         return [
             'from EVE'     => ['/../../artifacts/moon_report.txt'],
@@ -44,7 +44,7 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctDataProvider
+     * @dataProvider correctFormatProvider
      */
     public function testGetElements(string $artifact_path)
     {
@@ -122,7 +122,7 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctDataProvider
+     * @dataProvider correctFormatProvider
      */
     public function testParse(string $artifact_path)
     {
@@ -220,7 +220,7 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctDataProvider
+     * @dataProvider correctFormatProvider
      */
     public function testHasGroups(string $artifact_path)
     {
@@ -233,7 +233,7 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctDataProvider
+     * @dataProvider correctFormatProvider
      */
     public function testGetHeader(string $artifact_path)
     {
@@ -254,7 +254,7 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctDataProvider
+     * @dataProvider correctFormatProvider
      */
     public function testHasHeader(string $artifact_path)
     {
@@ -267,7 +267,7 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctDataProvider
+     * @dataProvider correctFormatProvider
      */
     public function testGetGroups(string $artifact_path)
     {
@@ -281,7 +281,7 @@ class MoonReportTest extends TestCase
     }
 
     /**
-     * @dataProvider correctDataProvider
+     * @dataProvider correctFormatProvider
      */
     public function testHasElements(string $artifact_path)
     {
