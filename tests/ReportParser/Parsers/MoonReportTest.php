@@ -13,7 +13,7 @@ use Seat\Services\ReportParser\Parsers\MoonReport;
  */
 class MoonReportTest extends TestCase
 {
-    public function correctData(): string
+    public function correctData(): array
     {
         return [
             'from EVE'     => ['/../../artifacts/moon_report.txt'],
