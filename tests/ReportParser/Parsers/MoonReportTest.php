@@ -13,9 +13,21 @@ use Seat\Services\ReportParser\Parsers\MoonReport;
  */
 class MoonReportTest extends TestCase
 {
-    public function testGetElements()
+    public function correctData(): array
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report.txt');
+        return [
+            'from EVE'     => '/../../artifacts/moon_report_excel.txt',
+            'from Excel'   => '/../../artifacts/moon_report_excel.txt',
+            'mixed inputs' => '/../../artifacts/moon_report_mixed.txt'
+        ]
+    }
+
+    /**
+     * @dataProvider correctData
+     */
+    public function testGetElements(string $path)
+    {
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -79,9 +91,12 @@ class MoonReportTest extends TestCase
         $report->validate();
     }
 
-    public function testParse()
+    /**
+     * @dataProvider correctData
+     */
+    public function testParse(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -174,9 +189,12 @@ class MoonReportTest extends TestCase
         ], $groups[1]->getElements()[2]->fields());
     }
 
-    public function testHasGroups()
+    /**
+     * @dataProvider correctData
+     */
+    public function testHasGroups(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -184,9 +202,12 @@ class MoonReportTest extends TestCase
         $this->assertTrue($report->hasGroups());
     }
 
-    public function testGetHeader()
+    /**
+     * @dataProvider correctData
+     */
+    public function testGetHeader(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -202,9 +223,12 @@ class MoonReportTest extends TestCase
         ], $report->getHeader()->fields());
     }
 
-    public function testHasHeader()
+    /**
+     * @dataProvider correctData
+     */
+    public function testHasHeader(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -212,9 +236,12 @@ class MoonReportTest extends TestCase
         $this->assertTrue($report->hasHeader());
     }
 
-    public function testGetGroups()
+    /**
+     * @dataProvider correctData
+     */
+    public function testGetGroups(string $path)
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
@@ -223,9 +250,12 @@ class MoonReportTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Group::class, $report->getGroups());
     }
 
+    /**
+     * @dataProvider correctData
+     */
     public function testHasElements()
     {
-        $content = file_get_contents(__DIR__ . '/../../artifacts/moon_report.txt');
+        $content = file_get_contents(__DIR__ . $path);
 
         $report = new MoonReport();
         $report->parse($content);
