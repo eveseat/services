@@ -13,13 +13,13 @@ use Seat\Services\ReportParser\Parsers\MoonReport;
  */
 class MoonReportTest extends TestCase
 {
-    public function correctData(): array
+    public function correctData(): string
     {
         return [
-            'from EVE'     => '/../../artifacts/moon_report_excel.txt',
-            'from Excel'   => '/../../artifacts/moon_report_excel.txt',
-            'mixed inputs' => '/../../artifacts/moon_report_mixed.txt'
-        ]
+            'from EVE'     => ['/../../artifacts/moon_report.txt'],
+            'from Excel'   => ['/../../artifacts/moon_report_excel.txt'],
+            'mixed inputs' => ['/../../artifacts/moon_report_mixed.txt']
+        ];
     }
 
     /**
@@ -253,7 +253,7 @@ class MoonReportTest extends TestCase
     /**
      * @dataProvider correctData
      */
-    public function testHasElements()
+    public function testHasElements(string $path)
     {
         $content = file_get_contents(__DIR__ . $path);
 
