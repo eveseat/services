@@ -5,10 +5,10 @@ on: [push]
 jobs:
   build-test:
     runs-on: ubuntu-latest
-
+    defaults:
+      php_version: "7.3"
     steps:
     - uses: actions/checkout@v3
     - uses: php-actions/composer@v6
     - uses: php-actions/phpunit@v3
-      with:
-        php_version: "7.3"
+        
