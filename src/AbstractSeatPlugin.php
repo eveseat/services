@@ -146,10 +146,8 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      * Return the plugin installed version.
      *
      * @return string
-     *
-     * @deprecated This method will be non longer overridable in the future.
      */
-    public function getVersion(): string
+    final public function getVersion(): string
     {
         $name = sprintf('%s/%s', $this->getPackagistVendorName(), $this->getPackagistPackageName());
 
@@ -229,6 +227,24 @@ abstract class AbstractSeatPlugin extends ServiceProvider
 
         config([
             'seat.sde.tables' => array_unique(array_merge($current_tables, $tables)),
+        ]);
+    }
+
+    /**
+     * Register database seeders in the stack.
+     *
+     * @param string|array $classes
+     * @return void
+     */
+    final public function registerDatabaseSeeders(string|array $classes)
+    {
+        $current_seeders = config('seat.seeders', []);
+
+        if (! is_array($classes))
+            $classes = [$classes];
+
+        config([
+            'seat.seeders' => array_merge($current_seeders, $classes),
         ]);
     }
 }
