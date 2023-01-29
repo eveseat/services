@@ -57,7 +57,7 @@ class Provider extends AbstractProvider
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://login.eveonline.com/v2/oauth/authorize', $state);
+        return $this->buildAuthUrlFromBase(sprintf('%s/v2/oauth/authorize', $this->getAuthenticationBaseUri()), $state);
     }
 
     /**
@@ -67,7 +67,7 @@ class Provider extends AbstractProvider
      */
     protected function getTokenUrl()
     {
-        return 'https://login.eveonline.com/v2/oauth/token';
+        return sprintf('%s/v2/oauth/token', $this->getAuthenticationBaseUri());
     }
 
     /**
@@ -121,12 +121,25 @@ class Provider extends AbstractProvider
     }
 
     /**
+     * Return authentication server base URI.
+     *
+     * @return string
+     */
+    private function getAuthenticationBaseUri()
+    {
+        return sprintf('%s://%s:%d',
+            config('esi.eseye_sso_scheme', 'https'), // authentication server scheme
+            config('esi.eseye_sso_host', 'login.eveonline.com'), // authentication server host
+            config('esi.eseye_sso_port', 443)); // authentication server port
+    }
+
+    /**
      * @return string
      */
     private function getJwkUri(): string
     {
         $response = $this->getHttpClient()
-            ->get('https://login.eveonline.com/.well-known/oauth-authorization-server');
+            ->get(sprintf('%s/.well-known/oauth-authorization-server', $this->getAuthenticationBaseUri()));
 
         $metadata = json_decode($response->getBody());
 
@@ -166,7 +179,7 @@ class Provider extends AbstractProvider
         $jws = Load::jws($access_token)
             ->algs(['RS256', 'ES256', 'HS256'])
             ->exp()
-            ->iss('login.eveonline.com')
+            ->iss(config('esi.eseye_sso_host', 'login.eveonline.com'))
             ->header('typ', new TypeChecker(['JWT'], true))
             ->claim('scp', new ScpChecker($scopes))
             ->claim('sub', new SubEveCharacterChecker())
