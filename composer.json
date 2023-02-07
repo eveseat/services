@@ -10,7 +10,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Seat\\Services\\": "src/"
+      "Seat\\Services\\": "src/",
+      "Seat\\Services\\Database\\Seeders\\": "src/database/seeders/"
     },
     "files": [
       "src/Helpers/helpers.php"
