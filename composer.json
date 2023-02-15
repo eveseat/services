@@ -31,7 +31,7 @@
     "composer/semver": "^3.0",
     "doctrine/dbal": "^3.0",
     "guzzlehttp/guzzle": "^7.0",
-    "laravel/framework": "^9.0",
+    "laravel/framework": "^10.0",
     "psr/simple-cache": "^1.0|^2.0|^3.0",
     "psr/log": "^1.0|^2.0|^3.0",
     "web-token/jwt-easy": "^2.1",
