@@ -64,8 +64,8 @@ abstract class Settings
     /**
      * Register new setting with its default value.
      *
-     * @param string $name
-     * @param mixed $value
+     * @param  string  $name
+     * @param  mixed  $value
      */
     public static function define(string $name, $value)
     {
