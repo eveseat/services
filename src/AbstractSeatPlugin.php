@@ -233,7 +233,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
     /**
      * Register database seeders in the stack.
      *
-     * @param string|array $classes
+     * @param  string|array  $classes
      * @return void
      */
     final public function registerDatabaseSeeders(string|array $classes)
