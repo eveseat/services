@@ -39,9 +39,6 @@ class Profile extends Settings
     public static $options = [
 
         'sidebar'            => ['sidebar-full', 'sidebar-collapse'],
-        'skins'              => [
-            'default', 'jet',
-        ],
         'thousand_seperator' => [' ', ',', '.'],
         'decimal_seperator'  => [',', '.'],
         'mail_threads'       => ['yes', 'no'],
