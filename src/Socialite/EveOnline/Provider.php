@@ -22,7 +22,9 @@
 
 namespace Seat\Services\Socialite\EveOnline;
 
+use GuzzleHttp\Client;
 use Seat\Eseye\Checker\EsiTokenValidator;
+use Seat\Eseye\Configuration;
 use Seat\Services\Exceptions\EveImageException;
 use Seat\Services\Image\Eve;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
@@ -121,6 +123,9 @@ class Provider extends AbstractProvider
      */
     private function validateJwtToken(string $access_token): array
     {
+        $config = Configuration::getInstance();
+        $config->http_client = Client::class;
+
         $validator = new EsiTokenValidator();
 
         return $validator->validateToken(config('eseye.esi.auth.client_id'), $access_token);
