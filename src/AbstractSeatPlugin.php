@@ -244,7 +244,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
             $classes = [$classes];
 
         config([
-            'seat.seeders' => array_merge($current_seeders, $classes),
+            'seat.seeders' => array_unique(array_merge($current_seeders, $classes)),
         ]);
     }
 }
