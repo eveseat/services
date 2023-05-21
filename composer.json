@@ -30,7 +30,7 @@
     "coduo/php-humanizer": "^4.0",
     "composer/semver": "^3.0",
     "doctrine/dbal": "^3.0",
-    "eveseat/eseye": "^5.0",
+    "eveseat/eseye": "^3.x-dev",
     "guzzlehttp/guzzle": "^7.0",
     "laravel/framework": "^10.0",
     "psr/simple-cache": "^3.0",
