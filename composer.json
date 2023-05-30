@@ -37,7 +37,7 @@
     "psr/log": "^3.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.0"
+    "phpunit/phpunit": "^10.0"
   },
   "extra": {
     "laravel": {
