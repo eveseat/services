@@ -39,9 +39,6 @@ class Profile extends Settings
     public static $options = [
 
         'sidebar'            => ['sidebar-full', 'sidebar-collapse'],
-        'skins'              => [
-            'default', 'jet',
-        ],
         'thousand_seperator' => [' ', ',', '.'],
         'decimal_seperator'  => [',', '.'],
         'mail_threads'       => ['yes', 'no'],
@@ -61,30 +58,4 @@ class Profile extends Settings
      * @var string
      */
     protected static $scope = 'user';
-
-    /**
-     * @var array
-     */
-    protected static $defaults = [
-
-        // UI
-        'sidebar'             => 'sidebar-full',
-        'skin'                => 'skin-black',
-        'language'            => 'en',
-        'mail_threads'        => 'yes',
-
-        // A groups main character_id
-        'main_character_id'   => 0,
-
-        // Numbers
-        'thousand_seperator'  => ' ',
-        'decimal_seperator'   => '.',
-
-        // Notifications
-        'email_notifications' => 'no',
-        'email_address'       => '',
-
-        // Multi factor authentication
-        'require_mfa'         => 'no',
-    ];
 }

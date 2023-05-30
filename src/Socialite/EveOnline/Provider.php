@@ -22,16 +22,11 @@
 
 namespace Seat\Services\Socialite\EveOnline;
 
-use Jose\Component\Core\JWKSet;
-use Jose\Easy\Load;
+use GuzzleHttp\Client;
+use Seat\Eseye\Checker\EsiTokenValidator;
+use Seat\Eseye\Configuration;
 use Seat\Services\Exceptions\EveImageException;
 use Seat\Services\Image\Eve;
-use Seat\Services\Socialite\EveOnline\Checker\Claim\AzpChecker;
-use Seat\Services\Socialite\EveOnline\Checker\Claim\NameChecker;
-use Seat\Services\Socialite\EveOnline\Checker\Claim\OwnerChecker;
-use Seat\Services\Socialite\EveOnline\Checker\Claim\ScpChecker;
-use Seat\Services\Socialite\EveOnline\Checker\Claim\SubEveCharacterChecker;
-use Seat\Services\Socialite\EveOnline\Checker\Header\TypeChecker;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User;
 
@@ -121,32 +116,6 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * @return string
-     */
-    private function getJwkUri(): string
-    {
-        $response = $this->getHttpClient()
-            ->get('https://login.eveonline.com/.well-known/oauth-authorization-server');
-
-        $metadata = json_decode($response->getBody());
-
-        return $metadata->jwks_uri;
-    }
-
-    /**
-     * @return array An array representing the JWK Key Sets
-     */
-    private function getJwkSets(): array
-    {
-        $jwk_uri = $this->getJwkUri();
-
-        $response = $this->getHttpClient()
-            ->get($jwk_uri);
-
-        return json_decode($response->getBody(), true);
-    }
-
-    /**
      * @param  string  $access_token
      * @return array
      *
@@ -154,28 +123,11 @@ class Provider extends AbstractProvider
      */
     private function validateJwtToken(string $access_token): array
     {
-        $scopes = session()->pull('scopes', []);
+        $config = Configuration::getInstance();
+        $config->http_client = Client::class;
 
-        // pulling JWK sets from CCP
-        $sets = $this->getJwkSets();
+        $validator = new EsiTokenValidator();
 
-        // loading JWK Sets Manager
-        $jwk_sets = JWKSet::createFromKeyData($sets);
-
-        // attempt to parse the JWT and collect payload
-        $jws = Load::jws($access_token)
-            ->algs(['RS256', 'ES256', 'HS256'])
-            ->exp()
-            ->iss('login.eveonline.com')
-            ->header('typ', new TypeChecker(['JWT'], true))
-            ->claim('scp', new ScpChecker($scopes))
-            ->claim('sub', new SubEveCharacterChecker())
-            ->claim('azp', new AzpChecker(config('esi.eseye_client_id')))
-            ->claim('name', new NameChecker())
-            ->claim('owner', new OwnerChecker())
-            ->keyset($jwk_sets)
-            ->run();
-
-        return $jws->claims->all();
+        return $validator->validateToken(config('eseye.esi.auth.client_id'), $access_token);
     }
 }

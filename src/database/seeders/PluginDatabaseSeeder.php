@@ -20,37 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Socialite\EveOnline\Checker\Claim;
+namespace Seat\Services\Database\Seeders;
 
-use Jose\Component\Checker\ClaimChecker;
-use Jose\Component\Checker\InvalidClaimException;
+use Illuminate\Database\Seeder;
 
-/**
- * Class SubEveCharacterChecker.
- *
- * @package Seat\Services\Socialite\EveOnline\Checker\Claim
- */
-class SubEveCharacterChecker implements ClaimChecker
+class PluginDatabaseSeeder extends Seeder
 {
-    private const NAME = 'sub';
-
     /**
-     * {@inheritdoc}
+     * Run the database seeders.
+     *
+     * @return void
      */
-    public function checkClaim($value): void
+    public function run()
     {
-        if (! is_string($value))
-            throw new InvalidClaimException('"sub" must be a string.', self::NAME, $value);
+        $seeders = config('seat.seeders', []);
 
-        if (preg_match('/^CHARACTER:EVE:[0-9]+$/', $value) !== 1)
-            throw new InvalidClaimException('"sub" must be of the form CHARACTER:EVE:{character_id}', self::NAME, $value);
-    }
+        $this->command->info('Running all unique registered seeders');
+        $this->call(array_unique($seeders));
+        $this->command->info('Registered seeders run complete');
 
-    /**
-     * {@inheritdoc}
-     */
-    public function supportedClaim(): string
-    {
-        return self::NAME;
     }
 }
