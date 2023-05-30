@@ -1,5 +1,7 @@
 <?php
 
+namespace Seat\Tests\Services\ReportParser\Parsers;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Services\ReportParser\Elements\Group;
 use Seat\Services\ReportParser\Exceptions\EmptyReportException;
@@ -13,7 +15,7 @@ use Seat\Services\ReportParser\Parsers\MoonReport;
  */
 class MoonReportTest extends TestCase
 {
-    public function correctFormatProvider(): array
+    public static function correctFormatProvider(): array
     {
         return [
             'from EVE'     => ['/../../artifacts/moon_report.txt'],
@@ -22,21 +24,21 @@ class MoonReportTest extends TestCase
         ];
     }
 
-    public function malformedElementsProvider(): array
+    public static function malformedElementsProvider(): array
     {
         return [
             'no elements' => ['/../../artifacts/moon_report_without_elements.txt']
         ];
     }
 
-    public function malformedGroupsProvider(): array
+    public static function malformedGroupsProvider(): array
     {
         return [
             'no groups' => ['/../../artifacts/moon_report_without_groups.txt']
         ];
     }
 
-    public function malformedHeaderProvider(): array
+    public static function malformedHeaderProvider(): array
     {
         return [
             'no header' => ['/../../artifacts/moon_report_without_header.txt']
