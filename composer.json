@@ -17,6 +17,11 @@
       "src/Helpers/helpers.php"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Seat\\Tests\\Services\\": "tests/"
+    }
+  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {

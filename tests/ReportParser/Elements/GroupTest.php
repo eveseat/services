@@ -1,5 +1,7 @@
 <?php
 
+namespace Seat\Tests\Services\ReportParser\Elements;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Services\ReportParser\Elements\Element;
 use Seat\Services\ReportParser\Elements\Group;
