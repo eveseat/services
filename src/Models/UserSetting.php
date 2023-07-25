@@ -22,14 +22,12 @@
 
 namespace Seat\Services\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Class UserSetting.
  *
  * @package Seat\Services\Models
  */
-class UserSetting extends Model
+class UserSetting extends ExtensibleModel
 {
     /**
      * @var array
