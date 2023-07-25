@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Seat\Services\Commands\Seat\Admin\Email;
 use Seat\Services\Commands\Seat\Version;
+use Seat\Services\Facade\InjectedRelation;
 use Seat\Services\Models\UserSetting;
 use Seat\Services\Models\UserSettingExtension;
 use Seat\Services\Services\InjectedRelationRegistry;
