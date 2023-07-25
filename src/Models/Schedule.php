@@ -22,8 +22,6 @@
 
 namespace Seat\Services\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Class Schedule.
  *
