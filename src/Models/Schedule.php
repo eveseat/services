@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package Seat\Services\Models
  */
-class Schedule extends Model
+class Schedule extends ExtensibleModel
 {
     /**
      * @var array

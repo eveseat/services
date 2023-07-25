@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package Seat\Services\Models
  */
-class Note extends Model
+class Note extends ExtensibleModel
 {
     /**
      * @var array

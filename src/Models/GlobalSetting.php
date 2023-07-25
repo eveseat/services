@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package Seat\Services\Models
  */
-class GlobalSetting extends Model
+class GlobalSetting extends ExtensibleModel
 {
     /**
      * @var array

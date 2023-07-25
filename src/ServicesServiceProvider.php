@@ -28,7 +28,7 @@ use Seat\Services\Commands\Seat\Admin\Email;
 use Seat\Services\Commands\Seat\Version;
 use Seat\Services\Models\UserSetting;
 use Seat\Services\Models\UserSettingExtension;
-use Seat\Services\Services\ModelExtensionRegistry;
+use Seat\Services\Services\InjectedRelationRegistry;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
 {
@@ -79,13 +79,6 @@ class ServicesServiceProvider extends AbstractSeatPlugin
 
         // Inform Laravel how to load migrations
         $this->add_migrations();
-
-        $this->app->make(ModelExtensionRegistry::class)->registerExtension(UserSetting::class,UserSettingExtension::class,"user");
-
-        Artisan::command("service:test",function (){
-            $setting = UserSetting::first();
-            dd(json_encode($setting),json_encode($setting->user()->get()));
-        });
     }
 
     /**
@@ -99,8 +92,8 @@ class ServicesServiceProvider extends AbstractSeatPlugin
         $this->mergeConfigFrom(
             __DIR__ . '/Config/services.config.php', 'services.config');
 
-        $this->app->singleton(ModelExtensionRegistry::class, function (){
-            return new ModelExtensionRegistry();
+        $this->app->singleton(InjectedRelationRegistry::class, function (){
+            return new InjectedRelationRegistry();
         });
     }
 
