@@ -11,13 +11,31 @@ use Seat\Services\Services\ModelExtensionRegistry;
 
 abstract class ExtensibleModel extends Model
 {
+
+    public function __call($method, $parameters)
+    {
+        // fetch injected relations
+        $extension_registry = app()->make(ModelExtensionRegistry::class);
+        $extensionClass = $extension_registry->getExtension($this::class, $method);
+
+        // check if we have an injected relation
+        if($extensionClass) {
+            // return the injected relation
+            $extensionClassInstance = new $extensionClass;
+            return $extensionClassInstance->$method($this);
+        }
+
+        // use the default behaviour if no relation is injected
+        return parent::__call($method, $parameters);
+    }
+
     public function __get($key)
     {
-        // fetch model extensions
+        // fetch injected relations
         $extension_registry = app()->make(ModelExtensionRegistry::class);
         $extensionClass = $extension_registry->getExtension($this::class, $key);
 
-        // if we have an extension, handle it
+        // check if we have an injected relation
         if($extensionClass){
             // since what we are doing is not intended, we have to roughly reimplement laravel's code from here on
 
@@ -50,7 +68,7 @@ abstract class ExtensibleModel extends Model
             });
         }
 
-        // we have no extension, use default behaviour
+        // use the default behaviour if no relation is injected
         return parent::__get($key);
     }
 

@@ -84,7 +84,7 @@ class ServicesServiceProvider extends AbstractSeatPlugin
 
         Artisan::command("service:test",function (){
             $setting = UserSetting::first();
-            dd(json_encode($setting),json_encode($setting->user));
+            dd(json_encode($setting),json_encode($setting->user()->get()));
         });
     }
 
