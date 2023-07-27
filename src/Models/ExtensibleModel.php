@@ -20,10 +20,10 @@ abstract class ExtensibleModel extends Model
     {
         // fetch injected relations
         $extension_registry = app()->make(InjectedRelationRegistry::class);
-        $extensionClass = $extension_registry->getRelation($this::class, $key);
+        $extension_class = $extension_registry->getExtensionClassFor($this::class, $key);
 
         // check if we have an injected relation
-        if($extensionClass){
+        if($extension_class){
             // since what we are doing is not intended, we have to roughly reimplement laravel's code from here on
 
             //check if relation data is cached
@@ -34,8 +34,8 @@ abstract class ExtensibleModel extends Model
 
             // it is NOT cached, we have to load it and put it into the cache
             // get relation from extension
-            $extensionClassInstance = new $extensionClass;
-            $relation = $extensionClassInstance->$key($this);
+            $extension_class_instance = new $extension_class;
+            $relation = $extension_class_instance->$key($this);
 
             // the following code is taken from laravel's \Illuminate\Database\Eloquent\Concerns\HasAttributes::getRelationshipFromMethod
             // check if we actually got a relation returned
@@ -71,16 +71,21 @@ abstract class ExtensibleModel extends Model
     {
         // fetch injected relations
         $extension_registry = app()->make(InjectedRelationRegistry::class);
-        $extensionClass = $extension_registry->getRelation($this::class, $method);
+        $extension_class = $extension_registry->getExtensionClassFor($this::class, $method);
 
         // check if we have an injected relation
-        if($extensionClass) {
+        if($extension_class) {
             // return the injected relation
-            $extensionClassInstance = new $extensionClass;
-            return $extensionClassInstance->$method($this);
+            $extension_class_instance = new $extension_class;
+            return $extension_class_instance->$method($this);
         }
 
         // use the default behaviour if no relation is injected
         return parent::__call($method, $parameters);
+    }
+
+    public static function injectRelationsFrom(string $extension_class): void {
+        $registry = app()->make(InjectedRelationRegistry::class);
+        $registry->injectRelations(static::class, $extension_class);
     }
 }
