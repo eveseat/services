@@ -1,5 +1,25 @@
 <?php
 
+/*
+ * This file is part of SeAT
+ *
+ * Copyright (C) 2015 to present Leon Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 namespace Seat\Services\Models;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -12,9 +32,11 @@ use Seat\Services\Services\InjectedRelationRegistry;
 abstract class ExtensibleModel extends Model
 {
     /**
-     * Returns an attribute or relation of the model, considering injected relations
-     * @param string $key
+     * Returns an attribute or relation of the model, considering injected relations.
+     *
+     * @param  string  $key
      * @return mixed
+     *
      * @throws BindingResolutionException
      */
     public function __get($key)
@@ -63,10 +85,12 @@ abstract class ExtensibleModel extends Model
     }
 
     /**
-     * Redirects calls to injected relations or behaves like a normal class
-     * @param string $method
-     * @param $parameters
+     * Redirects calls to injected relations or behaves like a normal class.
+     *
+     * @param  string  $method
+     * @param  $parameters
      * @return mixed
+     *
      * @throws BindingResolutionException
      */
     public function __call($method, $parameters)
@@ -79,6 +103,7 @@ abstract class ExtensibleModel extends Model
         if($extension_class) {
             // return the injected relation
             $extension_class_instance = new $extension_class;
+
             return $extension_class_instance->$method($this);
         }
 
@@ -87,9 +112,11 @@ abstract class ExtensibleModel extends Model
     }
 
     /**
-     * Injects relations into this model
-     * @param string $extension_class the class that provides the injected relations
+     * Injects relations into this model.
+     *
+     * @param  string  $extension_class  the class that provides the injected relations
      * @return void
+     *
      * @throws BindingResolutionException
      * @throws InjectedRelationConflictException A conflict arises when trying to inject two relations with the same name into a target.
      */
