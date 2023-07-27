@@ -17,6 +17,11 @@
       "src/Helpers/helpers.php"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Seat\\Tests\\Services\\": "tests/"
+    }
+  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
@@ -30,14 +35,14 @@
     "coduo/php-humanizer": "^4.0",
     "composer/semver": "^3.0",
     "doctrine/dbal": "^3.0",
-    "eveseat/eseye": "^3.x-dev",
+    "eveseat/eseye": "^3.0",
     "guzzlehttp/guzzle": "^7.0",
     "laravel/framework": "^10.0",
     "psr/simple-cache": "^3.0",
     "psr/log": "^3.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.0"
+    "phpunit/phpunit": "^10.0"
   },
   "extra": {
     "laravel": {

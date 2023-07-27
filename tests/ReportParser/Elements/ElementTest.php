@@ -1,5 +1,8 @@
 <?php
 
+namespace Seat\Tests\Services\ReportParser\Elements;
+
+use ErrorException;
 use PHPUnit\Framework\TestCase;
 use Seat\Services\ReportParser\Elements\Element;
 

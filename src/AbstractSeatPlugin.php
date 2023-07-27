@@ -37,6 +37,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      * Return an URI to a CHANGELOG.md file or an API path which will be providing changelog history.
      *
      * @example https://raw.githubusercontent.com/eveseat/seat/master/LICENSE
+     *
      * @exemple https://api.github.com/repos/eveseat/web/releases
      *
      * @return string|null
