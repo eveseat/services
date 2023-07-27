@@ -1,5 +1,7 @@
 <?php
 
+namespace Seat\Tests\Services\InjectedRelations;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\TestCase;
 use Seat\Services\Models\UserSetting;
