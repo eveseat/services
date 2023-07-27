@@ -6,13 +6,14 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use LogicException;
+use Seat\Services\Exceptions\InjectedRelationConflictException;
 use Seat\Services\Services\InjectedRelationRegistry;
 
 abstract class ExtensibleModel extends Model
 {
     /**
      * Returns an attribute or relation of the model, considering injected relations
-     * @param $key
+     * @param string $key
      * @return mixed
      * @throws BindingResolutionException
      */
@@ -24,6 +25,7 @@ abstract class ExtensibleModel extends Model
 
         // check if we have an injected relation
         if($extension_class){
+            // we have an injected relation
             // since what we are doing is not intended, we have to roughly reimplement laravel's code from here on
 
             //check if relation data is cached
@@ -61,8 +63,8 @@ abstract class ExtensibleModel extends Model
     }
 
     /**
-     * Redirects calls to injected relations, or uses the default laravel behaviour otherwise
-     * @param $method
+     * Redirects calls to injected relations or behaves like a normal class
+     * @param string $method
      * @param $parameters
      * @return mixed
      * @throws BindingResolutionException
@@ -84,6 +86,13 @@ abstract class ExtensibleModel extends Model
         return parent::__call($method, $parameters);
     }
 
+    /**
+     * Injects relations into this model
+     * @param string $extension_class the class that provides the injected relations
+     * @return void
+     * @throws BindingResolutionException
+     * @throws InjectedRelationConflictException A conflict arises when trying to inject two relations with the same name into a target.
+     */
     public static function injectRelationsFrom(string $extension_class): void {
         $registry = app()->make(InjectedRelationRegistry::class);
         $registry->injectRelations(static::class, $extension_class);
