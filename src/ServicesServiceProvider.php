@@ -24,6 +24,7 @@ namespace Seat\Services;
 
 use Illuminate\Support\Facades\DB;
 use Seat\Services\Commands\Seat\Admin\Email;
+use Seat\Services\Commands\Seat\DevEnv\BuildDevEnv;
 use Seat\Services\Commands\Seat\Version;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
@@ -94,6 +95,7 @@ class ServicesServiceProvider extends AbstractSeatPlugin
         $this->commands([
             Email::class,
             Version::class,
+            BuildDevEnv::class,
         ]);
     }
 
