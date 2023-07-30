@@ -2,15 +2,15 @@
 
 namespace Seat\Tests\Services\InjectedRelations;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use PhpParser\Node\Expr\BinaryOp\Mod;
 use Seat\Services\Exceptions\InjectedRelationConflictException;
 use Seat\Services\Services\InjectedRelationRegistry;
 use Seat\Services\ServicesServiceProvider;
 use Seat\Tests\Services\InjectedRelations\Extensions\ModelAExtension;
 use Seat\Tests\Services\InjectedRelations\Models\ModelA;
 use Seat\Tests\Services\InjectedRelations\Models\ModelB;
-use function PHPUnit\Framework\assertEquals;
+
 
 class InjectedRelationsTest extends \Orchestra\Testbench\TestCase
 {
@@ -104,5 +104,28 @@ class InjectedRelationsTest extends \Orchestra\Testbench\TestCase
         // as function calls
         $this->assertNotEquals(null, $a->modelBInjected()->first()->id);
         $this->assertEquals($b->id, $a->modelBInjected()->first()->id);
+    }
+
+    /**
+     * Test if eager loading with 'with' works
+     * @throws InjectedRelationConflictException
+     * @throws BindingResolutionException
+     */
+    public function testEagerLoading(){
+        $a = ModelA::factory()->create();
+        $b = ModelB::factory()
+            ->for($a)
+            ->create();
+
+        ModelA::injectRelationsFrom(ModelAExtension::class);
+
+        $result = ModelA::with("modelBInjected")->first();
+        $loaded_relations = $result->getRelations();
+
+        $this->assertArrayHasKey('modelBInjected', $loaded_relations);
+
+        $model_b = $loaded_relations['modelBInjected'];
+        $this->assertInstanceOf(ModelB::class, $model_b);
+        $this->assertEquals($model_b->id, $b->id);
     }
 }
