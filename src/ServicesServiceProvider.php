@@ -25,6 +25,7 @@ namespace Seat\Services;
 use Illuminate\Support\Facades\DB;
 use Seat\Services\Commands\Seat\Admin\Email;
 use Seat\Services\Commands\Seat\Version;
+use Seat\Services\Contracts\Prices\PriceProvider;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
 {
@@ -75,6 +76,9 @@ class ServicesServiceProvider extends AbstractSeatPlugin
 
         // Inform Laravel how to load migrations
         $this->add_migrations();
+
+        //publish config
+        $this->addPublications();
     }
 
     /**
@@ -84,6 +88,9 @@ class ServicesServiceProvider extends AbstractSeatPlugin
      */
     public function register()
     {
+        $this->app->bind(PriceProvider::class, function () {
+            return new \Seat\Services\Services\PriceProviderImpl();
+        });
 
         $this->mergeConfigFrom(
             __DIR__ . '/Config/services.config.php', 'services.config');
@@ -95,6 +102,12 @@ class ServicesServiceProvider extends AbstractSeatPlugin
             Email::class,
             Version::class,
         ]);
+    }
+
+    private function addPublications(){
+        $this->publishes([
+            __DIR__ . '/Config/priceproviders.backends.php' => config_path('priceproviders.backends.php'),
+        ], ['config', 'seat']);
     }
 
     /**
