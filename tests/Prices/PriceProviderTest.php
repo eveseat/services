@@ -7,6 +7,6 @@ use Orchestra\Testbench\TestCase;
 class PriceProviderTest extends TestCase
 {
     public function testIt(){
-        
+
     }
 }
