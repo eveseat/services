@@ -8,6 +8,6 @@ class PriceProvider extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Seat\Services\Contracts\Prices\PriceProvider::class;
+        return \Seat\Services\Services\Prices\PriceProvider::class;
     }
 }
