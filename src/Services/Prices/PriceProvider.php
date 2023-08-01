@@ -3,11 +3,10 @@
 namespace Seat\Services\Services\Prices;
 
 use Illuminate\Support\Collection;
-use Seat\Services\Contracts\Prices\PriceProvider as PriceProviderContract;
 use Seat\Services\Contracts\Prices\PriceProviderBackend;
 use Seat\Services\Models\PriceProviderInstance;
 
-class PriceProviderImpl implements PriceProviderContract
+class PriceProvider
 {
     public function instance(int $identifier): PriceProviderBackend
     {
@@ -35,5 +34,7 @@ class PriceProviderImpl implements PriceProviderContract
         $instance->backend = $description->getBackendClass();
         $instance->configuration = $configuration;
         $instance->save();
+
+        return $instance->id;
     }
 }

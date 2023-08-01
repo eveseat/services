@@ -25,7 +25,7 @@ namespace Seat\Services;
 use Illuminate\Support\Facades\DB;
 use Seat\Services\Commands\Seat\Admin\Email;
 use Seat\Services\Commands\Seat\Version;
-use Seat\Services\Contracts\Prices\PriceProvider;
+use Seat\Services\Services\Prices\PriceProvider;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
 {
@@ -86,10 +86,10 @@ class ServicesServiceProvider extends AbstractSeatPlugin
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(PriceProvider::class, function () {
-            return new Services\Prices\PriceProviderImpl();
+            return new Services\Prices\PriceProvider();
         });
 
         $this->mergeConfigFrom(
