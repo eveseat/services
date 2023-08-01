@@ -3,6 +3,7 @@
 namespace Seat\Services\Contracts\Prices;
 
 use Illuminate\Support\Collection;
+use Seat\Services\Services\Prices\PriceProviderBackendDescription;
 
 abstract class PriceProviderBackend
 {

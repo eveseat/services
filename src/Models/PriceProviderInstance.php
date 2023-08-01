@@ -4,6 +4,12 @@ namespace Seat\Services\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string $name
+ * @property string $backend
+ * @property array $configuration
+ * @property int $id
+ */
 class PriceProviderInstance extends Model
 {
     public $fillable = [

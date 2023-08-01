@@ -1,12 +1,10 @@
 <?php
 
-namespace Seat\Services\Services;
+namespace Seat\Services\Services\Prices;
 
-use Exception;
 use Illuminate\Support\Collection;
 use Seat\Services\Contracts\Prices\PriceProvider as PriceProviderContract;
 use Seat\Services\Contracts\Prices\PriceProviderBackend;
-use Seat\Services\Contracts\Prices\PriceProviderBackendDescription;
 use Seat\Services\Models\PriceProviderInstance;
 
 class PriceProviderImpl implements PriceProviderContract

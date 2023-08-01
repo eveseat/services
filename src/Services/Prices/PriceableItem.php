@@ -1,6 +1,6 @@
 <?php
 
-namespace Seat\Services\Services;
+namespace Seat\Services\Services\Prices;
 
 use Seat\Services\Contracts\HasTypeID;
 use Seat\Services\Contracts\Prices\Priceable;
@@ -13,8 +13,8 @@ class PriceableItem implements Priceable
     private float $price;
 
     /**
+     * @param int|HasTypeID $type_id
      * @param int $amount
-     * @param int $type_id
      */
     public function __construct(int | HasTypeID $type_id, int $amount, )
     {

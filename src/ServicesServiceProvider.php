@@ -89,7 +89,7 @@ class ServicesServiceProvider extends AbstractSeatPlugin
     public function register()
     {
         $this->app->bind(PriceProvider::class, function () {
-            return new \Seat\Services\Services\PriceProviderImpl();
+            return new Services\Prices\PriceProviderImpl();
         });
 
         $this->mergeConfigFrom(

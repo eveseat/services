@@ -3,12 +3,13 @@
 namespace Seat\Services\Contracts\Prices;
 
 use Illuminate\Support\Collection;
+use Seat\Services\Services\Prices\PriceProviderBackendDescription;
 
 interface PriceProvider
 {
     /**
      * Creates a backend with its configuration
-     * @param string $identifier
+     * @param int $identifier
      * @return PriceProviderBackend
      */
     public function instance(int $identifier): PriceProviderBackend;
