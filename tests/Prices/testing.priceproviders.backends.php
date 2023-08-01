@@ -1,5 +1,5 @@
 <?php
 
 return [
-  \Seat\Tests\Services\Prices\TestingPriceProviderBackend::class
+  \RecursiveTree\Seat\Testing\Prices\TestingPriceProviderBackend::class
 ];

@@ -27,6 +27,15 @@ class PriceProvider
             });
     }
 
+    public function availableInstances(): Collection
+    {
+        //TODO create and use InstanceDescription class
+        return PriceProviderInstance::all()
+            ->map(function ($instance){
+                return $instance->backend::getDescription();
+            });
+    }
+
     public function createInstance(PriceProviderBackendDescription $description, array $configuration): int
     {
         $instance = new PriceProviderInstance();
