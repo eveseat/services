@@ -128,6 +128,16 @@ if (! function_exists('clean_ccp_html')) {
         if (empty($html))
             return '';
 
+        // CCP's rich text might be encapsulated in u'<content>'. Remove the u'
+        $html = preg_match("/u'(.*)'/", $html, $match) ? $match[1] : $html;
+
+
+        // handle escaped UTF-8 data
+        // taken from https://stackoverflow.com/questions/2934563/how-to-decode-unicode-escape-sequences-like-u00ed-to-proper-utf-8-encoded-cha
+        $html = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UTF-16BE');
+        }, $html);
+
         // Handle Unicode cases.
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
