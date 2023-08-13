@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 class CleanCCPHtmlTest extends TestCase
 {
     public function testEncapsulationRemoval(){
-        $this->assertEquals('test',clean_ccp_html("u'test"));
+        $this->assertEquals('test',clean_ccp_html("u'test'"));
     }
 
     public function testWithoutEncapsulation(){
