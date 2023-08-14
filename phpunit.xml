@@ -5,6 +5,9 @@
     <testsuite name="Report Parser Test Suite">
       <directory>./tests/ReportParser</directory>
     </testsuite>
+    <testsuite name="CCP HTML CLeaning Test Suite">
+      <directory>./tests/CleanCCPHtml</directory>
+    </testsuite>
   </testsuites>
   <source>
     <include>
