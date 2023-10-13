@@ -2,6 +2,11 @@
 
 namespace Seat\Services\Contracts;
 
+/**
+ * Describes items that are appraisable using recursivetree/seat-prices-core.
+ * This interface is in the services package to encourage making classes that describe items compatible across both the
+ * seat core and plugin, even if they don't depend on recursivetree/seat-prices-core.
+ */
 interface IPriceable extends HasTypeID
 {
     /**

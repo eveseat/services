@@ -5,6 +5,9 @@ namespace Seat\Services\Items;
 
 use Seat\Services\Contracts\HasTypeID;
 
+/**
+ * A basic implementation of HasTypeID
+ */
 class EveType implements HasTypeID
 {
     protected int $type_id;
@@ -21,7 +24,9 @@ class EveType implements HasTypeID
         $this->type_id = $type_id;
     }
 
-
+    /**
+     * @return int The type id
+     */
     public function getTypeID(): int
     {
         return $this->type_id;

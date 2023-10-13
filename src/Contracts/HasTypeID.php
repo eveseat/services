@@ -3,7 +3,7 @@
 namespace Seat\Services\Contracts;
 
 /**
- * An interface to describe objects
+ * An interface to describe objects having a type id.
  */
 interface HasTypeID
 {
