@@ -166,7 +166,7 @@ class Provider extends AbstractProvider
         $jws = Load::jws($access_token)
             ->algs(['RS256', 'ES256', 'HS256'])
             ->exp()
-            ->iss('https://login.eveonline.com')
+            ->iss(['https://login.eveonline.com', "login.eveonline.com"])
             ->header('typ', new TypeChecker(['JWT'], true))
             ->claim('scp', new ScpChecker($scopes))
             ->claim('sub', new SubEveCharacterChecker())
