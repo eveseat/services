@@ -166,7 +166,7 @@ class Provider extends AbstractProvider
         $jws = Load::jws($access_token)
             ->algs(['RS256', 'ES256', 'HS256'])
             ->exp()
-            ->iss('login.eveonline.com')
+            // ->iss('login.eveonline.com') // Disabled temporarily to account for CCP iss change. SeAT v5 will re-enable with proper handling.
             ->header('typ', new TypeChecker(['JWT'], true))
             ->claim('scp', new ScpChecker($scopes))
             ->claim('sub', new SubEveCharacterChecker())
