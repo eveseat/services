@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ class AnalyticsContainer implements ArrayAccess
     }
 
     /**
-     * @param $key
+     * @param  $key
      * @return mixed
      */
     public function __get($key)
@@ -103,8 +103,8 @@ class AnalyticsContainer implements ArrayAccess
     }
 
     /**
-     * @param $key
-     * @param $val
+     * @param  $key
+     * @param  $val
      */
     public function __set($key, $val)
     {
@@ -113,8 +113,8 @@ class AnalyticsContainer implements ArrayAccess
     }
 
     /**
-     * @param $key
-     * @param $val
+     * @param  $key
+     * @param  $val
      * @return $this
      */
     public function set($key, $val)

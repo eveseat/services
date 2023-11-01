@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,8 +106,8 @@ abstract class Settings
     /**
      * Determine the unique prefix for the key by name.
      *
-     * @param $name
-     * @param $for_id
+     * @param  $name
+     * @param  $for_id
      * @return string
      *
      * @throws \Seat\Services\Exceptions\SettingException
@@ -135,7 +135,7 @@ abstract class Settings
      * dont have an already logged in session, well then
      * we make the $for_id null.
      *
-     * @param $for_id
+     * @param  $for_id
      * @return int|null
      */
     public static function get_affected_id($for_id)

@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ abstract class AbstractSeatPlugin extends ServiceProvider
      * Return an URI to a CHANGELOG.md file or an API path which will be providing changelog history.
      *
      * @example https://raw.githubusercontent.com/eveseat/seat/master/LICENSE
+     *
      * @exemple https://api.github.com/repos/eveseat/web/releases
      *
      * @return string|null

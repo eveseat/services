@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ if (! function_exists('human_diff')) {
      * Return the time difference from now in a
      * format that humans can read.
      *
-     * @param $time
+     * @param  $time
      * @return string
      */
     function human_diff($time)
@@ -84,8 +84,8 @@ if (! function_exists('number')) {
     /**
      * Return a formatted number.
      *
-     * @param $number
-     * @param $dec
+     * @param  $number
+     * @param  $dec
      * @return string
      *
      * @throws \Seat\Services\Exceptions\SettingException
@@ -104,7 +104,7 @@ if (! function_exists('number_metric')) {
      * Return a shortened number with a suffix.
      * Depends on php5-intl.
      *
-     * @param $number
+     * @param  $number
      * @return bool|string
      */
     function number_metric($number)
@@ -157,7 +157,7 @@ if (! function_exists('evemail_threads')) {
      * Attempt to 'thread' evemails based on the separator
      * that is automatically added using the eve client.
      *
-     * @param $message
+     * @param  $message
      * @return \Illuminate\Support\Collection
      */
     function evemail_threads($message)
