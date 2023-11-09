@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ if (! function_exists('human_diff')) {
      * Return the time difference from now in a
      * format that humans can read.
      *
-     * @param $time
+     * @param  $time
      * @return string
      */
     function human_diff($time)
@@ -84,8 +84,8 @@ if (! function_exists('number')) {
     /**
      * Return a formatted number.
      *
-     * @param $number
-     * @param $dec
+     * @param  $number
+     * @param  $dec
      * @return string
      *
      * @throws \Seat\Services\Exceptions\SettingException
@@ -104,7 +104,7 @@ if (! function_exists('number_metric')) {
      * Return a shortened number with a suffix.
      * Depends on php5-intl.
      *
-     * @param $number
+     * @param  $number
      * @return bool|string
      */
     function number_metric($number)
@@ -127,6 +127,15 @@ if (! function_exists('clean_ccp_html')) {
     {
         if (empty($html))
             return '';
+
+        // CCP's rich text might be encapsulated in u'<content>'. Remove the u'
+        $html = preg_match("/u'(.*)'/", $html, $match) ? $match[1] : $html;
+
+        // handle escaped UTF-8 data
+        // taken from https://stackoverflow.com/questions/2934563/how-to-decode-unicode-escape-sequences-like-u00ed-to-proper-utf-8-encoded-cha
+        $html = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UTF-16BE');
+        }, $html);
 
         // Handle Unicode cases.
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
@@ -159,7 +168,7 @@ if (! function_exists('evemail_threads')) {
      * Attempt to 'thread' evemails based on the separator
      * that is automatically added using the eve client.
      *
-     * @param $message
+     * @param  $message
      * @return \Illuminate\Support\Collection
      */
     function evemail_threads($message)

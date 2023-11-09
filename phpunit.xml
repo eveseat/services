@@ -8,6 +8,9 @@
     <testsuite name="Injected Relations Test Suite">
       <directory>./tests/InjectedRelations</directory>
     </testsuite>
+    <testsuite name="CCP HTML CLeaning Test Suite">
+      <directory>./tests/CleanCCPHtml</directory>
+    </testsuite>
   </testsuites>
   <source>
     <include>
