@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ namespace Seat\Services;
 use Illuminate\Support\Facades\DB;
 use Seat\Services\Commands\Seat\Admin\Email;
 use Seat\Services\Commands\Seat\Version;
+use Seat\Services\Services\InjectedRelationRegistry;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
 {
@@ -87,6 +88,10 @@ class ServicesServiceProvider extends AbstractSeatPlugin
 
         $this->mergeConfigFrom(
             __DIR__ . '/Config/services.config.php', 'services.config');
+
+        $this->app->singleton(InjectedRelationRegistry::class, function () {
+            return new InjectedRelationRegistry();
+        });
     }
 
     private function addCommands()

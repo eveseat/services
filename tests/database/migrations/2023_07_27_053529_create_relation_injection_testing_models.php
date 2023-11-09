@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to present Leon Jacobs
+ * Copyright (C) 2015 to 2022 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
-/**
- * Class GlobalSetting.
- *
- * @package Seat\Services\Models
- */
-class GlobalSetting extends ExtensibleModel
+
+class CreateRelationInjectionTestingModels extends Migration
 {
     /**
-     * @var array
+     * Run the migrations.
+     *
+     * @return void
      */
-    protected $fillable = ['name', 'value'];
+    public function up()
+    {
+        Schema::create('model_a', function (Blueprint $table) {
+            $table->increments('id');
+        });
+
+        Schema::create('model_b', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('model_a_id')->unsigned();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+
+        Schema::drop('model_a');
+        Schema::drop('model_m');
+    }
 }

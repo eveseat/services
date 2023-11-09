@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to present Leon Jacobs
+ * Copyright (C) 2015 to 2020 Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,25 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Models;
+namespace Seat\Tests\Services\database\factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seat\Tests\Services\InjectedRelations\Models\ModelA;
 
 /**
- * Class GlobalSetting.
- *
- * @package Seat\Services\Models
+ * Class RoleFactory.
+ * @package Seat\Tests\Web\Database\Factories
  */
-class GlobalSetting extends ExtensibleModel
+class ModelAFactory extends Factory
 {
+    protected $model = ModelA::class;
+
     /**
-     * @var array
+     * @return array
      */
-    protected $fillable = ['name', 'value'];
+    public function definition(): array
+    {
+        return [
+        ];
+    }
 }

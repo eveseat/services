@@ -20,17 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Services\Models;
+namespace Seat\Services\Exceptions;
 
-/**
- * Class GlobalSetting.
- *
- * @package Seat\Services\Models
- */
-class GlobalSetting extends ExtensibleModel
+use Exception;
+
+class InjectedRelationConflictException extends Exception
 {
-    /**
-     * @var array
-     */
-    protected $fillable = ['name', 'value'];
+
 }
