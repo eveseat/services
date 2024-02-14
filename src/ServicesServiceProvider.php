@@ -22,9 +22,14 @@
 
 namespace Seat\Services;
 
+use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Seat\Services\Commands\Seat\Admin\Email;
 use Seat\Services\Commands\Seat\Version;
+use Seat\Services\Contracts\DeferredMigration;
+use Seat\Services\Listeners\RunDeferredMigrations;
+use Seat\Services\Services\DeferredMigrationRegistry;
 use Seat\Services\Services\InjectedRelationRegistry;
 
 class ServicesServiceProvider extends AbstractSeatPlugin
@@ -76,6 +81,9 @@ class ServicesServiceProvider extends AbstractSeatPlugin
 
         // Inform Laravel how to load migrations
         $this->add_migrations();
+
+        // add event listener
+        $this->add_event_listeners();
     }
 
     /**
@@ -92,6 +100,10 @@ class ServicesServiceProvider extends AbstractSeatPlugin
         $this->app->singleton(InjectedRelationRegistry::class, function () {
             return new InjectedRelationRegistry();
         });
+
+        $this->app->singleton(DeferredMigrationRegistry::class, function () {
+            return new DeferredMigrationRegistry();
+        });
     }
 
     private function addCommands()
@@ -100,6 +112,11 @@ class ServicesServiceProvider extends AbstractSeatPlugin
             Email::class,
             Version::class,
         ]);
+    }
+
+    private function add_event_listeners(): void
+    {
+        Event::listen(MigrationsEnded::class,RunDeferredMigrations::class);
     }
 
     /**
