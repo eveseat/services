@@ -118,7 +118,6 @@ class Provider extends AbstractProvider
             'redirect_uri' => $this->redirectUrl,
         ];
 
-        
         if ($this->usesPKCE()) {
             $fields['code_verifier'] = $this->request->session()->pull('code_verifier');
         }
