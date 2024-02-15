@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class Provider extends AbstractProvider
     /**
      * Get the authentication URL for the provider.
      *
-     * @param  string  $state
+     * @param string $state
      * @return string
      */
     protected function getAuthUrl($state)
@@ -68,7 +68,7 @@ class Provider extends AbstractProvider
     /**
      * Get the raw user for the given access token.
      *
-     * @param  string  $token
+     * @param string $token
      * @return array
      */
     protected function getUserByToken($token)
@@ -79,7 +79,7 @@ class Provider extends AbstractProvider
     /**
      * Map the raw user array to a Socialite User instance.
      *
-     * @param  array  $user
+     * @param array $user
      * @return \Laravel\Socialite\Two\User
      */
     protected function mapUserToObject(array $user)
@@ -94,20 +94,20 @@ class Provider extends AbstractProvider
         }
 
         return (new User)->setRaw($user)->map([
-            'id'                   => $character_id,
-            'name'                 => $user['name'],
-            'nickname'             => $user['name'],
+            'id' => $character_id,
+            'name' => $user['name'],
+            'nickname' => $user['name'],
             'character_owner_hash' => $user['owner'],
-            'scopes'               => is_array($user['scp']) ? $user['scp'] : [$user['scp']],
-            'expires_on'           => $user['exp'],
-            'avatar'               => $avatar,
+            'scopes' => is_array($user['scp']) ? $user['scp'] : [$user['scp']],
+            'expires_on' => $user['exp'],
+            'avatar' => $avatar,
         ]);
     }
 
     /**
      * Get the POST fields for the token request.
      *
-     * @param  string  $code
+     * @param string $code
      * @return array
      */
     protected function getTokenFields($code)
@@ -115,7 +115,7 @@ class Provider extends AbstractProvider
         $fields = [
             'grant_type' => 'authorization_code',
             'code' => $code,
-            'redirect_uri' => $this->redirectUrl
+            'redirect_uri' => $this->redirectUrl,
         ];
 
 
@@ -127,7 +127,7 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * @param  string  $access_token
+     * @param string $access_token
      * @return array
      *
      * @throws \Exception
