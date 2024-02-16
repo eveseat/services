@@ -140,4 +140,15 @@ class Provider extends AbstractProvider
 
         return $validator->validateToken(config('eseye.esi.auth.client_id'), $access_token);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getTokenHeaders($code)
+    {
+        return [
+            'Accept' => 'application/json',
+            'Authorization' => 'Basic ' . base64_encode($this->clientId . ':' . $this->clientSecret),
+        ];
+    }
 }
