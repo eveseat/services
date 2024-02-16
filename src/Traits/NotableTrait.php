@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@ trait NotableTrait
 
         return Note::create([
             'object_type' => __CLASS__,
-            'object_id'   => $object_id,
-            'title'       => $title,
-            'note'        => $note,
+            'object_id' => $object_id,
+            'title' => $title,
+            'note' => $note,
         ]);
 
     }

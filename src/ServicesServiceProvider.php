@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Seat\Services\Commands\Seat\Admin\Email;
 use Seat\Services\Commands\Seat\Version;
-use Seat\Services\Contracts\DeferredMigration;
 use Seat\Services\Listeners\RunDeferredMigrations;
 use Seat\Services\Services\DeferredMigrationRegistry;
 use Seat\Services\Services\InjectedRelationRegistry;
@@ -116,7 +115,7 @@ class ServicesServiceProvider extends AbstractSeatPlugin
 
     private function add_event_listeners(): void
     {
-        Event::listen(MigrationsEnded::class,RunDeferredMigrations::class);
+        Event::listen(MigrationsEnded::class, RunDeferredMigrations::class);
     }
 
     /**
