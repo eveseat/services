@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,13 +94,13 @@ class Provider extends AbstractProvider
         }
 
         return (new User)->setRaw($user)->map([
-            'id'                   => $character_id,
-            'name'                 => $user['name'],
-            'nickname'             => $user['name'],
+            'id' => $character_id,
+            'name' => $user['name'],
+            'nickname' => $user['name'],
             'character_owner_hash' => $user['owner'],
-            'scopes'               => is_array($user['scp']) ? $user['scp'] : [$user['scp']],
-            'expires_on'           => $user['exp'],
-            'avatar'               => $avatar,
+            'scopes' => is_array($user['scp']) ? $user['scp'] : [$user['scp']],
+            'expires_on' => $user['exp'],
+            'avatar' => $avatar,
         ]);
     }
 
@@ -112,7 +112,17 @@ class Provider extends AbstractProvider
      */
     protected function getTokenFields($code)
     {
-        return array_merge(parent::getTokenFields($code), ['grant_type' => 'authorization_code']);
+        $fields = [
+            'grant_type' => 'authorization_code',
+            'code' => $code,
+            'redirect_uri' => $this->redirectUrl,
+        ];
+
+        if ($this->usesPKCE()) {
+            $fields['code_verifier'] = $this->request->session()->pull('code_verifier');
+        }
+
+        return $fields;
     }
 
     /**
