@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ class Analytics implements ShouldQueue
 
         $client = new Client([
             'base_uri' => 'https://www.google-analytics.com/',
-            'timeout'  => 5.0,
+            'timeout' => 5.0,
         ]);
 
         // Check if we are in debug mode
@@ -172,17 +172,17 @@ class Analytics implements ShouldQueue
 
                 // Required Fields
                 //  https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide#required
-                'v'   => 1,                     // Protocol Version
+                'v' => 1,                     // Protocol Version
                 'tid' => $this->tracking_id,    // Google Tracking-ID
                 'cid' => $this->getClientID(),  // Unique Client-ID
-                't'   => $type,                 // Event
+                't' => $type,                 // Event
 
                 // Optional Fields
                 'aip' => 1,                     // Anonymize the IP of the calling client
-                'an'  => 'SeAT',                // App Name
+                'an' => 'SeAT',                // App Name
 
                 // Versions of the currently installed packages.
-                'av'  => $versions->implode(', '),
+                'av' => $versions->implode(', '),
 
                 // User Agent is comprised of OS Name(s), Release(r)
                 // and Machine Type(m). Examples:
@@ -191,7 +191,7 @@ class Analytics implements ShouldQueue
                 //
                 // See:
                 //  http://php.net/manual/en/function.php-uname.php
-                'ua'  => 'SeAT/' . php_uname('s') .
+                'ua' => 'SeAT/' . php_uname('s') .
                     '/' . php_uname('r') .
                     '/' . php_uname('m'),
 

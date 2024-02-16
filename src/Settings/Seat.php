@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,12 +38,12 @@ class Seat extends Settings
      */
     public static $options = [
 
-        'registration'       => ['yes', 'no'],
-        'force_min_mask'     => ['yes', 'no'],
-        'allow_sso'          => ['yes', 'no'],
-        'allow_tracking'     => ['yes', 'no'],
+        'registration' => ['yes', 'no'],
+        'force_min_mask' => ['yes', 'no'],
+        'allow_sso' => ['yes', 'no'],
+        'allow_tracking' => ['yes', 'no'],
         'require_activation' => ['yes', 'no'],
-        'cleanup_data'       => ['yes', 'no'],
+        'cleanup_data' => ['yes', 'no'],
     ];
 
     /**

@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,10 @@ class Profile extends Settings
      */
     public static $options = [
 
-        'sidebar'            => ['sidebar-full', 'sidebar-collapse'],
+        'sidebar' => ['sidebar-full', 'sidebar-collapse'],
         'thousand_seperator' => [' ', ',', '.'],
-        'decimal_seperator'  => [',', '.'],
-        'mail_threads'       => ['yes', 'no'],
+        'decimal_seperator' => [',', '.'],
+        'mail_threads' => ['yes', 'no'],
     ];
 
     /**
