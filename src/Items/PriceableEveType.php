@@ -23,7 +23,6 @@
 namespace Seat\Services\Items;
 
 use Seat\Services\Contracts\HasTypeID;
-use Seat\Services\Contracts\HasTypeIDWithAmount;
 use Seat\Services\Contracts\IPriceable;
 
 /**
