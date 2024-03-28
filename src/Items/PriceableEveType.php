@@ -23,33 +23,24 @@
 namespace Seat\Services\Items;
 
 use Seat\Services\Contracts\HasTypeID;
+use Seat\Services\Contracts\HasTypeIDWithAmount;
 use Seat\Services\Contracts\IPriceable;
 
 /**
  * A basic implementation od IPriceable.
  */
-class PriceableEveType extends EveType implements IPriceable
+class PriceableEveType extends EveTypeWithAmount implements IPriceable
 {
     protected float $price;
-    protected float $amount;
 
     /**
      * @param  int|HasTypeID  $type_id  The eve type to be appraised
-     * @param  float  $amount  The amount of this type to be appraised
+     * @param  float|int  $amount  The amount of this type to be appraised
      */
-    public function __construct(int|HasTypeID $type_id, float $amount)
+    public function __construct(int|HasTypeID $type_id, float|int $amount)
     {
-        parent::__construct($type_id);
+        parent::__construct($type_id, (int) $amount);
         $this->price = 0;
-        $this->amount = $amount;
-    }
-
-    /**
-     * @return int The amount of this item to be appraised
-     */
-    public function getAmount(): int
-    {
-        return $this->amount;
     }
 
     /**
