@@ -27,7 +27,7 @@ namespace Seat\Services\Contracts;
  * This interface is in the services package to encourage making classes that describe items compatible across both the
  * seat core and plugin, even if they don't depend on recursivetree/seat-prices-core.
  */
-interface IPriceable extends HasTypeID, HasTypeIDWithAmount
+interface IPriceable extends HasTypeIDWithAmount
 {
     /**
      * Set the price of this object.
