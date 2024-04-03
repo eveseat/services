@@ -23,17 +23,13 @@
 namespace Seat\Services\Contracts;
 
 /**
- * Describes items that are appraisable using recursivetree/seat-prices-core.
- * This interface is in the services package to encourage making classes that describe items compatible across both the
- * seat core and plugin, even if they don't depend on recursivetree/seat-prices-core.
+ * This interface is something between HasTypeID and IPriceable for things that have an amount and type but no price, like an asset list.
+ * The goal is to improve cross-plugin item handling compatibility.
  */
-interface IPriceable extends HasTypeIDWithAmount
+interface HasTypeIDWithAmount extends HasTypeID
 {
     /**
-     * Set the price of this object.
-     *
-     * @param  float  $price
-     * @return void
+     * @return int The amount of items
      */
-    public function setPrice(float $price): void;
+    public function getAmount(): int;
 }
