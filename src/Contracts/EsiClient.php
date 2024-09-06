@@ -99,4 +99,6 @@ interface EsiClient
      * @return \Psr\SimpleCache\CacheInterface
      */
     public function getCache(): CacheInterface;
+
+    public function getValidAccessToken(): string;
 }
