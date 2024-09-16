@@ -26,6 +26,7 @@ use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Seat\Services\Commands\Seat\Admin\Email;
+use Seat\Services\Commands\Seat\DevEnv\BuildDevEnv;
 use Seat\Services\Commands\Seat\Version;
 use Seat\Services\Listeners\RunDeferredMigrations;
 use Seat\Services\Services\DeferredMigrationRegistry;
@@ -110,6 +111,7 @@ class ServicesServiceProvider extends AbstractSeatPlugin
         $this->commands([
             Email::class,
             Version::class,
+            BuildDevEnv::class,
         ]);
     }
 
