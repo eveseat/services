@@ -144,6 +144,9 @@ if (! function_exists('clean_ccp_html')) {
         // or that is not considered valid HTML anyways.
         $html = strip_tags($html, $acceptable_tags);
 
+        // DOMDocument->loadHTML doesn't handle empty strings
+        if($html === '') return '';
+
         // Prep a DOMDocument so that we can remove font
         // colors and size attributes.
         $dom = new DOMDocument();
