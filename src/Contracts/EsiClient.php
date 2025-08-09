@@ -55,7 +55,7 @@ interface EsiClient
     public function setQueryString(array $query): self;
 
     /**
-     * @param string $date
+     * @param  string  $date
      * @return void
      */
     public function setCompatibilityDate(string $date): self;
