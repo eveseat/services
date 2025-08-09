@@ -58,7 +58,7 @@ interface EsiClient
      * @param string $date
      * @return void
      */
-    public function setCompatibilityDate(string $date): void;
+    public function setCompatibilityDate(string $date): self;
 
     /**
      * @return string
