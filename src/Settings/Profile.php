@@ -42,6 +42,7 @@ class Profile extends Settings
         'thousand_seperator' => [' ', ',', '.'],
         'decimal_seperator' => [',', '.'],
         'mail_threads' => ['yes', 'no'],
+        'page_limit' => [10, 25, 50, 100, -1],
     ];
 
     /**
