@@ -44,17 +44,6 @@ interface EsiClient
     public function isAuthenticated(): bool;
 
     /**
-     * @return string
-     */
-    public function getVersion(): string;
-
-    /**
-     * @param  string  $version
-     * @return $this
-     */
-    public function setVersion(string $version): self;
-
-    /**
      * @return array
      */
     public function getQueryString(): array;
@@ -64,6 +53,17 @@ interface EsiClient
      * @return $this
      */
     public function setQueryString(array $query): self;
+
+    /**
+     * @param  string  $date
+     * @return void
+     */
+    public function setCompatibilityDate(string $date): self;
+
+    /**
+     * @return string
+     */
+    public function getCompatibilityDate(): string;
 
     /**
      * @return array
